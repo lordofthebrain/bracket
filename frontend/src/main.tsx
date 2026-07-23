@@ -1,4 +1,4 @@
-import { MantineProvider, createTheme } from '@mantine/core';
+import { Autocomplete, MantineProvider, MultiSelect, Select, TagsInput, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';
@@ -36,6 +36,15 @@ import StandingsPage from './pages/tournaments/[id]/standings';
 import TeamsPage from './pages/tournaments/[id]/teams';
 import UserPage from './pages/user';
 
+// Mantine's dropdown lists use its own ScrollArea for the scrollbar by default, which
+// doesn't reliably respond to mouse wheel scrolling in Firefox. Falling back to native
+// overflow scrolling (with an explicit max height, since that's normally only applied
+// by the ScrollArea variant) fixes this for every Select/MultiSelect/etc. in the app.
+const dropdownScrollDefaultProps = {
+  withScrollArea: false,
+  styles: { options: { maxHeight: '15rem', overflowY: 'auto' as const } },
+};
+
 const theme = createTheme({
   colors: {
     dark: [
@@ -50,6 +59,12 @@ const theme = createTheme({
       '#141517',
       '#101113',
     ],
+  },
+  components: {
+    Select: Select.extend({ defaultProps: dropdownScrollDefaultProps }),
+    MultiSelect: MultiSelect.extend({ defaultProps: dropdownScrollDefaultProps }),
+    Autocomplete: Autocomplete.extend({ defaultProps: dropdownScrollDefaultProps }),
+    TagsInput: TagsInput.extend({ defaultProps: dropdownScrollDefaultProps }),
   },
 });
 
