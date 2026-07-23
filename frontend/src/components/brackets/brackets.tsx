@@ -144,26 +144,30 @@ export function RoundsGridCols({
       <div style={{ width: '100%' }}>
         <Grid grow>
           <Grid.Col span={6} mb="2rem">
-            <Group>
-              <Center>
-                <Switch
-                  size="md"
-                  onLabel={<MdOutlineAutoFixHigh size={16} />}
-                  offLabel={<IoOptions size={16} />}
-                  checked={displaySettings.showManualSchedulingOptions === 'false'}
-                  label={
-                    displaySettings.showManualSchedulingOptions === 'true' ? 'Manual' : 'Automatic'
-                  }
-                  color="indigo"
-                  onChange={(event) => {
-                    displaySettings.setShowManualSchedulingOptions(
-                      event.currentTarget.checked ? 'false' : 'true'
-                    );
-                  }}
-                  miw="9rem"
-                />
-              </Center>
-            </Group>
+            {stageItem.type !== 'ROUND_ROBIN' && (
+              <Group>
+                <Center>
+                  <Switch
+                    size="md"
+                    onLabel={<MdOutlineAutoFixHigh size={16} />}
+                    offLabel={<IoOptions size={16} />}
+                    checked={displaySettings.showManualSchedulingOptions === 'false'}
+                    label={
+                      displaySettings.showManualSchedulingOptions === 'true'
+                        ? 'Manual'
+                        : 'Automatic'
+                    }
+                    color="indigo"
+                    onChange={(event) => {
+                      displaySettings.setShowManualSchedulingOptions(
+                        event.currentTarget.checked ? 'false' : 'true'
+                      );
+                    }}
+                    miw="9rem"
+                  />
+                </Center>
+              </Group>
+            )}
           </Grid.Col>
           <Grid.Col span={6}>
             <Group justify="right">
@@ -179,6 +183,7 @@ export function RoundsGridCols({
                 />
               )}
               {hideAddRoundButton ||
+              stageItem.type === 'ROUND_ROBIN' ||
               displaySettings.showManualSchedulingOptions === 'true' ? null : (
                 <ActivateNextRoundModal
                   tournamentId={tournamentData.id}

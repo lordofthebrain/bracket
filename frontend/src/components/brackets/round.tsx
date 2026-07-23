@@ -42,6 +42,8 @@ export default function RoundComponent({
         match={match}
         readOnly={readOnly}
         round={round}
+        showCourtAndTime={false}
+        highlightWinner={false}
       />
     ));
   const active_round_style = round.is_draft

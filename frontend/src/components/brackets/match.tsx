@@ -1,4 +1,4 @@
-import { Center, Grid, UnstyledButton, useMantineTheme } from '@mantine/core';
+import { Center, Grid, Group, Text, UnstyledButton, useMantineTheme } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,14 +44,17 @@ export default function Match({
   match,
   readOnly,
   round,
+  showCourtAndTime = true,
+  highlightWinner = true,
 }: {
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   swrUpcomingMatchesResponse: SWRResponse | null;
   tournamentData: TournamentMinimal;
   match: MatchWithDetails;
   readOnly: boolean;
-
   round: RoundWithMatches;
+  showCourtAndTime?: boolean;
+  highlightWinner?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -63,9 +66,13 @@ export default function Match({
   const matchesLookup = getMatchLookup(swrStagesResponse);
 
   const team1_style =
-    match.stage_item_input1_score > match.stage_item_input2_score ? winner_style : {};
+    highlightWinner && match.stage_item_input1_score > match.stage_item_input2_score
+      ? winner_style
+      : {};
   const team2_style =
-    match.stage_item_input1_score < match.stage_item_input2_score ? winner_style : {};
+    highlightWinner && match.stage_item_input1_score < match.stage_item_input2_score
+      ? winner_style
+      : {};
 
   const team1_label = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
   const team2_label = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
@@ -74,18 +81,35 @@ export default function Match({
 
   const bracket = (
     <>
-      <MatchBadge match={match} theme={theme} />
+      {showCourtAndTime && <MatchBadge match={match} theme={theme} />}
       <div className={classes.top} style={team1_style}>
         <Grid grow>
           <Grid.Col span={10}>{team1_label}</Grid.Col>
-          <Grid.Col span={2}>{match.stage_item_input1_score}</Grid.Col>
+          <Grid.Col span={2}>
+            <Group gap={4} wrap="nowrap" justify="flex-end">
+              <Text component="span">{match.stage_item_input1_score}</Text>
+              {match.stage_item_input1_score_half_time != null && (
+                <Text component="span" size="sm" c="dimmed">
+                  ({match.stage_item_input1_score_half_time})
+                </Text>
+              )}
+            </Group>
+          </Grid.Col>
         </Grid>
       </div>
-      <div className={classes.divider} />
       <div className={classes.bottom} style={team2_style}>
         <Grid grow>
           <Grid.Col span={10}>{team2_label}</Grid.Col>
-          <Grid.Col span={2}>{match.stage_item_input2_score}</Grid.Col>
+          <Grid.Col span={2}>
+            <Group gap={4} wrap="nowrap" justify="flex-end">
+              <Text component="span">{match.stage_item_input2_score}</Text>
+              {match.stage_item_input2_score_half_time != null && (
+                <Text component="span" size="sm" c="dimmed">
+                  ({match.stage_item_input2_score_half_time})
+                </Text>
+              )}
+            </Group>
+          </Grid.Col>
         </Grid>
       </div>
     </>
