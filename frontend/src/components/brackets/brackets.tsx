@@ -90,7 +90,7 @@ export function RoundsGridCols({
   }
 
   let result: React.JSX.Element[] | React.JSX.Element = stageItem.rounds
-    .sort((r1: any, r2: any) => (r1.name > r2.name ? 1 : -1))
+    .sort((r1: any, r2: any) => r1.id - r2.id)
     .filter(
       (round: RoundWithMatches) =>
         round.matches.length > 0 || displaySettings.matchVisibility === 'all'

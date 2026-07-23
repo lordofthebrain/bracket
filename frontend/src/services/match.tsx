@@ -45,3 +45,21 @@ export async function scheduleMatches(tournament_id: number) {
     .post(`tournaments/${tournament_id}/schedule_matches`)
     .catch((response: any) => handleRequestError(response));
 }
+
+export interface MatchRoundAssignment {
+  match_id: number;
+  round_id: number;
+  swap_teams: boolean;
+}
+
+export async function reassignRounds(
+  tournament_id: number,
+  stage_item_id: number,
+  assignments: MatchRoundAssignment[]
+) {
+  return createAxios()
+    .post(`tournaments/${tournament_id}/stage_items/${stage_item_id}/reassign_rounds`, {
+      assignments,
+    })
+    .catch((response: any) => handleRequestError(response));
+}

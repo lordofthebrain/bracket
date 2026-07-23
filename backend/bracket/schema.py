@@ -93,6 +93,8 @@ stage_item_inputs = Table(
     Column("wins", Integer, nullable=False, server_default="0"),
     Column("draws", Integer, nullable=False, server_default="0"),
     Column("losses", Integer, nullable=False, server_default="0"),
+    Column("goals_for", Integer, nullable=False, server_default="0"),
+    Column("goals_against", Integer, nullable=False, server_default="0"),
     UniqueConstraint("stage_item_id", "team_id"),
     UniqueConstraint("stage_item_id", "winner_from_stage_item_id", "winner_position"),
 )
@@ -138,6 +140,9 @@ matches = Table(
     Column("court_id", BigInteger, ForeignKey("courts.id"), nullable=True),
     Column("stage_item_input1_score", Integer, nullable=False),
     Column("stage_item_input2_score", Integer, nullable=False),
+    Column("stage_item_input1_score_half_time", Integer, nullable=True),
+    Column("stage_item_input2_score_half_time", Integer, nullable=True),
+    Column("is_played", Boolean, nullable=False, server_default="false"),
     Column("position_in_schedule", Integer, nullable=True),
 )
 

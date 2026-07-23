@@ -1,4 +1,4 @@
-import { Container, Text } from '@mantine/core';
+import { Container } from '@mantine/core';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,10 +19,12 @@ export function StandingsContent({
   swrStagesResponse,
   fontSizeInPixels,
   maxTeamsToDisplay,
+  tournamentId,
 }: {
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   fontSizeInPixels: number;
   maxTeamsToDisplay: number;
+  tournamentId: number;
 }) {
   const { t } = useTranslation();
 
@@ -38,15 +40,13 @@ export function StandingsContent({
     )
     .map((stageItemId) => (
       <div key={stageItemId}>
-        <Text size="xl" mt="md" mb="xs" inherit>
-          {stageItemsLookup[stageItemId].name}
-        </Text>
         <StandingsTableForStageItem
           teams_with_inputs={stageItemTeamLookup[stageItemId]}
           stageItem={stageItemsLookup[stageItemId]}
           stageItemsLookup={stageItemsLookup}
           fontSizeInPixels={fontSizeInPixels}
           maxTeamsToDisplay={maxTeamsToDisplay}
+          tournamentId={tournamentId}
         />
       </div>
     ));
@@ -88,6 +88,7 @@ export default function DashboardStandingsPage() {
             swrStagesResponse={swrStagesResponse}
             fontSizeInPixels={16}
             maxTeamsToDisplay={100}
+            tournamentId={tournamentDataFull.id}
           />
         </Container>
       </Container>

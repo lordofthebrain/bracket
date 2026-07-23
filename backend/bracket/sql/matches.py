@@ -23,6 +23,32 @@ async def sql_delete_match(match_id: MatchId) -> None:
     await database.execute(query=query, values={"match_id": match_id})
 
 
+async def sql_update_match_round(match_id: MatchId, round_id: RoundId) -> None:
+    query = """
+        UPDATE matches
+        SET round_id = :round_id
+        WHERE matches.id = :match_id
+        """
+    await database.execute(query=query, values={"match_id": match_id, "round_id": round_id})
+
+
+async def sql_swap_match_teams(match_id: MatchId) -> None:
+    query = """
+        UPDATE matches
+        SET
+            stage_item_input1_id = matches.stage_item_input2_id,
+            stage_item_input2_id = matches.stage_item_input1_id,
+            stage_item_input1_score = matches.stage_item_input2_score,
+            stage_item_input2_score = matches.stage_item_input1_score,
+            stage_item_input1_winner_from_match_id =
+                matches.stage_item_input2_winner_from_match_id,
+            stage_item_input2_winner_from_match_id =
+                matches.stage_item_input1_winner_from_match_id
+        WHERE matches.id = :match_id
+        """
+    await database.execute(query=query, values={"match_id": match_id})
+
+
 async def sql_delete_matches_for_stage_item_id(stage_item_id: StageItemId) -> None:
     query = """
         DELETE FROM matches
@@ -88,6 +114,9 @@ async def sql_update_match(match_id: MatchId, match: MatchBody, tournament: Tour
         SET round_id = :round_id,
             stage_item_input1_score = :stage_item_input1_score,
             stage_item_input2_score = :stage_item_input2_score,
+            stage_item_input1_score_half_time = :stage_item_input1_score_half_time,
+            stage_item_input2_score_half_time = :stage_item_input2_score_half_time,
+            is_played = :is_played,
             court_id = :court_id,
             custom_duration_minutes = :custom_duration_minutes,
             custom_margin_minutes = :custom_margin_minutes,

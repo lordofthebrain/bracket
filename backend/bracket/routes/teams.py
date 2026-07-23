@@ -136,8 +136,8 @@ async def update_team_logo(
 
     if file:
         assert file.filename is not None
-        extension = os.path.splitext(file.filename)[1]
-        assert extension in (".png", ".jpg", ".jpeg")
+        extension = os.path.splitext(file.filename)[1].lower()
+        assert extension in (".png", ".jpg", ".jpeg", ".svg", ".webp")
 
         filename = f"{uuid4()}{extension}"
         new_logo_path = f"static/team-logos/{filename}" if file is not None else None

@@ -1,4 +1,6 @@
-import { Table } from '@mantine/core';
+import { Alert, Button, Group, Modal, Table } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -19,6 +21,7 @@ export default function ClubsTable({
   const clubs: Club[] = swrClubsResponse.data != null ? swrClubsResponse.data.data : [];
   const tableState = getTableState('name');
   const { t } = useTranslation();
+  const [clubPendingDeletion, setClubPendingDeletion] = useState<Club | null>(null);
 
   if (swrClubsResponse.error) return <RequestErrorAlert error={swrClubsResponse.error} />;
   if (swrClubsResponse.isLoading) {
@@ -33,10 +36,7 @@ export default function ClubsTable({
         <Table.Td>
           <ClubModal swrClubsResponse={swrClubsResponse} club={club} />
           <DeleteButton
-            onClick={async () => {
-              await deleteClub(club.id);
-              await swrClubsResponse.mutate();
-            }}
+            onClick={() => setClubPendingDeletion(club)}
             title={t('delete_club_button')}
           />
         </Table.Td>
@@ -46,16 +46,45 @@ export default function ClubsTable({
   if (rows.length < 1) return <EmptyTableInfo entity_name={t('clubs_title')} />;
 
   return (
-    <TableLayout>
-      <Table.Thead>
-        <Table.Tr>
-          <ThSortable state={tableState} field="name">
-            {t('title')}
-          </ThSortable>
-          <ThNotSortable>{null}</ThNotSortable>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>{rows}</Table.Tbody>
-    </TableLayout>
+    <>
+      <Modal
+        opened={clubPendingDeletion != null}
+        onClose={() => setClubPendingDeletion(null)}
+        title={t('delete_club_modal_title')}
+      >
+        <Alert icon={<IconAlertCircle size={16} />} color="red" radius="lg">
+          {t('delete_club_modal_description', { name: clubPendingDeletion?.name })}
+        </Alert>
+        <Group justify="flex-end" mt="lg">
+          <Button variant="default" onClick={() => setClubPendingDeletion(null)}>
+            {t('cancel_button')}
+          </Button>
+          <Button
+            color="red"
+            onClick={async () => {
+              if (clubPendingDeletion != null) {
+                await deleteClub(clubPendingDeletion.id);
+                await swrClubsResponse.mutate();
+              }
+              setClubPendingDeletion(null);
+            }}
+          >
+            {t('delete_button')}
+          </Button>
+        </Group>
+      </Modal>
+
+      <TableLayout>
+        <Table.Thead>
+          <Table.Tr>
+            <ThSortable state={tableState} field="name">
+              {t('title')}
+            </ThSortable>
+            <ThNotSortable>{null}</ThNotSortable>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>{rows}</Table.Tbody>
+      </TableLayout>
+    </>
   );
 }

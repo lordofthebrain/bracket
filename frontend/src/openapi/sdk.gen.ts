@@ -9,188 +9,195 @@ import {
 } from './client';
 import { client } from './client.gen';
 import type {
-  ActivateNextStageTournamentsTournamentIdStagesActivatePostData,
-  ActivateNextStageTournamentsTournamentIdStagesActivatePostErrors,
-  ActivateNextStageTournamentsTournamentIdStagesActivatePostResponses,
-  ChangeStatusTournamentsTournamentIdChangeStatusPostData,
-  ChangeStatusTournamentsTournamentIdChangeStatusPostErrors,
-  ChangeStatusTournamentsTournamentIdChangeStatusPostResponses,
-  CreateCourtTournamentsTournamentIdCourtsPostData,
-  CreateCourtTournamentsTournamentIdCourtsPostErrors,
-  CreateCourtTournamentsTournamentIdCourtsPostResponses,
-  CreateMatchTournamentsTournamentIdMatchesPostData,
-  CreateMatchTournamentsTournamentIdMatchesPostErrors,
-  CreateMatchTournamentsTournamentIdMatchesPostResponses,
-  CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostData,
-  CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostErrors,
-  CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostResponses,
-  CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostData,
-  CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostErrors,
-  CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostResponses,
-  CreateNewClubClubsPostData,
-  CreateNewClubClubsPostErrors,
-  CreateNewClubClubsPostResponses,
-  CreateRankingTournamentsTournamentIdRankingsPostData,
-  CreateRankingTournamentsTournamentIdRankingsPostErrors,
-  CreateRankingTournamentsTournamentIdRankingsPostResponses,
-  CreateRoundTournamentsTournamentIdRoundsPostData,
-  CreateRoundTournamentsTournamentIdRoundsPostErrors,
-  CreateRoundTournamentsTournamentIdRoundsPostResponses,
-  CreateSinglePlayerTournamentsTournamentIdPlayersPostData,
-  CreateSinglePlayerTournamentsTournamentIdPlayersPostErrors,
-  CreateSinglePlayerTournamentsTournamentIdPlayersPostResponses,
-  CreateStageItemTournamentsTournamentIdStageItemsPostData,
-  CreateStageItemTournamentsTournamentIdStageItemsPostErrors,
-  CreateStageItemTournamentsTournamentIdStageItemsPostResponses,
-  CreateStageTournamentsTournamentIdStagesPostData,
-  CreateStageTournamentsTournamentIdStagesPostErrors,
-  CreateStageTournamentsTournamentIdStagesPostResponses,
-  CreateTeamTournamentsTournamentIdTeamsPostData,
-  CreateTeamTournamentsTournamentIdTeamsPostErrors,
-  CreateTeamTournamentsTournamentIdTeamsPostResponses,
-  CreateTournamentTournamentsPostData,
-  CreateTournamentTournamentsPostErrors,
-  CreateTournamentTournamentsPostResponses,
-  DeleteClubClubsClubIdDeleteData,
-  DeleteClubClubsClubIdDeleteErrors,
-  DeleteClubClubsClubIdDeleteResponses,
-  DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteData,
-  DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteErrors,
-  DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteResponses,
-  DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteData,
-  DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteErrors,
-  DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteResponses,
-  DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteData,
-  DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteErrors,
-  DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteResponses,
-  DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteData,
-  DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteErrors,
-  DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteResponses,
-  DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteData,
-  DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteErrors,
-  DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteResponses,
-  DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteData,
-  DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteErrors,
-  DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteResponses,
-  DeleteStageTournamentsTournamentIdStagesStageIdDeleteData,
-  DeleteStageTournamentsTournamentIdStagesStageIdDeleteErrors,
-  DeleteStageTournamentsTournamentIdStagesStageIdDeleteResponses,
-  DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteData,
-  DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteErrors,
-  DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteResponses,
-  DeleteTournamentTournamentsTournamentIdDeleteData,
-  DeleteTournamentTournamentsTournamentIdDeleteErrors,
-  DeleteTournamentTournamentsTournamentIdDeleteResponses,
-  GetAvailableInputsTournamentsTournamentIdAvailableInputsGetData,
-  GetAvailableInputsTournamentsTournamentIdAvailableInputsGetErrors,
-  GetAvailableInputsTournamentsTournamentIdAvailableInputsGetResponses,
-  GetClubsClubsGetData,
-  GetClubsClubsGetResponses,
-  GetCourtsTournamentsTournamentIdCourtsGetData,
-  GetCourtsTournamentsTournamentIdCourtsGetErrors,
-  GetCourtsTournamentsTournamentIdCourtsGetResponses,
-  GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetData,
-  GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetErrors,
-  GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetResponses,
-  GetMetricsMetricsGetData,
-  GetMetricsMetricsGetResponses,
-  GetMeUsersUserIdGetData,
-  GetMeUsersUserIdGetErrors,
-  GetMeUsersUserIdGetResponses,
-  GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetData,
-  GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetErrors,
-  GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetResponses,
-  GetPlayersTournamentsTournamentIdPlayersGetData,
-  GetPlayersTournamentsTournamentIdPlayersGetErrors,
-  GetPlayersTournamentsTournamentIdPlayersGetResponses,
-  GetRankingsTournamentsTournamentIdRankingsGetData,
-  GetRankingsTournamentsTournamentIdRankingsGetErrors,
-  GetRankingsTournamentsTournamentIdRankingsGetResponses,
-  GetStagesTournamentsTournamentIdStagesGetData,
-  GetStagesTournamentsTournamentIdStagesGetErrors,
-  GetStagesTournamentsTournamentIdStagesGetResponses,
-  GetTeamsTournamentsTournamentIdTeamsGetData,
-  GetTeamsTournamentsTournamentIdTeamsGetErrors,
-  GetTeamsTournamentsTournamentIdTeamsGetResponses,
-  GetTournamentsTournamentsGetData,
-  GetTournamentsTournamentsGetErrors,
-  GetTournamentsTournamentsGetResponses,
-  GetTournamentTournamentsTournamentIdGetData,
-  GetTournamentTournamentsTournamentIdGetErrors,
-  GetTournamentTournamentsTournamentIdGetResponses,
-  GetUserUsersMeGetData,
-  GetUserUsersMeGetResponses,
-  LoginForAccessTokenTokenPostData,
-  LoginForAccessTokenTokenPostErrors,
-  LoginForAccessTokenTokenPostResponses,
-  PingPingGetData,
-  PingPingGetResponses,
-  PutUserPasswordUsersUserIdPasswordPutData,
-  PutUserPasswordUsersUserIdPasswordPutErrors,
-  PutUserPasswordUsersUserIdPasswordPutResponses,
-  RegisterDemoUserUsersRegisterDemoPostData,
-  RegisterDemoUserUsersRegisterDemoPostErrors,
-  RegisterDemoUserUsersRegisterDemoPostResponses,
-  RegisterUserUsersRegisterPostData,
-  RegisterUserUsersRegisterPostErrors,
-  RegisterUserUsersRegisterPostResponses,
-  RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostData,
-  RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostErrors,
-  RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostResponses,
-  ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostData,
-  ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostErrors,
-  ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostResponses,
-  StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostData,
-  StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostErrors,
-  StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostResponses,
-  UpdateClubClubsClubIdPutData,
-  UpdateClubClubsClubIdPutErrors,
-  UpdateClubClubsClubIdPutResponses,
-  UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutData,
-  UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutErrors,
-  UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutResponses,
-  UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutData,
-  UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutErrors,
-  UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutResponses,
-  UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutData,
-  UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutErrors,
-  UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutResponses,
-  UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutData,
-  UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutErrors,
-  UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutResponses,
-  UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutData,
-  UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutErrors,
-  UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutResponses,
-  UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutData,
-  UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutErrors,
-  UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutResponses,
-  UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutData,
-  UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutErrors,
-  UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutResponses,
-  UpdateStageTournamentsTournamentIdStagesStageIdPutData,
-  UpdateStageTournamentsTournamentIdStagesStageIdPutErrors,
-  UpdateStageTournamentsTournamentIdStagesStageIdPutResponses,
-  UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutData,
-  UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutErrors,
-  UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutResponses,
-  UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostData,
-  UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostErrors,
-  UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostResponses,
-  UpdateTournamentByIdTournamentsTournamentIdPutData,
-  UpdateTournamentByIdTournamentsTournamentIdPutErrors,
-  UpdateTournamentByIdTournamentsTournamentIdPutResponses,
-  UpdateUserDetailsUsersUserIdPutData,
-  UpdateUserDetailsUsersUserIdPutErrors,
-  UpdateUserDetailsUsersUserIdPutResponses,
-  UploadLogoTournamentsTournamentIdLogoPostData,
-  UploadLogoTournamentsTournamentIdLogoPostErrors,
-  UploadLogoTournamentsTournamentIdLogoPostResponses,
+  ActivateNextStageApiTournamentsTournamentIdStagesActivatePostData,
+  ActivateNextStageApiTournamentsTournamentIdStagesActivatePostErrors,
+  ActivateNextStageApiTournamentsTournamentIdStagesActivatePostResponses,
+  ChangeStatusApiTournamentsTournamentIdChangeStatusPostData,
+  ChangeStatusApiTournamentsTournamentIdChangeStatusPostErrors,
+  ChangeStatusApiTournamentsTournamentIdChangeStatusPostResponses,
+  CreateCourtApiTournamentsTournamentIdCourtsPostData,
+  CreateCourtApiTournamentsTournamentIdCourtsPostErrors,
+  CreateCourtApiTournamentsTournamentIdCourtsPostResponses,
+  CreateMatchApiTournamentsTournamentIdMatchesPostData,
+  CreateMatchApiTournamentsTournamentIdMatchesPostErrors,
+  CreateMatchApiTournamentsTournamentIdMatchesPostResponses,
+  CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostData,
+  CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostErrors,
+  CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostResponses,
+  CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostData,
+  CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostErrors,
+  CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostResponses,
+  CreateNewClubApiClubsPostData,
+  CreateNewClubApiClubsPostErrors,
+  CreateNewClubApiClubsPostResponses,
+  CreateRankingApiTournamentsTournamentIdRankingsPostData,
+  CreateRankingApiTournamentsTournamentIdRankingsPostErrors,
+  CreateRankingApiTournamentsTournamentIdRankingsPostResponses,
+  CreateRoundApiTournamentsTournamentIdRoundsPostData,
+  CreateRoundApiTournamentsTournamentIdRoundsPostErrors,
+  CreateRoundApiTournamentsTournamentIdRoundsPostResponses,
+  CreateSinglePlayerApiTournamentsTournamentIdPlayersPostData,
+  CreateSinglePlayerApiTournamentsTournamentIdPlayersPostErrors,
+  CreateSinglePlayerApiTournamentsTournamentIdPlayersPostResponses,
+  CreateStageApiTournamentsTournamentIdStagesPostData,
+  CreateStageApiTournamentsTournamentIdStagesPostErrors,
+  CreateStageApiTournamentsTournamentIdStagesPostResponses,
+  CreateStageItemApiTournamentsTournamentIdStageItemsPostData,
+  CreateStageItemApiTournamentsTournamentIdStageItemsPostErrors,
+  CreateStageItemApiTournamentsTournamentIdStageItemsPostResponses,
+  CreateTeamApiTournamentsTournamentIdTeamsPostData,
+  CreateTeamApiTournamentsTournamentIdTeamsPostErrors,
+  CreateTeamApiTournamentsTournamentIdTeamsPostResponses,
+  CreateTournamentApiTournamentsPostData,
+  CreateTournamentApiTournamentsPostErrors,
+  CreateTournamentApiTournamentsPostResponses,
+  DeleteClubApiClubsClubIdDeleteData,
+  DeleteClubApiClubsClubIdDeleteErrors,
+  DeleteClubApiClubsClubIdDeleteResponses,
+  DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteData,
+  DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteErrors,
+  DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteResponses,
+  DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteData,
+  DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteErrors,
+  DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteResponses,
+  DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteData,
+  DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteErrors,
+  DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteResponses,
+  DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteData,
+  DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteErrors,
+  DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteResponses,
+  DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteData,
+  DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteErrors,
+  DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteResponses,
+  DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteData,
+  DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteErrors,
+  DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteResponses,
+  DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteData,
+  DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteErrors,
+  DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteResponses,
+  DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteData,
+  DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteErrors,
+  DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteResponses,
+  DeleteTournamentApiTournamentsTournamentIdDeleteData,
+  DeleteTournamentApiTournamentsTournamentIdDeleteErrors,
+  DeleteTournamentApiTournamentsTournamentIdDeleteResponses,
+  FrontendFullPathGetData,
+  FrontendFullPathGetErrors,
+  FrontendFullPathGetResponses,
+  GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetData,
+  GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetErrors,
+  GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetResponses,
+  GetClubsApiClubsGetData,
+  GetClubsApiClubsGetResponses,
+  GetCourtsApiTournamentsTournamentIdCourtsGetData,
+  GetCourtsApiTournamentsTournamentIdCourtsGetErrors,
+  GetCourtsApiTournamentsTournamentIdCourtsGetResponses,
+  GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetData,
+  GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetErrors,
+  GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetResponses,
+  GetMeApiUsersUserIdGetData,
+  GetMeApiUsersUserIdGetErrors,
+  GetMeApiUsersUserIdGetResponses,
+  GetMetricsApiMetricsGetData,
+  GetMetricsApiMetricsGetResponses,
+  GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetData,
+  GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetErrors,
+  GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetResponses,
+  GetPlayersApiTournamentsTournamentIdPlayersGetData,
+  GetPlayersApiTournamentsTournamentIdPlayersGetErrors,
+  GetPlayersApiTournamentsTournamentIdPlayersGetResponses,
+  GetRankingsApiTournamentsTournamentIdRankingsGetData,
+  GetRankingsApiTournamentsTournamentIdRankingsGetErrors,
+  GetRankingsApiTournamentsTournamentIdRankingsGetResponses,
+  GetStagesApiTournamentsTournamentIdStagesGetData,
+  GetStagesApiTournamentsTournamentIdStagesGetErrors,
+  GetStagesApiTournamentsTournamentIdStagesGetResponses,
+  GetTeamsApiTournamentsTournamentIdTeamsGetData,
+  GetTeamsApiTournamentsTournamentIdTeamsGetErrors,
+  GetTeamsApiTournamentsTournamentIdTeamsGetResponses,
+  GetTournamentApiTournamentsTournamentIdGetData,
+  GetTournamentApiTournamentsTournamentIdGetErrors,
+  GetTournamentApiTournamentsTournamentIdGetResponses,
+  GetTournamentsApiTournamentsGetData,
+  GetTournamentsApiTournamentsGetErrors,
+  GetTournamentsApiTournamentsGetResponses,
+  GetUserApiUsersMeGetData,
+  GetUserApiUsersMeGetResponses,
+  LoginForAccessTokenApiTokenPostData,
+  LoginForAccessTokenApiTokenPostErrors,
+  LoginForAccessTokenApiTokenPostResponses,
+  PingApiPingGetData,
+  PingApiPingGetResponses,
+  PutUserPasswordApiUsersUserIdPasswordPutData,
+  PutUserPasswordApiUsersUserIdPasswordPutErrors,
+  PutUserPasswordApiUsersUserIdPasswordPutResponses,
+  ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostData,
+  ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostErrors,
+  ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponses,
+  RegisterDemoUserApiUsersRegisterDemoPostData,
+  RegisterDemoUserApiUsersRegisterDemoPostErrors,
+  RegisterDemoUserApiUsersRegisterDemoPostResponses,
+  RegisterUserApiUsersRegisterPostData,
+  RegisterUserApiUsersRegisterPostErrors,
+  RegisterUserApiUsersRegisterPostResponses,
+  RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostData,
+  RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostErrors,
+  RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostResponses,
+  ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostData,
+  ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostErrors,
+  ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostResponses,
+  StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostData,
+  StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostErrors,
+  StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostResponses,
+  UpdateClubApiClubsClubIdPutData,
+  UpdateClubApiClubsClubIdPutErrors,
+  UpdateClubApiClubsClubIdPutResponses,
+  UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutData,
+  UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutErrors,
+  UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutResponses,
+  UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutData,
+  UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutErrors,
+  UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutResponses,
+  UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutData,
+  UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutErrors,
+  UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutResponses,
+  UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutData,
+  UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutErrors,
+  UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutResponses,
+  UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutData,
+  UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutErrors,
+  UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutResponses,
+  UpdateStageApiTournamentsTournamentIdStagesStageIdPutData,
+  UpdateStageApiTournamentsTournamentIdStagesStageIdPutErrors,
+  UpdateStageApiTournamentsTournamentIdStagesStageIdPutResponses,
+  UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutData,
+  UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutErrors,
+  UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutResponses,
+  UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutData,
+  UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutErrors,
+  UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutResponses,
+  UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutData,
+  UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutErrors,
+  UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutResponses,
+  UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostData,
+  UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostErrors,
+  UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostResponses,
+  UpdateTournamentByIdApiTournamentsTournamentIdPutData,
+  UpdateTournamentByIdApiTournamentsTournamentIdPutErrors,
+  UpdateTournamentByIdApiTournamentsTournamentIdPutResponses,
+  UpdateUserDetailsApiUsersUserIdPutData,
+  UpdateUserDetailsApiUsersUserIdPutErrors,
+  UpdateUserDetailsApiUsersUserIdPutResponses,
+  UploadLogoApiTournamentsTournamentIdLogoPostData,
+  UploadLogoApiTournamentsTournamentIdLogoPostErrors,
+  UploadLogoApiTournamentsTournamentIdLogoPostResponses,
 } from './types.gen';
 
 export type Options<
   TData extends TDataShape = TDataShape,
   ThrowOnError extends boolean = boolean,
-> = Options2<TData, ThrowOnError> & {
+  TResponse = unknown,
+> = Options2<TData, ThrowOnError, TResponse> & {
   /**
    * You can provide a client instance returned by `createClient()` instead of
    * individual options. This might be also useful if you want to implement a
@@ -207,30 +214,30 @@ export type Options<
 /**
  * Get Clubs
  */
-export const getClubsClubsGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetClubsClubsGetData, ThrowOnError>
+export const getClubsApiClubsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetClubsApiClubsGetData, ThrowOnError>
 ) =>
-  (options?.client ?? client).get<GetClubsClubsGetResponses, unknown, ThrowOnError>({
+  (options?.client ?? client).get<GetClubsApiClubsGetResponses, unknown, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/clubs',
+    url: '/api/clubs',
     ...options,
   });
 
 /**
  * Create New Club
  */
-export const createNewClubClubsPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateNewClubClubsPostData, ThrowOnError>
+export const createNewClubApiClubsPost = <ThrowOnError extends boolean = false>(
+  options: Options<CreateNewClubApiClubsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateNewClubClubsPostResponses,
-    CreateNewClubClubsPostErrors,
+    CreateNewClubApiClubsPostResponses,
+    CreateNewClubApiClubsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/clubs',
+    url: '/api/clubs',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -241,34 +248,34 @@ export const createNewClubClubsPost = <ThrowOnError extends boolean = false>(
 /**
  * Delete Club
  */
-export const deleteClubClubsClubIdDelete = <ThrowOnError extends boolean = false>(
-  options: Options<DeleteClubClubsClubIdDeleteData, ThrowOnError>
+export const deleteClubApiClubsClubIdDelete = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteClubApiClubsClubIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteClubClubsClubIdDeleteResponses,
-    DeleteClubClubsClubIdDeleteErrors,
+    DeleteClubApiClubsClubIdDeleteResponses,
+    DeleteClubApiClubsClubIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/clubs/{club_id}',
+    url: '/api/clubs/{club_id}',
     ...options,
   });
 
 /**
  * Update Club
  */
-export const updateClubClubsClubIdPut = <ThrowOnError extends boolean = false>(
-  options: Options<UpdateClubClubsClubIdPutData, ThrowOnError>
+export const updateClubApiClubsClubIdPut = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateClubApiClubsClubIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateClubClubsClubIdPutResponses,
-    UpdateClubClubsClubIdPutErrors,
+    UpdateClubApiClubsClubIdPutResponses,
+    UpdateClubApiClubsClubIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/clubs/{club_id}',
+    url: '/api/clubs/{club_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -279,41 +286,41 @@ export const updateClubClubsClubIdPut = <ThrowOnError extends boolean = false>(
 /**
  * Get Metrics
  */
-export const getMetricsMetricsGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetMetricsMetricsGetData, ThrowOnError>
+export const getMetricsApiMetricsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMetricsApiMetricsGetData, ThrowOnError>
 ) =>
-  (options?.client ?? client).get<GetMetricsMetricsGetResponses, unknown, ThrowOnError>({
+  (options?.client ?? client).get<GetMetricsApiMetricsGetResponses, unknown, ThrowOnError>({
     responseType: 'text',
-    url: '/metrics',
+    url: '/api/metrics',
     ...options,
   });
 
 /**
  * Healthcheck ping
  */
-export const pingPingGet = <ThrowOnError extends boolean = false>(
-  options?: Options<PingPingGetData, ThrowOnError>
+export const pingApiPingGet = <ThrowOnError extends boolean = false>(
+  options?: Options<PingApiPingGetData, ThrowOnError>
 ) =>
-  (options?.client ?? client).get<PingPingGetResponses, unknown, ThrowOnError>({
+  (options?.client ?? client).get<PingApiPingGetResponses, unknown, ThrowOnError>({
     responseType: 'json',
-    url: '/ping',
+    url: '/api/ping',
     ...options,
   });
 
 /**
  * Login For Access Token
  */
-export const loginForAccessTokenTokenPost = <ThrowOnError extends boolean = false>(
-  options: Options<LoginForAccessTokenTokenPostData, ThrowOnError>
+export const loginForAccessTokenApiTokenPost = <ThrowOnError extends boolean = false>(
+  options: Options<LoginForAccessTokenApiTokenPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    LoginForAccessTokenTokenPostResponses,
-    LoginForAccessTokenTokenPostErrors,
+    LoginForAccessTokenApiTokenPostResponses,
+    LoginForAccessTokenApiTokenPostErrors,
     ThrowOnError
   >({
     ...urlSearchParamsBodySerializer,
     responseType: 'json',
-    url: '/token',
+    url: '/api/token',
     ...options,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -324,34 +331,34 @@ export const loginForAccessTokenTokenPost = <ThrowOnError extends boolean = fals
 /**
  * Get Tournaments
  */
-export const getTournamentsTournamentsGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetTournamentsTournamentsGetData, ThrowOnError>
+export const getTournamentsApiTournamentsGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetTournamentsApiTournamentsGetData, ThrowOnError>
 ) =>
   (options?.client ?? client).get<
-    GetTournamentsTournamentsGetResponses,
-    GetTournamentsTournamentsGetErrors,
+    GetTournamentsApiTournamentsGetResponses,
+    GetTournamentsApiTournamentsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments',
+    url: '/api/tournaments',
     ...options,
   });
 
 /**
  * Create Tournament
  */
-export const createTournamentTournamentsPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateTournamentTournamentsPostData, ThrowOnError>
+export const createTournamentApiTournamentsPost = <ThrowOnError extends boolean = false>(
+  options: Options<CreateTournamentApiTournamentsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateTournamentTournamentsPostResponses,
-    CreateTournamentTournamentsPostErrors,
+    CreateTournamentApiTournamentsPostResponses,
+    CreateTournamentApiTournamentsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments',
+    url: '/api/tournaments',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -362,52 +369,54 @@ export const createTournamentTournamentsPost = <ThrowOnError extends boolean = f
 /**
  * Delete Tournament
  */
-export const deleteTournamentTournamentsTournamentIdDelete = <ThrowOnError extends boolean = false>(
-  options: Options<DeleteTournamentTournamentsTournamentIdDeleteData, ThrowOnError>
+export const deleteTournamentApiTournamentsTournamentIdDelete = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<DeleteTournamentApiTournamentsTournamentIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteTournamentTournamentsTournamentIdDeleteResponses,
-    DeleteTournamentTournamentsTournamentIdDeleteErrors,
+    DeleteTournamentApiTournamentsTournamentIdDeleteResponses,
+    DeleteTournamentApiTournamentsTournamentIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}',
+    url: '/api/tournaments/{tournament_id}',
     ...options,
   });
 
 /**
  * Get Tournament
  */
-export const getTournamentTournamentsTournamentIdGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetTournamentTournamentsTournamentIdGetData, ThrowOnError>
+export const getTournamentApiTournamentsTournamentIdGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTournamentApiTournamentsTournamentIdGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetTournamentTournamentsTournamentIdGetResponses,
-    GetTournamentTournamentsTournamentIdGetErrors,
+    GetTournamentApiTournamentsTournamentIdGetResponses,
+    GetTournamentApiTournamentsTournamentIdGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/tournaments/{tournament_id}',
+    url: '/api/tournaments/{tournament_id}',
     ...options,
   });
 
 /**
  * Update Tournament By Id
  */
-export const updateTournamentByIdTournamentsTournamentIdPut = <
+export const updateTournamentByIdApiTournamentsTournamentIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateTournamentByIdTournamentsTournamentIdPutData, ThrowOnError>
+  options: Options<UpdateTournamentByIdApiTournamentsTournamentIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateTournamentByIdTournamentsTournamentIdPutResponses,
-    UpdateTournamentByIdTournamentsTournamentIdPutErrors,
+    UpdateTournamentByIdApiTournamentsTournamentIdPutResponses,
+    UpdateTournamentByIdApiTournamentsTournamentIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}',
+    url: '/api/tournaments/{tournament_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -418,19 +427,19 @@ export const updateTournamentByIdTournamentsTournamentIdPut = <
 /**
  * Get Available Inputs
  */
-export const getAvailableInputsTournamentsTournamentIdAvailableInputsGet = <
+export const getAvailableInputsApiTournamentsTournamentIdAvailableInputsGet = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<GetAvailableInputsTournamentsTournamentIdAvailableInputsGetData, ThrowOnError>
+  options: Options<GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetAvailableInputsTournamentsTournamentIdAvailableInputsGetResponses,
-    GetAvailableInputsTournamentsTournamentIdAvailableInputsGetErrors,
+    GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetResponses,
+    GetAvailableInputsApiTournamentsTournamentIdAvailableInputsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/available_inputs',
+    url: '/api/tournaments/{tournament_id}/available_inputs',
     ...options,
   });
 
@@ -439,19 +448,19 @@ export const getAvailableInputsTournamentsTournamentIdAvailableInputsGet = <
  *
  * Make a tournament archived or non-archived.
  */
-export const changeStatusTournamentsTournamentIdChangeStatusPost = <
+export const changeStatusApiTournamentsTournamentIdChangeStatusPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<ChangeStatusTournamentsTournamentIdChangeStatusPostData, ThrowOnError>
+  options: Options<ChangeStatusApiTournamentsTournamentIdChangeStatusPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    ChangeStatusTournamentsTournamentIdChangeStatusPostResponses,
-    ChangeStatusTournamentsTournamentIdChangeStatusPostErrors,
+    ChangeStatusApiTournamentsTournamentIdChangeStatusPostResponses,
+    ChangeStatusApiTournamentsTournamentIdChangeStatusPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/change-status',
+    url: '/api/tournaments/{tournament_id}/change-status',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -462,33 +471,35 @@ export const changeStatusTournamentsTournamentIdChangeStatusPost = <
 /**
  * Get Courts
  */
-export const getCourtsTournamentsTournamentIdCourtsGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetCourtsTournamentsTournamentIdCourtsGetData, ThrowOnError>
+export const getCourtsApiTournamentsTournamentIdCourtsGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetCourtsApiTournamentsTournamentIdCourtsGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetCourtsTournamentsTournamentIdCourtsGetResponses,
-    GetCourtsTournamentsTournamentIdCourtsGetErrors,
+    GetCourtsApiTournamentsTournamentIdCourtsGetResponses,
+    GetCourtsApiTournamentsTournamentIdCourtsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/tournaments/{tournament_id}/courts',
+    url: '/api/tournaments/{tournament_id}/courts',
     ...options,
   });
 
 /**
  * Create Court
  */
-export const createCourtTournamentsTournamentIdCourtsPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateCourtTournamentsTournamentIdCourtsPostData, ThrowOnError>
+export const createCourtApiTournamentsTournamentIdCourtsPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<CreateCourtApiTournamentsTournamentIdCourtsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateCourtTournamentsTournamentIdCourtsPostResponses,
-    CreateCourtTournamentsTournamentIdCourtsPostErrors,
+    CreateCourtApiTournamentsTournamentIdCourtsPostResponses,
+    CreateCourtApiTournamentsTournamentIdCourtsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/courts',
+    url: '/api/tournaments/{tournament_id}/courts',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -499,38 +510,38 @@ export const createCourtTournamentsTournamentIdCourtsPost = <ThrowOnError extend
 /**
  * Delete Court
  */
-export const deleteCourtTournamentsTournamentIdCourtsCourtIdDelete = <
+export const deleteCourtApiTournamentsTournamentIdCourtsCourtIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteData, ThrowOnError>
+  options: Options<DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteResponses,
-    DeleteCourtTournamentsTournamentIdCourtsCourtIdDeleteErrors,
+    DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteResponses,
+    DeleteCourtApiTournamentsTournamentIdCourtsCourtIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/courts/{court_id}',
+    url: '/api/tournaments/{tournament_id}/courts/{court_id}',
     ...options,
   });
 
 /**
  * Update Court By Id
  */
-export const updateCourtByIdTournamentsTournamentIdCourtsCourtIdPut = <
+export const updateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutData, ThrowOnError>
+  options: Options<UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutResponses,
-    UpdateCourtByIdTournamentsTournamentIdCourtsCourtIdPutErrors,
+    UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutResponses,
+    UpdateCourtByIdApiTournamentsTournamentIdCourtsCourtIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/courts/{court_id}',
+    url: '/api/tournaments/{tournament_id}/courts/{court_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -541,18 +552,18 @@ export const updateCourtByIdTournamentsTournamentIdCourtsCourtIdPut = <
 /**
  * Upload Logo
  */
-export const uploadLogoTournamentsTournamentIdLogoPost = <ThrowOnError extends boolean = false>(
-  options: Options<UploadLogoTournamentsTournamentIdLogoPostData, ThrowOnError>
+export const uploadLogoApiTournamentsTournamentIdLogoPost = <ThrowOnError extends boolean = false>(
+  options: Options<UploadLogoApiTournamentsTournamentIdLogoPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    UploadLogoTournamentsTournamentIdLogoPostResponses,
-    UploadLogoTournamentsTournamentIdLogoPostErrors,
+    UploadLogoApiTournamentsTournamentIdLogoPostResponses,
+    UploadLogoApiTournamentsTournamentIdLogoPostErrors,
     ThrowOnError
   >({
     ...formDataBodySerializer,
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/logo',
+    url: '/api/tournaments/{tournament_id}/logo',
     ...options,
     headers: {
       'Content-Type': null,
@@ -563,17 +574,19 @@ export const uploadLogoTournamentsTournamentIdLogoPost = <ThrowOnError extends b
 /**
  * Create Match
  */
-export const createMatchTournamentsTournamentIdMatchesPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateMatchTournamentsTournamentIdMatchesPostData, ThrowOnError>
+export const createMatchApiTournamentsTournamentIdMatchesPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<CreateMatchApiTournamentsTournamentIdMatchesPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateMatchTournamentsTournamentIdMatchesPostResponses,
-    CreateMatchTournamentsTournamentIdMatchesPostErrors,
+    CreateMatchApiTournamentsTournamentIdMatchesPostResponses,
+    CreateMatchApiTournamentsTournamentIdMatchesPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/matches',
+    url: '/api/tournaments/{tournament_id}/matches',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -584,38 +597,38 @@ export const createMatchTournamentsTournamentIdMatchesPost = <ThrowOnError exten
 /**
  * Delete Match
  */
-export const deleteMatchTournamentsTournamentIdMatchesMatchIdDelete = <
+export const deleteMatchApiTournamentsTournamentIdMatchesMatchIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteData, ThrowOnError>
+  options: Options<DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteResponses,
-    DeleteMatchTournamentsTournamentIdMatchesMatchIdDeleteErrors,
+    DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteResponses,
+    DeleteMatchApiTournamentsTournamentIdMatchesMatchIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/matches/{match_id}',
+    url: '/api/tournaments/{tournament_id}/matches/{match_id}',
     ...options,
   });
 
 /**
  * Update Match By Id
  */
-export const updateMatchByIdTournamentsTournamentIdMatchesMatchIdPut = <
+export const updateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutData, ThrowOnError>
+  options: Options<UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutResponses,
-    UpdateMatchByIdTournamentsTournamentIdMatchesMatchIdPutErrors,
+    UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutResponses,
+    UpdateMatchByIdApiTournamentsTournamentIdMatchesMatchIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/matches/{match_id}',
+    url: '/api/tournaments/{tournament_id}/matches/{match_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -626,22 +639,22 @@ export const updateMatchByIdTournamentsTournamentIdMatchesMatchIdPut = <
 /**
  * Reschedule Match
  */
-export const rescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePost = <
+export const rescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePost = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<
-    RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostData,
+    RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostData,
     ThrowOnError
   >
 ) =>
   (options.client ?? client).post<
-    RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostResponses,
-    RescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePostErrors,
+    RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostResponses,
+    RescheduleMatchApiTournamentsTournamentIdMatchesMatchIdReschedulePostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/matches/{match_id}/reschedule',
+    url: '/api/tournaments/{tournament_id}/matches/{match_id}/reschedule',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -654,58 +667,60 @@ export const rescheduleMatchTournamentsTournamentIdMatchesMatchIdReschedulePost 
  *
  * Get the rankings for the stage items in this stage.
  */
-export const getNextStageRankingsTournamentsTournamentIdNextStageRankingsGet = <
+export const getNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGet = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<
-    GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetData,
+    GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetData,
     ThrowOnError
   >
 ) =>
   (options.client ?? client).get<
-    GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetResponses,
-    GetNextStageRankingsTournamentsTournamentIdNextStageRankingsGetErrors,
+    GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetResponses,
+    GetNextStageRankingsApiTournamentsTournamentIdNextStageRankingsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/next_stage_rankings',
+    url: '/api/tournaments/{tournament_id}/next_stage_rankings',
     ...options,
   });
 
 /**
  * Get Players
  */
-export const getPlayersTournamentsTournamentIdPlayersGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetPlayersTournamentsTournamentIdPlayersGetData, ThrowOnError>
+export const getPlayersApiTournamentsTournamentIdPlayersGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetPlayersApiTournamentsTournamentIdPlayersGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetPlayersTournamentsTournamentIdPlayersGetResponses,
-    GetPlayersTournamentsTournamentIdPlayersGetErrors,
+    GetPlayersApiTournamentsTournamentIdPlayersGetResponses,
+    GetPlayersApiTournamentsTournamentIdPlayersGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/players',
+    url: '/api/tournaments/{tournament_id}/players',
     ...options,
   });
 
 /**
  * Create Single Player
  */
-export const createSinglePlayerTournamentsTournamentIdPlayersPost = <
+export const createSinglePlayerApiTournamentsTournamentIdPlayersPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<CreateSinglePlayerTournamentsTournamentIdPlayersPostData, ThrowOnError>
+  options: Options<CreateSinglePlayerApiTournamentsTournamentIdPlayersPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateSinglePlayerTournamentsTournamentIdPlayersPostResponses,
-    CreateSinglePlayerTournamentsTournamentIdPlayersPostErrors,
+    CreateSinglePlayerApiTournamentsTournamentIdPlayersPostResponses,
+    CreateSinglePlayerApiTournamentsTournamentIdPlayersPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/players',
+    url: '/api/tournaments/{tournament_id}/players',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -716,38 +731,38 @@ export const createSinglePlayerTournamentsTournamentIdPlayersPost = <
 /**
  * Delete Player
  */
-export const deletePlayerTournamentsTournamentIdPlayersPlayerIdDelete = <
+export const deletePlayerApiTournamentsTournamentIdPlayersPlayerIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteData, ThrowOnError>
+  options: Options<DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteResponses,
-    DeletePlayerTournamentsTournamentIdPlayersPlayerIdDeleteErrors,
+    DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteResponses,
+    DeletePlayerApiTournamentsTournamentIdPlayersPlayerIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/players/{player_id}',
+    url: '/api/tournaments/{tournament_id}/players/{player_id}',
     ...options,
   });
 
 /**
  * Update Player By Id
  */
-export const updatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPut = <
+export const updatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutData, ThrowOnError>
+  options: Options<UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutResponses,
-    UpdatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPutErrors,
+    UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutResponses,
+    UpdatePlayerByIdApiTournamentsTournamentIdPlayersPlayerIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/players/{player_id}',
+    url: '/api/tournaments/{tournament_id}/players/{player_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -758,19 +773,22 @@ export const updatePlayerByIdTournamentsTournamentIdPlayersPlayerIdPut = <
 /**
  * Create Multiple Players
  */
-export const createMultiplePlayersTournamentsTournamentIdPlayersMultiPost = <
+export const createMultiplePlayersApiTournamentsTournamentIdPlayersMultiPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostData, ThrowOnError>
+  options: Options<
+    CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostData,
+    ThrowOnError
+  >
 ) =>
   (options.client ?? client).post<
-    CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostResponses,
-    CreateMultiplePlayersTournamentsTournamentIdPlayersMultiPostErrors,
+    CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostResponses,
+    CreateMultiplePlayersApiTournamentsTournamentIdPlayersMultiPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/players_multi',
+    url: '/api/tournaments/{tournament_id}/players_multi',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -781,35 +799,37 @@ export const createMultiplePlayersTournamentsTournamentIdPlayersMultiPost = <
 /**
  * Get Rankings
  */
-export const getRankingsTournamentsTournamentIdRankingsGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetRankingsTournamentsTournamentIdRankingsGetData, ThrowOnError>
+export const getRankingsApiTournamentsTournamentIdRankingsGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetRankingsApiTournamentsTournamentIdRankingsGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetRankingsTournamentsTournamentIdRankingsGetResponses,
-    GetRankingsTournamentsTournamentIdRankingsGetErrors,
+    GetRankingsApiTournamentsTournamentIdRankingsGetResponses,
+    GetRankingsApiTournamentsTournamentIdRankingsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/tournaments/{tournament_id}/rankings',
+    url: '/api/tournaments/{tournament_id}/rankings',
     ...options,
   });
 
 /**
  * Create Ranking
  */
-export const createRankingTournamentsTournamentIdRankingsPost = <
+export const createRankingApiTournamentsTournamentIdRankingsPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<CreateRankingTournamentsTournamentIdRankingsPostData, ThrowOnError>
+  options: Options<CreateRankingApiTournamentsTournamentIdRankingsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateRankingTournamentsTournamentIdRankingsPostResponses,
-    CreateRankingTournamentsTournamentIdRankingsPostErrors,
+    CreateRankingApiTournamentsTournamentIdRankingsPostResponses,
+    CreateRankingApiTournamentsTournamentIdRankingsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rankings',
+    url: '/api/tournaments/{tournament_id}/rankings',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -820,38 +840,41 @@ export const createRankingTournamentsTournamentIdRankingsPost = <
 /**
  * Delete Ranking
  */
-export const deleteRankingTournamentsTournamentIdRankingsRankingIdDelete = <
+export const deleteRankingApiTournamentsTournamentIdRankingsRankingIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteData, ThrowOnError>
+  options: Options<DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteResponses,
-    DeleteRankingTournamentsTournamentIdRankingsRankingIdDeleteErrors,
+    DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteResponses,
+    DeleteRankingApiTournamentsTournamentIdRankingsRankingIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rankings/{ranking_id}',
+    url: '/api/tournaments/{tournament_id}/rankings/{ranking_id}',
     ...options,
   });
 
 /**
  * Update Ranking By Id
  */
-export const updateRankingByIdTournamentsTournamentIdRankingsRankingIdPut = <
+export const updateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutData, ThrowOnError>
+  options: Options<
+    UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutData,
+    ThrowOnError
+  >
 ) =>
   (options.client ?? client).put<
-    UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutResponses,
-    UpdateRankingByIdTournamentsTournamentIdRankingsRankingIdPutErrors,
+    UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutResponses,
+    UpdateRankingByIdApiTournamentsTournamentIdRankingsRankingIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rankings/{ranking_id}',
+    url: '/api/tournaments/{tournament_id}/rankings/{ranking_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -862,17 +885,19 @@ export const updateRankingByIdTournamentsTournamentIdRankingsRankingIdPut = <
 /**
  * Create Round
  */
-export const createRoundTournamentsTournamentIdRoundsPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateRoundTournamentsTournamentIdRoundsPostData, ThrowOnError>
+export const createRoundApiTournamentsTournamentIdRoundsPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<CreateRoundApiTournamentsTournamentIdRoundsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateRoundTournamentsTournamentIdRoundsPostResponses,
-    CreateRoundTournamentsTournamentIdRoundsPostErrors,
+    CreateRoundApiTournamentsTournamentIdRoundsPostResponses,
+    CreateRoundApiTournamentsTournamentIdRoundsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rounds',
+    url: '/api/tournaments/{tournament_id}/rounds',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -883,38 +908,38 @@ export const createRoundTournamentsTournamentIdRoundsPost = <ThrowOnError extend
 /**
  * Delete Round
  */
-export const deleteRoundTournamentsTournamentIdRoundsRoundIdDelete = <
+export const deleteRoundApiTournamentsTournamentIdRoundsRoundIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteData, ThrowOnError>
+  options: Options<DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteResponses,
-    DeleteRoundTournamentsTournamentIdRoundsRoundIdDeleteErrors,
+    DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteResponses,
+    DeleteRoundApiTournamentsTournamentIdRoundsRoundIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rounds/{round_id}',
+    url: '/api/tournaments/{tournament_id}/rounds/{round_id}',
     ...options,
   });
 
 /**
  * Update Round By Id
  */
-export const updateRoundByIdTournamentsTournamentIdRoundsRoundIdPut = <
+export const updateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutData, ThrowOnError>
+  options: Options<UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutResponses,
-    UpdateRoundByIdTournamentsTournamentIdRoundsRoundIdPutErrors,
+    UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutResponses,
+    UpdateRoundByIdApiTournamentsTournamentIdRoundsRoundIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/rounds/{round_id}',
+    url: '/api/tournaments/{tournament_id}/rounds/{round_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -925,38 +950,38 @@ export const updateRoundByIdTournamentsTournamentIdRoundsRoundIdPut = <
 /**
  * Schedule Matches
  */
-export const scheduleMatchesTournamentsTournamentIdScheduleMatchesPost = <
+export const scheduleMatchesApiTournamentsTournamentIdScheduleMatchesPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostData, ThrowOnError>
+  options: Options<ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostResponses,
-    ScheduleMatchesTournamentsTournamentIdScheduleMatchesPostErrors,
+    ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostResponses,
+    ScheduleMatchesApiTournamentsTournamentIdScheduleMatchesPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/schedule_matches',
+    url: '/api/tournaments/{tournament_id}/schedule_matches',
     ...options,
   });
 
 /**
  * Create Stage Item
  */
-export const createStageItemTournamentsTournamentIdStageItemsPost = <
+export const createStageItemApiTournamentsTournamentIdStageItemsPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<CreateStageItemTournamentsTournamentIdStageItemsPostData, ThrowOnError>
+  options: Options<CreateStageItemApiTournamentsTournamentIdStageItemsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateStageItemTournamentsTournamentIdStageItemsPostResponses,
-    CreateStageItemTournamentsTournamentIdStageItemsPostErrors,
+    CreateStageItemApiTournamentsTournamentIdStageItemsPostResponses,
+    CreateStageItemApiTournamentsTournamentIdStageItemsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stage_items',
+    url: '/api/tournaments/{tournament_id}/stage_items',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -967,41 +992,44 @@ export const createStageItemTournamentsTournamentIdStageItemsPost = <
 /**
  * Delete Stage Item
  */
-export const deleteStageItemTournamentsTournamentIdStageItemsStageItemIdDelete = <
+export const deleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDelete = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<
-    DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteData,
+    DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteData,
     ThrowOnError
   >
 ) =>
   (options.client ?? client).delete<
-    DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteResponses,
-    DeleteStageItemTournamentsTournamentIdStageItemsStageItemIdDeleteErrors,
+    DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteResponses,
+    DeleteStageItemApiTournamentsTournamentIdStageItemsStageItemIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stage_items/{stage_item_id}',
+    url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}',
     ...options,
   });
 
 /**
  * Update Stage Item
  */
-export const updateStageItemTournamentsTournamentIdStageItemsStageItemIdPut = <
+export const updateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutData, ThrowOnError>
+  options: Options<
+    UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutData,
+    ThrowOnError
+  >
 ) =>
   (options.client ?? client).put<
-    UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutResponses,
-    UpdateStageItemTournamentsTournamentIdStageItemsStageItemIdPutErrors,
+    UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutResponses,
+    UpdateStageItemApiTournamentsTournamentIdStageItemsStageItemIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stage_items/{stage_item_id}',
+    url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1012,21 +1040,21 @@ export const updateStageItemTournamentsTournamentIdStageItemsStageItemIdPut = <
 /**
  * Update Stage Item Input
  */
-export const updateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPut =
+export const updateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPut =
   <ThrowOnError extends boolean = false>(
     options: Options<
-      UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutData,
+      UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutData,
       ThrowOnError
     >
   ) =>
     (options.client ?? client).put<
-      UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutResponses,
-      UpdateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutErrors,
+      UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutResponses,
+      UpdateStageItemInputApiTournamentsTournamentIdStageItemsStageItemIdInputsStageItemInputIdPutErrors,
       ThrowOnError
     >({
       responseType: 'json',
       security: [{ scheme: 'bearer', type: 'http' }],
-      url: '/tournaments/{tournament_id}/stage_items/{stage_item_id}/inputs/{stage_item_input_id}',
+      url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/inputs/{stage_item_input_id}',
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -1035,24 +1063,50 @@ export const updateStageItemInputTournamentsTournamentIdStageItemsStageItemIdInp
     });
 
 /**
- * Start Next Round
+ * Reassign Rounds
  */
-export const startNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPost = <
+export const reassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPost = <
   ThrowOnError extends boolean = false,
 >(
   options: Options<
-    StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostData,
+    ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostData,
     ThrowOnError
   >
 ) =>
   (options.client ?? client).post<
-    StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostResponses,
-    StartNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostErrors,
+    ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponses,
+    ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stage_items/{stage_item_id}/start_next_round',
+    url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_rounds',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Start Next Round
+ */
+export const startNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<
+    StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostData,
+    ThrowOnError
+  >
+) =>
+  (options.client ?? client).post<
+    StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostResponses,
+    StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/start_next_round',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1063,74 +1117,75 @@ export const startNextRoundTournamentsTournamentIdStageItemsStageItemIdStartNext
 /**
  * Get Matches To Schedule
  */
-export const getMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGet = <
-  ThrowOnError extends boolean = false,
->(
-  options: Options<
-    GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetData,
-    ThrowOnError
-  >
-) =>
-  (options.client ?? client).get<
-    GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetResponses,
-    GetMatchesToScheduleTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stage_items/{stage_item_id}/upcoming_matches',
-    ...options,
-  });
+export const getMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGet =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetData,
+      ThrowOnError
+    >
+  ) =>
+    (options.client ?? client).get<
+      GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetResponses,
+      GetMatchesToScheduleApiTournamentsTournamentIdStageItemsStageItemIdUpcomingMatchesGetErrors,
+      ThrowOnError
+    >({
+      responseType: 'json',
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/upcoming_matches',
+      ...options,
+    });
 
 /**
  * Get Stages
  */
-export const getStagesTournamentsTournamentIdStagesGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetStagesTournamentsTournamentIdStagesGetData, ThrowOnError>
+export const getStagesApiTournamentsTournamentIdStagesGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetStagesApiTournamentsTournamentIdStagesGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetStagesTournamentsTournamentIdStagesGetResponses,
-    GetStagesTournamentsTournamentIdStagesGetErrors,
+    GetStagesApiTournamentsTournamentIdStagesGetResponses,
+    GetStagesApiTournamentsTournamentIdStagesGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/tournaments/{tournament_id}/stages',
+    url: '/api/tournaments/{tournament_id}/stages',
     ...options,
   });
 
 /**
  * Create Stage
  */
-export const createStageTournamentsTournamentIdStagesPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateStageTournamentsTournamentIdStagesPostData, ThrowOnError>
+export const createStageApiTournamentsTournamentIdStagesPost = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<CreateStageApiTournamentsTournamentIdStagesPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateStageTournamentsTournamentIdStagesPostResponses,
-    CreateStageTournamentsTournamentIdStagesPostErrors,
+    CreateStageApiTournamentsTournamentIdStagesPostResponses,
+    CreateStageApiTournamentsTournamentIdStagesPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stages',
+    url: '/api/tournaments/{tournament_id}/stages',
     ...options,
   });
 
 /**
  * Activate Next Stage
  */
-export const activateNextStageTournamentsTournamentIdStagesActivatePost = <
+export const activateNextStageApiTournamentsTournamentIdStagesActivatePost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<ActivateNextStageTournamentsTournamentIdStagesActivatePostData, ThrowOnError>
+  options: Options<ActivateNextStageApiTournamentsTournamentIdStagesActivatePostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    ActivateNextStageTournamentsTournamentIdStagesActivatePostResponses,
-    ActivateNextStageTournamentsTournamentIdStagesActivatePostErrors,
+    ActivateNextStageApiTournamentsTournamentIdStagesActivatePostResponses,
+    ActivateNextStageApiTournamentsTournamentIdStagesActivatePostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stages/activate',
+    url: '/api/tournaments/{tournament_id}/stages/activate',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1141,38 +1196,38 @@ export const activateNextStageTournamentsTournamentIdStagesActivatePost = <
 /**
  * Delete Stage
  */
-export const deleteStageTournamentsTournamentIdStagesStageIdDelete = <
+export const deleteStageApiTournamentsTournamentIdStagesStageIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteStageTournamentsTournamentIdStagesStageIdDeleteData, ThrowOnError>
+  options: Options<DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteStageTournamentsTournamentIdStagesStageIdDeleteResponses,
-    DeleteStageTournamentsTournamentIdStagesStageIdDeleteErrors,
+    DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteResponses,
+    DeleteStageApiTournamentsTournamentIdStagesStageIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stages/{stage_id}',
+    url: '/api/tournaments/{tournament_id}/stages/{stage_id}',
     ...options,
   });
 
 /**
  * Update Stage
  */
-export const updateStageTournamentsTournamentIdStagesStageIdPut = <
+export const updateStageApiTournamentsTournamentIdStagesStageIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateStageTournamentsTournamentIdStagesStageIdPutData, ThrowOnError>
+  options: Options<UpdateStageApiTournamentsTournamentIdStagesStageIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateStageTournamentsTournamentIdStagesStageIdPutResponses,
-    UpdateStageTournamentsTournamentIdStagesStageIdPutErrors,
+    UpdateStageApiTournamentsTournamentIdStagesStageIdPutResponses,
+    UpdateStageApiTournamentsTournamentIdStagesStageIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/stages/{stage_id}',
+    url: '/api/tournaments/{tournament_id}/stages/{stage_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1183,33 +1238,33 @@ export const updateStageTournamentsTournamentIdStagesStageIdPut = <
 /**
  * Get Teams
  */
-export const getTeamsTournamentsTournamentIdTeamsGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetTeamsTournamentsTournamentIdTeamsGetData, ThrowOnError>
+export const getTeamsApiTournamentsTournamentIdTeamsGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetTeamsApiTournamentsTournamentIdTeamsGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetTeamsTournamentsTournamentIdTeamsGetResponses,
-    GetTeamsTournamentsTournamentIdTeamsGetErrors,
+    GetTeamsApiTournamentsTournamentIdTeamsGetResponses,
+    GetTeamsApiTournamentsTournamentIdTeamsGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/tournaments/{tournament_id}/teams',
+    url: '/api/tournaments/{tournament_id}/teams',
     ...options,
   });
 
 /**
  * Create Team
  */
-export const createTeamTournamentsTournamentIdTeamsPost = <ThrowOnError extends boolean = false>(
-  options: Options<CreateTeamTournamentsTournamentIdTeamsPostData, ThrowOnError>
+export const createTeamApiTournamentsTournamentIdTeamsPost = <ThrowOnError extends boolean = false>(
+  options: Options<CreateTeamApiTournamentsTournamentIdTeamsPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateTeamTournamentsTournamentIdTeamsPostResponses,
-    CreateTeamTournamentsTournamentIdTeamsPostErrors,
+    CreateTeamApiTournamentsTournamentIdTeamsPostResponses,
+    CreateTeamApiTournamentsTournamentIdTeamsPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/teams',
+    url: '/api/tournaments/{tournament_id}/teams',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1220,38 +1275,38 @@ export const createTeamTournamentsTournamentIdTeamsPost = <ThrowOnError extends 
 /**
  * Delete Team
  */
-export const deleteTeamTournamentsTournamentIdTeamsTeamIdDelete = <
+export const deleteTeamApiTournamentsTournamentIdTeamsTeamIdDelete = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteData, ThrowOnError>
+  options: Options<DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteData, ThrowOnError>
 ) =>
   (options.client ?? client).delete<
-    DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteResponses,
-    DeleteTeamTournamentsTournamentIdTeamsTeamIdDeleteErrors,
+    DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteResponses,
+    DeleteTeamApiTournamentsTournamentIdTeamsTeamIdDeleteErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/teams/{team_id}',
+    url: '/api/tournaments/{tournament_id}/teams/{team_id}',
     ...options,
   });
 
 /**
  * Update Team By Id
  */
-export const updateTeamByIdTournamentsTournamentIdTeamsTeamIdPut = <
+export const updateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPut = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutData, ThrowOnError>
+  options: Options<UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutResponses,
-    UpdateTeamByIdTournamentsTournamentIdTeamsTeamIdPutErrors,
+    UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutResponses,
+    UpdateTeamByIdApiTournamentsTournamentIdTeamsTeamIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/teams/{team_id}',
+    url: '/api/tournaments/{tournament_id}/teams/{team_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1262,20 +1317,20 @@ export const updateTeamByIdTournamentsTournamentIdTeamsTeamIdPut = <
 /**
  * Update Team Logo
  */
-export const updateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPost = <
+export const updateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostData, ThrowOnError>
+  options: Options<UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostResponses,
-    UpdateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPostErrors,
+    UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostResponses,
+    UpdateTeamLogoApiTournamentsTournamentIdTeamsTeamIdLogoPostErrors,
     ThrowOnError
   >({
     ...formDataBodySerializer,
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/teams/{team_id}/logo',
+    url: '/api/tournaments/{tournament_id}/teams/{team_id}/logo',
     ...options,
     headers: {
       'Content-Type': null,
@@ -1286,19 +1341,19 @@ export const updateTeamLogoTournamentsTournamentIdTeamsTeamIdLogoPost = <
 /**
  * Create Multiple Teams
  */
-export const createMultipleTeamsTournamentsTournamentIdTeamsMultiPost = <
+export const createMultipleTeamsApiTournamentsTournamentIdTeamsMultiPost = <
   ThrowOnError extends boolean = false,
 >(
-  options: Options<CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostData, ThrowOnError>
+  options: Options<CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostResponses,
-    CreateMultipleTeamsTournamentsTournamentIdTeamsMultiPostErrors,
+    CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostResponses,
+    CreateMultipleTeamsApiTournamentsTournamentIdTeamsMultiPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/tournaments/{tournament_id}/teams_multi',
+    url: '/api/tournaments/{tournament_id}/teams_multi',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1309,29 +1364,29 @@ export const createMultipleTeamsTournamentsTournamentIdTeamsMultiPost = <
 /**
  * Get User
  */
-export const getUserUsersMeGet = <ThrowOnError extends boolean = false>(
-  options?: Options<GetUserUsersMeGetData, ThrowOnError>
+export const getUserApiUsersMeGet = <ThrowOnError extends boolean = false>(
+  options?: Options<GetUserApiUsersMeGetData, ThrowOnError>
 ) =>
-  (options?.client ?? client).get<GetUserUsersMeGetResponses, unknown, ThrowOnError>({
+  (options?.client ?? client).get<GetUserApiUsersMeGetResponses, unknown, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/users/me',
+    url: '/api/users/me',
     ...options,
   });
 
 /**
  * Register User
  */
-export const registerUserUsersRegisterPost = <ThrowOnError extends boolean = false>(
-  options: Options<RegisterUserUsersRegisterPostData, ThrowOnError>
+export const registerUserApiUsersRegisterPost = <ThrowOnError extends boolean = false>(
+  options: Options<RegisterUserApiUsersRegisterPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    RegisterUserUsersRegisterPostResponses,
-    RegisterUserUsersRegisterPostErrors,
+    RegisterUserApiUsersRegisterPostResponses,
+    RegisterUserApiUsersRegisterPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/users/register',
+    url: '/api/users/register',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1342,16 +1397,16 @@ export const registerUserUsersRegisterPost = <ThrowOnError extends boolean = fal
 /**
  * Register Demo User
  */
-export const registerDemoUserUsersRegisterDemoPost = <ThrowOnError extends boolean = false>(
-  options: Options<RegisterDemoUserUsersRegisterDemoPostData, ThrowOnError>
+export const registerDemoUserApiUsersRegisterDemoPost = <ThrowOnError extends boolean = false>(
+  options: Options<RegisterDemoUserApiUsersRegisterDemoPostData, ThrowOnError>
 ) =>
   (options.client ?? client).post<
-    RegisterDemoUserUsersRegisterDemoPostResponses,
-    RegisterDemoUserUsersRegisterDemoPostErrors,
+    RegisterDemoUserApiUsersRegisterDemoPostResponses,
+    RegisterDemoUserApiUsersRegisterDemoPostErrors,
     ThrowOnError
   >({
     responseType: 'json',
-    url: '/users/register_demo',
+    url: '/api/users/register_demo',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1362,34 +1417,34 @@ export const registerDemoUserUsersRegisterDemoPost = <ThrowOnError extends boole
 /**
  * Get Me
  */
-export const getMeUsersUserIdGet = <ThrowOnError extends boolean = false>(
-  options: Options<GetMeUsersUserIdGetData, ThrowOnError>
+export const getMeApiUsersUserIdGet = <ThrowOnError extends boolean = false>(
+  options: Options<GetMeApiUsersUserIdGetData, ThrowOnError>
 ) =>
   (options.client ?? client).get<
-    GetMeUsersUserIdGetResponses,
-    GetMeUsersUserIdGetErrors,
+    GetMeApiUsersUserIdGetResponses,
+    GetMeApiUsersUserIdGetErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/users/{user_id}',
+    url: '/api/users/{user_id}',
     ...options,
   });
 
 /**
  * Update User Details
  */
-export const updateUserDetailsUsersUserIdPut = <ThrowOnError extends boolean = false>(
-  options: Options<UpdateUserDetailsUsersUserIdPutData, ThrowOnError>
+export const updateUserDetailsApiUsersUserIdPut = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateUserDetailsApiUsersUserIdPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    UpdateUserDetailsUsersUserIdPutResponses,
-    UpdateUserDetailsUsersUserIdPutErrors,
+    UpdateUserDetailsApiUsersUserIdPutResponses,
+    UpdateUserDetailsApiUsersUserIdPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/users/{user_id}',
+    url: '/api/users/{user_id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -1400,20 +1455,36 @@ export const updateUserDetailsUsersUserIdPut = <ThrowOnError extends boolean = f
 /**
  * Put User Password
  */
-export const putUserPasswordUsersUserIdPasswordPut = <ThrowOnError extends boolean = false>(
-  options: Options<PutUserPasswordUsersUserIdPasswordPutData, ThrowOnError>
+export const putUserPasswordApiUsersUserIdPasswordPut = <ThrowOnError extends boolean = false>(
+  options: Options<PutUserPasswordApiUsersUserIdPasswordPutData, ThrowOnError>
 ) =>
   (options.client ?? client).put<
-    PutUserPasswordUsersUserIdPasswordPutResponses,
-    PutUserPasswordUsersUserIdPasswordPutErrors,
+    PutUserPasswordApiUsersUserIdPasswordPutResponses,
+    PutUserPasswordApiUsersUserIdPasswordPutErrors,
     ThrowOnError
   >({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/users/{user_id}/password',
+    url: '/api/users/{user_id}/password',
     ...options,
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Frontend
+ */
+export const frontendFullPathGet = <ThrowOnError extends boolean = false>(
+  options: Options<FrontendFullPathGetData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    FrontendFullPathGetResponses,
+    FrontendFullPathGetErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/{full_path}',
+    ...options,
   });

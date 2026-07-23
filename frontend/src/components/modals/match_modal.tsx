@@ -1,4 +1,14 @@
-import { Button, Center, Checkbox, Divider, Grid, Modal, NumberInput, Text } from '@mantine/core';
+import {
+  Button,
+  Center,
+  Checkbox,
+  Divider,
+  Grid,
+  Modal,
+  NumberInput,
+  Select,
+  Text,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,8 +70,11 @@ function MatchModalForm({
   const { t } = useTranslation();
   const form = useForm({
     initialValues: {
+      round_id: `${match.round_id}`,
       stage_item_input1_score: match.stage_item_input1_score,
       stage_item_input2_score: match.stage_item_input2_score,
+      stage_item_input1_score_half_time: match.stage_item_input1_score_half_time ?? 0,
+      stage_item_input2_score_half_time: match.stage_item_input2_score_half_time ?? 0,
       custom_duration_minutes: match.custom_duration_minutes,
       custom_margin_minutes: match.custom_margin_minutes,
     },
@@ -69,6 +82,10 @@ function MatchModalForm({
     validate: {
       stage_item_input1_score: (value) => (value >= 0 ? null : t('negative_score_validation')),
       stage_item_input2_score: (value) => (value >= 0 ? null : t('negative_score_validation')),
+      stage_item_input1_score_half_time: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input2_score_half_time: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
       custom_duration_minutes: (value) =>
         value == null || value >= 0 ? null : t('negative_match_duration_validation'),
       custom_margin_minutes: (value) =>
@@ -89,15 +106,26 @@ function MatchModalForm({
   const team1Name = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
   const team2Name = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
 
+  const roundOptions =
+    round != null
+      ? stageItemsLookup[round.stage_item_id]?.rounds.map((r: RoundWithMatches) => ({
+          value: `${r.id}`,
+          label: r.name,
+        }))
+      : null;
+
   return (
     <>
       <form
         onSubmit={form.onSubmit(async (values) => {
           const updatedMatch = {
             id: match.id,
-            round_id: match.round_id,
+            round_id: roundOptions != null ? parseInt(values.round_id, 10) : match.round_id,
             stage_item_input1_score: values.stage_item_input1_score,
             stage_item_input2_score: values.stage_item_input2_score,
+            stage_item_input1_score_half_time: values.stage_item_input1_score_half_time,
+            stage_item_input2_score_half_time: values.stage_item_input2_score_half_time,
+            is_played: true,
             court_id: match.court_id || null,
             custom_duration_minutes: customDurationEnabled ? values.custom_duration_minutes : null,
             custom_margin_minutes: customMarginEnabled ? values.custom_margin_minutes : null,
@@ -108,19 +136,50 @@ function MatchModalForm({
           setOpened(false);
         })}
       >
-        <NumberInput
-          withAsterisk
-          label={`${t('score_of_label')} ${team1Name}`}
-          placeholder={`${t('score_of_label')} ${team1Name}`}
-          {...form.getInputProps('stage_item_input1_score')}
-        />
-        <NumberInput
-          withAsterisk
-          mt="lg"
-          label={`${t('score_of_label')} ${team2Name}`}
-          placeholder={`${t('score_of_label')} ${team2Name}`}
-          {...form.getInputProps('stage_item_input2_score')}
-        />
+        {roundOptions != null && (
+          <Select
+            withAsterisk
+            label={t('round_select_label')}
+            data={roundOptions}
+            allowDeselect={false}
+            mb="lg"
+            {...form.getInputProps('round_id')}
+          />
+        )}
+        <Grid align="flex-end">
+          <Grid.Col span={{ sm: 8 }}>
+            <NumberInput
+              withAsterisk
+              label={`${t('score_of_label')} ${team1Name}`}
+              placeholder={`${t('score_of_label')} ${team1Name}`}
+              {...form.getInputProps('stage_item_input1_score')}
+            />
+          </Grid.Col>
+          <Grid.Col span={{ sm: 4 }}>
+            <NumberInput
+              label={t('half_time_score_label')}
+              placeholder={t('half_time_score_label')}
+              {...form.getInputProps('stage_item_input1_score_half_time')}
+            />
+          </Grid.Col>
+        </Grid>
+        <Grid align="flex-end" mt="lg">
+          <Grid.Col span={{ sm: 8 }}>
+            <NumberInput
+              withAsterisk
+              label={`${t('score_of_label')} ${team2Name}`}
+              placeholder={`${t('score_of_label')} ${team2Name}`}
+              {...form.getInputProps('stage_item_input2_score')}
+            />
+          </Grid.Col>
+          <Grid.Col span={{ sm: 4 }}>
+            <NumberInput
+              label={t('half_time_score_label')}
+              placeholder={t('half_time_score_label')}
+              {...form.getInputProps('stage_item_input2_score_half_time')}
+            />
+          </Grid.Col>
+        </Grid>
         <Divider mt="lg" />
 
         <Text size="sm" mt="lg">

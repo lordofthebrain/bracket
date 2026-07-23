@@ -21,6 +21,9 @@ class MatchBaseInsertable(BaseModelORM):
     round_id: RoundId
     stage_item_input1_score: int
     stage_item_input2_score: int
+    stage_item_input1_score_half_time: int | None = None
+    stage_item_input2_score_half_time: int | None = None
+    is_played: bool = False
     court_id: CourtId | None = None
     stage_item_input1_conflict: bool
     stage_item_input2_conflict: bool
@@ -90,6 +93,9 @@ class MatchBody(BaseModelORM):
     round_id: RoundId
     stage_item_input1_score: int = 0
     stage_item_input2_score: int = 0
+    stage_item_input1_score_half_time: int | None = None
+    stage_item_input2_score_half_time: int | None = None
+    is_played: bool = True
     court_id: CourtId | None = None
     custom_duration_minutes: int | None = None
     custom_margin_minutes: int | None = None
@@ -116,6 +122,16 @@ class MatchRescheduleBody(BaseModelORM):
     old_position: int
     new_court_id: CourtId
     new_position: int
+
+
+class MatchRoundAssignment(BaseModelORM):
+    match_id: MatchId
+    round_id: RoundId
+    swap_teams: bool = False
+
+
+class MatchRoundAssignmentsBody(BaseModelORM):
+    assignments: list[MatchRoundAssignment]
 
 
 class MatchFilter(BaseModel):

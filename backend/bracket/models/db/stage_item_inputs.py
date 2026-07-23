@@ -21,6 +21,8 @@ class StageItemInputGeneric(BaseModel):
     wins: int = 0
     draws: int = 0
     losses: int = 0
+    goals_for: int = 0
+    goals_against: int = 0
 
     @property
     def elo(self) -> Decimal:

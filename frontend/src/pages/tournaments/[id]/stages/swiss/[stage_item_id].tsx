@@ -6,6 +6,7 @@ import { LuNavigation } from 'react-icons/lu';
 import { SWRResponse } from 'swr';
 
 import { RoundsGridCols } from '@components/brackets/brackets';
+import BulkRoundAssignmentModal from '@components/modals/bulk_round_assignment_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
 import Scheduler from '@components/scheduling/scheduling';
 import classes from '@components/utility.module.css';
@@ -196,6 +197,13 @@ export default function SwissTournamentPage() {
               >
                 {t('view_dashboard_button')}
               </Button>
+            )}
+            {stageItem != null && (
+              <BulkRoundAssignmentModal
+                tournamentData={tournamentDataFull}
+                stageItem={stageItem}
+                swrStagesResponse={swrStagesResponse}
+              />
             )}
           </Group>
         </Grid.Col>

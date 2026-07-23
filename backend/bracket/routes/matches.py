@@ -24,6 +24,7 @@ from bracket.models.db.match import (
     MatchCreateBodyFrontend,
     MatchFilter,
     MatchRescheduleBody,
+    MatchRoundAssignmentsBody,
 )
 from bracket.models.db.stage_item import StageType
 from bracket.models.db.tournament import Tournament
@@ -32,13 +33,19 @@ from bracket.routes.auth import user_authenticated_for_tournament
 from bracket.routes.models import SingleMatchResponse, SuccessResponse, UpcomingMatchesResponse
 from bracket.routes.util import disallow_archived_tournament, match_dependency
 from bracket.sql.courts import get_all_courts_in_tournament
-from bracket.sql.matches import sql_create_match, sql_delete_match, sql_update_match
+from bracket.sql.matches import (
+    sql_create_match,
+    sql_delete_match,
+    sql_swap_match_teams,
+    sql_update_match,
+    sql_update_match_round,
+)
 from bracket.sql.rounds import get_round_by_id
 from bracket.sql.stage_items import get_stage_item
 from bracket.sql.stages import get_full_tournament_details
 from bracket.sql.tournaments import sql_get_tournament
 from bracket.sql.validation import check_foreign_keys_belong_to_tournament
-from bracket.utils.id_types import MatchId, StageItemId, TournamentId
+from bracket.utils.id_types import MatchId, RoundId, StageItemId, StageItemInputId, TournamentId
 from bracket.utils.types import assert_some
 
 router = APIRouter(prefix=config.api_prefix)
@@ -165,6 +172,26 @@ async def update_match_by_id(
     await check_foreign_keys_belong_to_tournament(match_body, tournament_id)
     tournament = await sql_get_tournament(tournament_id)
 
+    if match_body.round_id != match.round_id:
+        old_round = await get_round_by_id(tournament_id, match.round_id)
+        new_round = await get_round_by_id(tournament_id, match_body.round_id)
+
+        if new_round.stage_item_id != old_round.stage_item_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Can't move a match to a round of a different stage item",
+            )
+
+        input_ids = {match.stage_item_input1_id, match.stage_item_input2_id} - {None}
+        for other_match in new_round.matches:
+            if other_match.id == match_id:
+                continue
+            if {other_match.stage_item_input1_id, other_match.stage_item_input2_id} & input_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="One of the teams already has a match in the destination round",
+                )
+
     await sql_update_match(match_id, match_body, tournament)
 
     round_ = await get_round_by_id(tournament_id, match.round_id)
@@ -181,5 +208,76 @@ async def update_match_by_id(
 
     if stage_item.type == StageType.SINGLE_ELIMINATION:
         await update_inputs_in_subsequent_elimination_rounds(round_.id, stage_item, {match_id})
+
+    return SuccessResponse()
+
+
+@router.post(
+    "/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_rounds",
+    response_model=SuccessResponse,
+)
+async def reassign_rounds(
+    tournament_id: TournamentId,
+    stage_item_id: StageItemId,
+    body: MatchRoundAssignmentsBody,
+    _: UserPublic = Depends(user_authenticated_for_tournament),
+    __: Tournament = Depends(disallow_archived_tournament),
+) -> SuccessResponse:
+    stage_item = await get_stage_item(tournament_id, stage_item_id)
+
+    valid_round_ids = {round_.id for round_ in stage_item.rounds}
+    match_current_round: dict[MatchId, RoundId] = {}
+    match_inputs: dict[MatchId, tuple[StageItemInputId | None, StageItemInputId | None]] = {}
+    for round_ in stage_item.rounds:
+        for match in round_.matches:
+            match_current_round[match.id] = round_.id
+            match_inputs[match.id] = (match.stage_item_input1_id, match.stage_item_input2_id)
+
+    new_round_by_match: dict[MatchId, RoundId] = dict(match_current_round)
+    for assignment in body.assignments:
+        if assignment.match_id not in match_current_round:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Match {assignment.match_id} doesn't belong to this stage item",
+            )
+        if assignment.round_id not in valid_round_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Round {assignment.round_id} doesn't belong to this stage item",
+            )
+        new_round_by_match[assignment.match_id] = assignment.round_id
+
+    teams_per_round: dict[RoundId, dict[StageItemInputId, MatchId]] = {
+        round_id: {} for round_id in valid_round_ids
+    }
+    conflicting_round_names: set[str] = set()
+    round_name_by_id = {round_.id: round_.name for round_ in stage_item.rounds}
+    for match_id, round_id in new_round_by_match.items():
+        for input_id in match_inputs[match_id]:
+            if input_id is None:
+                continue
+            existing_match_id = teams_per_round[round_id].get(input_id)
+            if existing_match_id is not None and existing_match_id != match_id:
+                conflicting_round_names.add(round_name_by_id[round_id])
+            teams_per_round[round_id][input_id] = match_id
+
+    if conflicting_round_names:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "A team would play twice in the same round: "
+                f"{', '.join(sorted(conflicting_round_names))}"
+            ),
+        )
+
+    for match_id, round_id in new_round_by_match.items():
+        if round_id != match_current_round[match_id]:
+            await sql_update_match_round(match_id, round_id)
+
+    for assignment in body.assignments:
+        if assignment.swap_teams:
+            await sql_swap_match_teams(assignment.match_id)
+
+    await recalculate_ranking_for_stage_item(tournament_id, stage_item)
 
     return SuccessResponse()

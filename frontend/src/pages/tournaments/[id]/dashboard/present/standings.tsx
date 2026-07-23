@@ -47,6 +47,7 @@ export default function StandingsPresentPage() {
             swrStagesResponse={swrStagesResponse}
             fontSizeInPixels={fontSizeInPixels}
             maxTeamsToDisplay={14}
+            tournamentId={tournamentDataFull.id}
           />
         </Grid.Col>
       </Grid>

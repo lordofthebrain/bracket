@@ -84,7 +84,7 @@ export function getMatchLookup(swrStagesResponse: SWRResponse) {
     stage.stage_items.forEach((stageItem) => {
       stageItem.rounds.forEach((round) => {
         round.matches.forEach((match) => {
-          result = result.concat([[match.id, { match, stageItem }]]);
+          result = result.concat([[match.id, { match, stageItem, round }]]);
         });
       });
     })

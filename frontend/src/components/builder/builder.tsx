@@ -298,8 +298,8 @@ function StageItemRow({
             rankings={rankings}
           />
           <Group gap="0rem">
-            {stageItem.type === 'SWISS' ? (
-              <Tooltip label={t('handle_swiss_system')}>
+            {stageItem.type === 'SWISS' || stageItem.type === 'ROUND_ROBIN' ? (
+              <Tooltip label={t('manage_rounds_button')}>
                 <ActionIcon
                   variant="transparent"
                   color="gray"
@@ -326,13 +326,13 @@ function StageItemRow({
                 >
                   {t('edit_stage_item_label')}
                 </Menu.Item>
-                {stageItem.type === 'SWISS' ? (
+                {stageItem.type === 'SWISS' || stageItem.type === 'ROUND_ROBIN' ? (
                   <Menu.Item
                     leftSection={<BiSolidWrench size="1.5rem" />}
                     component={PreloadLink}
                     href={`/tournaments/${tournament.id}/stages/swiss/${stageItem.id}`}
                   >
-                    {t('handle_swiss_system')}
+                    {t('manage_rounds_button')}
                   </Menu.Item>
                 ) : null}
                 <Menu.Item

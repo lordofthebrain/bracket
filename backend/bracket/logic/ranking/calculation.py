@@ -25,10 +25,14 @@ def set_statistics_for_stage_item_input(
 ) -> None:
     is_team1 = team_index == 0
     team_score = match.stage_item_input1_score if is_team1 else match.stage_item_input2_score
+    opponent_score = match.stage_item_input2_score if is_team1 else match.stage_item_input1_score
     was_draw = match.stage_item_input1_score == match.stage_item_input2_score
     has_won = not was_draw and team_score == max(
         match.stage_item_input1_score, match.stage_item_input2_score
     )
+
+    stats[stage_item_input_id].goals_for += team_score
+    stats[stage_item_input_id].goals_against += opponent_score
 
     if has_won:
         stats[stage_item_input_id].wins += 1
@@ -75,7 +79,7 @@ def determine_ranking_for_stage_item(
         for round_ in stage_item.rounds
         if not round_.is_draft
         for match in round_.matches
-        if isinstance(match, MatchWithDetailsDefinitive)
+        if isinstance(match, MatchWithDetailsDefinitive) and match.is_played
     ]
     for match in matches:
         for team_index, stage_item_input in enumerate(match.stage_item_inputs):

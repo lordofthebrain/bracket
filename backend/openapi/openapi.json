@@ -1,7 +1,7 @@
 {
   "components": {
     "schemas": {
-      "Body_login_for_access_token_token_post": {
+      "Body_login_for_access_token_api_token_post": {
         "properties": {
           "client_id": {
             "anyOf": [
@@ -61,15 +61,15 @@
           "client_id",
           "client_secret"
         ],
-        "title": "Body_login_for_access_token_token_post",
+        "title": "Body_login_for_access_token_api_token_post",
         "type": "object"
       },
-      "Body_update_team_logo_tournaments__tournament_id__teams__team_id__logo_post": {
+      "Body_update_team_logo_api_tournaments__tournament_id__teams__team_id__logo_post": {
         "properties": {
           "file": {
             "anyOf": [
               {
-                "contentMediaType": "application/octet-stream",
+                "format": "binary",
                 "type": "string"
               },
               {
@@ -82,15 +82,15 @@
         "required": [
           "file"
         ],
-        "title": "Body_update_team_logo_tournaments__tournament_id__teams__team_id__logo_post",
+        "title": "Body_update_team_logo_api_tournaments__tournament_id__teams__team_id__logo_post",
         "type": "object"
       },
-      "Body_upload_logo_tournaments__tournament_id__logo_post": {
+      "Body_upload_logo_api_tournaments__tournament_id__logo_post": {
         "properties": {
           "file": {
             "anyOf": [
               {
-                "contentMediaType": "application/octet-stream",
+                "format": "binary",
                 "type": "string"
               },
               {
@@ -103,7 +103,7 @@
         "required": [
           "file"
         ],
-        "title": "Body_upload_logo_tournaments__tournament_id__logo_post",
+        "title": "Body_upload_logo_api_tournaments__tournament_id__logo_post",
         "type": "object"
       },
       "Club": {
@@ -409,6 +409,11 @@
             "title": "Id",
             "type": "integer"
           },
+          "is_played": {
+            "default": false,
+            "title": "Is Played",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -464,6 +469,17 @@
             "title": "Stage Item Input1 Score",
             "type": "integer"
           },
+          "stage_item_input1_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input1 Score Half Time"
+          },
           "stage_item_input1_winner_from_match_id": {
             "anyOf": [
               {
@@ -511,6 +527,17 @@
             "title": "Stage Item Input2 Score",
             "type": "integer"
           },
+          "stage_item_input2_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input2 Score Half Time"
+          },
           "stage_item_input2_winner_from_match_id": {
             "anyOf": [
               {
@@ -546,6 +573,9 @@
           "round_id",
           "stage_item_input1_score",
           "stage_item_input2_score",
+          "stage_item_input1_score_half_time",
+          "stage_item_input2_score_half_time",
+          "is_played",
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
@@ -595,6 +625,11 @@
             ],
             "title": "Custom Margin Minutes"
           },
+          "is_played": {
+            "default": true,
+            "title": "Is Played",
+            "type": "boolean"
+          },
           "round_id": {
             "title": "Round Id",
             "type": "integer"
@@ -604,16 +639,41 @@
             "title": "Stage Item Input1 Score",
             "type": "integer"
           },
+          "stage_item_input1_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input1 Score Half Time"
+          },
           "stage_item_input2_score": {
             "default": 0,
             "title": "Stage Item Input2 Score",
             "type": "integer"
+          },
+          "stage_item_input2_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input2 Score Half Time"
           }
         },
         "required": [
           "round_id",
           "stage_item_input1_score",
           "stage_item_input2_score",
+          "stage_item_input1_score_half_time",
+          "stage_item_input2_score_half_time",
+          "is_played",
           "court_id",
           "custom_duration_minutes",
           "custom_margin_minutes"
@@ -722,6 +782,46 @@
         "title": "MatchRescheduleBody",
         "type": "object"
       },
+      "MatchRoundAssignment": {
+        "properties": {
+          "match_id": {
+            "title": "Match Id",
+            "type": "integer"
+          },
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "swap_teams": {
+            "default": false,
+            "title": "Swap Teams",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "match_id",
+          "round_id",
+          "swap_teams"
+        ],
+        "title": "MatchRoundAssignment",
+        "type": "object"
+      },
+      "MatchRoundAssignmentsBody": {
+        "properties": {
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/MatchRoundAssignment"
+            },
+            "title": "Assignments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assignments"
+        ],
+        "title": "MatchRoundAssignmentsBody",
+        "type": "object"
+      },
       "MatchWithDetails": {
         "description": "MatchWithDetails has zero or one defined stage item inputs, but not both.",
         "properties": {
@@ -781,6 +881,11 @@
             "title": "Id",
             "type": "integer"
           },
+          "is_played": {
+            "default": false,
+            "title": "Is Played",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -836,6 +941,17 @@
             "title": "Stage Item Input1 Score",
             "type": "integer"
           },
+          "stage_item_input1_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input1 Score Half Time"
+          },
           "stage_item_input1_winner_from_match_id": {
             "anyOf": [
               {
@@ -883,6 +999,17 @@
             "title": "Stage Item Input2 Score",
             "type": "integer"
           },
+          "stage_item_input2_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input2 Score Half Time"
+          },
           "stage_item_input2_winner_from_match_id": {
             "anyOf": [
               {
@@ -918,6 +1045,9 @@
           "round_id",
           "stage_item_input1_score",
           "stage_item_input2_score",
+          "stage_item_input1_score_half_time",
+          "stage_item_input2_score_half_time",
+          "is_played",
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
@@ -991,6 +1121,11 @@
             "title": "Id",
             "type": "integer"
           },
+          "is_played": {
+            "default": false,
+            "title": "Is Played",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -1043,6 +1178,17 @@
             "title": "Stage Item Input1 Score",
             "type": "integer"
           },
+          "stage_item_input1_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input1 Score Half Time"
+          },
           "stage_item_input1_winner_from_match_id": {
             "anyOf": [
               {
@@ -1087,6 +1233,17 @@
             "title": "Stage Item Input2 Score",
             "type": "integer"
           },
+          "stage_item_input2_score_half_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input2 Score Half Time"
+          },
           "stage_item_input2_winner_from_match_id": {
             "anyOf": [
               {
@@ -1122,6 +1279,9 @@
           "round_id",
           "stage_item_input1_score",
           "stage_item_input2_score",
+          "stage_item_input1_score_half_time",
+          "stage_item_input2_score_half_time",
+          "is_played",
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
@@ -1711,6 +1871,16 @@
             "title": "Draws",
             "type": "integer"
           },
+          "goals_against": {
+            "default": 0,
+            "title": "Goals Against",
+            "type": "integer"
+          },
+          "goals_for": {
+            "default": 0,
+            "title": "Goals For",
+            "type": "integer"
+          },
           "id": {
             "title": "Id",
             "type": "integer"
@@ -1768,6 +1938,8 @@
           "wins",
           "draws",
           "losses",
+          "goals_for",
+          "goals_against",
           "id",
           "slot",
           "tournament_id",
@@ -1784,6 +1956,16 @@
           "draws": {
             "default": 0,
             "title": "Draws",
+            "type": "integer"
+          },
+          "goals_against": {
+            "default": 0,
+            "title": "Goals Against",
+            "type": "integer"
+          },
+          "goals_for": {
+            "default": 0,
+            "title": "Goals For",
             "type": "integer"
           },
           "id": {
@@ -1860,6 +2042,8 @@
           "wins",
           "draws",
           "losses",
+          "goals_for",
+          "goals_against",
           "id",
           "slot",
           "tournament_id",
@@ -1946,6 +2130,16 @@
             "title": "Draws",
             "type": "integer"
           },
+          "goals_against": {
+            "default": 0,
+            "title": "Goals Against",
+            "type": "integer"
+          },
+          "goals_for": {
+            "default": 0,
+            "title": "Goals For",
+            "type": "integer"
+          },
           "id": {
             "title": "Id",
             "type": "integer"
@@ -2004,6 +2198,8 @@
           "wins",
           "draws",
           "losses",
+          "goals_for",
+          "goals_against",
           "id",
           "slot",
           "tournament_id",
@@ -2926,13 +3122,6 @@
       },
       "ValidationError": {
         "properties": {
-          "ctx": {
-            "title": "Context",
-            "type": "object"
-          },
-          "input": {
-            "title": "Input"
-          },
           "loc": {
             "items": {
               "anyOf": [
@@ -2989,9 +3178,9 @@
   },
   "openapi": "3.1.0",
   "paths": {
-    "/clubs": {
+    "/api/clubs": {
       "get": {
-        "operationId": "get_clubs_clubs_get",
+        "operationId": "get_clubs_api_clubs_get",
         "responses": {
           "200": {
             "content": {
@@ -3015,7 +3204,7 @@
         ]
       },
       "post": {
-        "operationId": "create_new_club_clubs_post",
+        "operationId": "create_new_club_api_clubs_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3059,9 +3248,9 @@
         ]
       }
     },
-    "/clubs/{club_id}": {
+    "/api/clubs/{club_id}": {
       "delete": {
-        "operationId": "delete_club_clubs__club_id__delete",
+        "operationId": "delete_club_api_clubs__club_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -3106,7 +3295,7 @@
         ]
       },
       "put": {
-        "operationId": "update_club_clubs__club_id__put",
+        "operationId": "update_club_api_clubs__club_id__put",
         "parameters": [
           {
             "in": "path",
@@ -3161,9 +3350,9 @@
         ]
       }
     },
-    "/metrics": {
+    "/api/metrics": {
       "get": {
-        "operationId": "get_metrics_metrics_get",
+        "operationId": "get_metrics_api_metrics_get",
         "responses": {
           "200": {
             "content": {
@@ -3182,15 +3371,15 @@
         ]
       }
     },
-    "/ping": {
+    "/api/ping": {
       "get": {
-        "operationId": "ping_ping_get",
+        "operationId": "ping_api_ping_get",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Ping Ping Get",
+                  "title": "Response Ping Api Ping Get",
                   "type": "string"
                 }
               }
@@ -3204,14 +3393,14 @@
         ]
       }
     },
-    "/token": {
+    "/api/token": {
       "post": {
-        "operationId": "login_for_access_token_token_post",
+        "operationId": "login_for_access_token_api_token_post",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/Body_login_for_access_token_token_post"
+                "$ref": "#/components/schemas/Body_login_for_access_token_api_token_post"
               }
             }
           },
@@ -3245,9 +3434,9 @@
         ]
       }
     },
-    "/tournaments": {
+    "/api/tournaments": {
       "get": {
-        "operationId": "get_tournaments_tournaments_get",
+        "operationId": "get_tournaments_api_tournaments_get",
         "parameters": [
           {
             "in": "query",
@@ -3314,7 +3503,7 @@
         ]
       },
       "post": {
-        "operationId": "create_tournament_tournaments_post",
+        "operationId": "create_tournament_api_tournaments_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3358,9 +3547,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}": {
+    "/api/tournaments/{tournament_id}": {
       "delete": {
-        "operationId": "delete_tournament_tournaments__tournament_id__delete",
+        "operationId": "delete_tournament_api_tournaments__tournament_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -3405,7 +3594,7 @@
         ]
       },
       "get": {
-        "operationId": "get_tournament_tournaments__tournament_id__get",
+        "operationId": "get_tournament_api_tournaments__tournament_id__get",
         "parameters": [
           {
             "in": "path",
@@ -3445,7 +3634,7 @@
         ]
       },
       "put": {
-        "operationId": "update_tournament_by_id_tournaments__tournament_id__put",
+        "operationId": "update_tournament_by_id_api_tournaments__tournament_id__put",
         "parameters": [
           {
             "in": "path",
@@ -3500,9 +3689,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/available_inputs": {
+    "/api/tournaments/{tournament_id}/available_inputs": {
       "get": {
-        "operationId": "get_available_inputs_tournaments__tournament_id__available_inputs_get",
+        "operationId": "get_available_inputs_api_tournaments__tournament_id__available_inputs_get",
         "parameters": [
           {
             "in": "path",
@@ -3547,10 +3736,10 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/change-status": {
+    "/api/tournaments/{tournament_id}/change-status": {
       "post": {
         "description": "Make a tournament archived or non-archived.",
-        "operationId": "change_status_tournaments__tournament_id__change_status_post",
+        "operationId": "change_status_api_tournaments__tournament_id__change_status_post",
         "parameters": [
           {
             "in": "path",
@@ -3605,9 +3794,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/courts": {
+    "/api/tournaments/{tournament_id}/courts": {
       "get": {
-        "operationId": "get_courts_tournaments__tournament_id__courts_get",
+        "operationId": "get_courts_api_tournaments__tournament_id__courts_get",
         "parameters": [
           {
             "in": "path",
@@ -3647,7 +3836,7 @@
         ]
       },
       "post": {
-        "operationId": "create_court_tournaments__tournament_id__courts_post",
+        "operationId": "create_court_api_tournaments__tournament_id__courts_post",
         "parameters": [
           {
             "in": "path",
@@ -3702,9 +3891,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/courts/{court_id}": {
+    "/api/tournaments/{tournament_id}/courts/{court_id}": {
       "delete": {
-        "operationId": "delete_court_tournaments__tournament_id__courts__court_id__delete",
+        "operationId": "delete_court_api_tournaments__tournament_id__courts__court_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -3758,7 +3947,7 @@
         ]
       },
       "put": {
-        "operationId": "update_court_by_id_tournaments__tournament_id__courts__court_id__put",
+        "operationId": "update_court_by_id_api_tournaments__tournament_id__courts__court_id__put",
         "parameters": [
           {
             "in": "path",
@@ -3822,9 +4011,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/logo": {
+    "/api/tournaments/{tournament_id}/logo": {
       "post": {
-        "operationId": "upload_logo_tournaments__tournament_id__logo_post",
+        "operationId": "upload_logo_api_tournaments__tournament_id__logo_post",
         "parameters": [
           {
             "in": "path",
@@ -3840,7 +4029,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Body_upload_logo_tournaments__tournament_id__logo_post"
+                "$ref": "#/components/schemas/Body_upload_logo_api_tournaments__tournament_id__logo_post"
               }
             }
           }
@@ -3878,9 +4067,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/matches": {
+    "/api/tournaments/{tournament_id}/matches": {
       "post": {
-        "operationId": "create_match_tournaments__tournament_id__matches_post",
+        "operationId": "create_match_api_tournaments__tournament_id__matches_post",
         "parameters": [
           {
             "in": "path",
@@ -3935,9 +4124,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/matches/{match_id}": {
+    "/api/tournaments/{tournament_id}/matches/{match_id}": {
       "delete": {
-        "operationId": "delete_match_tournaments__tournament_id__matches__match_id__delete",
+        "operationId": "delete_match_api_tournaments__tournament_id__matches__match_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -3991,7 +4180,7 @@
         ]
       },
       "put": {
-        "operationId": "update_match_by_id_tournaments__tournament_id__matches__match_id__put",
+        "operationId": "update_match_by_id_api_tournaments__tournament_id__matches__match_id__put",
         "parameters": [
           {
             "in": "path",
@@ -4055,9 +4244,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/matches/{match_id}/reschedule": {
+    "/api/tournaments/{tournament_id}/matches/{match_id}/reschedule": {
       "post": {
-        "operationId": "reschedule_match_tournaments__tournament_id__matches__match_id__reschedule_post",
+        "operationId": "reschedule_match_api_tournaments__tournament_id__matches__match_id__reschedule_post",
         "parameters": [
           {
             "in": "path",
@@ -4121,10 +4310,10 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/next_stage_rankings": {
+    "/api/tournaments/{tournament_id}/next_stage_rankings": {
       "get": {
         "description": "Get the rankings for the stage items in this stage.",
-        "operationId": "get_next_stage_rankings_tournaments__tournament_id__next_stage_rankings_get",
+        "operationId": "get_next_stage_rankings_api_tournaments__tournament_id__next_stage_rankings_get",
         "parameters": [
           {
             "in": "path",
@@ -4169,9 +4358,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/players": {
+    "/api/tournaments/{tournament_id}/players": {
       "get": {
-        "operationId": "get_players_tournaments__tournament_id__players_get",
+        "operationId": "get_players_api_tournaments__tournament_id__players_get",
         "parameters": [
           {
             "in": "path",
@@ -4287,7 +4476,7 @@
         ]
       },
       "post": {
-        "operationId": "create_single_player_tournaments__tournament_id__players_post",
+        "operationId": "create_single_player_api_tournaments__tournament_id__players_post",
         "parameters": [
           {
             "in": "path",
@@ -4342,9 +4531,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/players/{player_id}": {
+    "/api/tournaments/{tournament_id}/players/{player_id}": {
       "delete": {
-        "operationId": "delete_player_tournaments__tournament_id__players__player_id__delete",
+        "operationId": "delete_player_api_tournaments__tournament_id__players__player_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -4398,7 +4587,7 @@
         ]
       },
       "put": {
-        "operationId": "update_player_by_id_tournaments__tournament_id__players__player_id__put",
+        "operationId": "update_player_by_id_api_tournaments__tournament_id__players__player_id__put",
         "parameters": [
           {
             "in": "path",
@@ -4462,9 +4651,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/players_multi": {
+    "/api/tournaments/{tournament_id}/players_multi": {
       "post": {
-        "operationId": "create_multiple_players_tournaments__tournament_id__players_multi_post",
+        "operationId": "create_multiple_players_api_tournaments__tournament_id__players_multi_post",
         "parameters": [
           {
             "in": "path",
@@ -4519,9 +4708,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/rankings": {
+    "/api/tournaments/{tournament_id}/rankings": {
       "get": {
-        "operationId": "get_rankings_tournaments__tournament_id__rankings_get",
+        "operationId": "get_rankings_api_tournaments__tournament_id__rankings_get",
         "parameters": [
           {
             "in": "path",
@@ -4561,7 +4750,7 @@
         ]
       },
       "post": {
-        "operationId": "create_ranking_tournaments__tournament_id__rankings_post",
+        "operationId": "create_ranking_api_tournaments__tournament_id__rankings_post",
         "parameters": [
           {
             "in": "path",
@@ -4616,9 +4805,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/rankings/{ranking_id}": {
+    "/api/tournaments/{tournament_id}/rankings/{ranking_id}": {
       "delete": {
-        "operationId": "delete_ranking_tournaments__tournament_id__rankings__ranking_id__delete",
+        "operationId": "delete_ranking_api_tournaments__tournament_id__rankings__ranking_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -4672,7 +4861,7 @@
         ]
       },
       "put": {
-        "operationId": "update_ranking_by_id_tournaments__tournament_id__rankings__ranking_id__put",
+        "operationId": "update_ranking_by_id_api_tournaments__tournament_id__rankings__ranking_id__put",
         "parameters": [
           {
             "in": "path",
@@ -4736,9 +4925,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/rounds": {
+    "/api/tournaments/{tournament_id}/rounds": {
       "post": {
-        "operationId": "create_round_tournaments__tournament_id__rounds_post",
+        "operationId": "create_round_api_tournaments__tournament_id__rounds_post",
         "parameters": [
           {
             "in": "path",
@@ -4793,9 +4982,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/rounds/{round_id}": {
+    "/api/tournaments/{tournament_id}/rounds/{round_id}": {
       "delete": {
-        "operationId": "delete_round_tournaments__tournament_id__rounds__round_id__delete",
+        "operationId": "delete_round_api_tournaments__tournament_id__rounds__round_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -4849,7 +5038,7 @@
         ]
       },
       "put": {
-        "operationId": "update_round_by_id_tournaments__tournament_id__rounds__round_id__put",
+        "operationId": "update_round_by_id_api_tournaments__tournament_id__rounds__round_id__put",
         "parameters": [
           {
             "in": "path",
@@ -4913,9 +5102,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/schedule_matches": {
+    "/api/tournaments/{tournament_id}/schedule_matches": {
       "post": {
-        "operationId": "schedule_matches_tournaments__tournament_id__schedule_matches_post",
+        "operationId": "schedule_matches_api_tournaments__tournament_id__schedule_matches_post",
         "parameters": [
           {
             "in": "path",
@@ -4960,9 +5149,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stage_items": {
+    "/api/tournaments/{tournament_id}/stage_items": {
       "post": {
-        "operationId": "create_stage_item_tournaments__tournament_id__stage_items_post",
+        "operationId": "create_stage_item_api_tournaments__tournament_id__stage_items_post",
         "parameters": [
           {
             "in": "path",
@@ -5017,9 +5206,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stage_items/{stage_item_id}": {
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}": {
       "delete": {
-        "operationId": "delete_stage_item_tournaments__tournament_id__stage_items__stage_item_id__delete",
+        "operationId": "delete_stage_item_api_tournaments__tournament_id__stage_items__stage_item_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -5073,7 +5262,7 @@
         ]
       },
       "put": {
-        "operationId": "update_stage_item_tournaments__tournament_id__stage_items__stage_item_id__put",
+        "operationId": "update_stage_item_api_tournaments__tournament_id__stage_items__stage_item_id__put",
         "parameters": [
           {
             "in": "path",
@@ -5137,9 +5326,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stage_items/{stage_item_id}/inputs/{stage_item_input_id}": {
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/inputs/{stage_item_input_id}": {
       "put": {
-        "operationId": "update_stage_item_input_tournaments__tournament_id__stage_items__stage_item_id__inputs__stage_item_input_id__put",
+        "operationId": "update_stage_item_input_api_tournaments__tournament_id__stage_items__stage_item_id__inputs__stage_item_input_id__put",
         "parameters": [
           {
             "in": "path",
@@ -5223,9 +5412,75 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stage_items/{stage_item_id}/start_next_round": {
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_rounds": {
       "post": {
-        "operationId": "start_next_round_tournaments__tournament_id__stage_items__stage_item_id__start_next_round_post",
+        "operationId": "reassign_rounds_api_tournaments__tournament_id__stage_items__stage_item_id__reassign_rounds_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tournament_id",
+            "required": true,
+            "schema": {
+              "title": "Tournament Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "stage_item_id",
+            "required": true,
+            "schema": {
+              "title": "Stage Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRoundAssignmentsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Reassign Rounds",
+        "tags": [
+          "Matches"
+        ]
+      }
+    },
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/start_next_round": {
+      "post": {
+        "operationId": "start_next_round_api_tournaments__tournament_id__stage_items__stage_item_id__start_next_round_post",
         "parameters": [
           {
             "in": "path",
@@ -5319,9 +5574,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stage_items/{stage_item_id}/upcoming_matches": {
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/upcoming_matches": {
       "get": {
-        "operationId": "get_matches_to_schedule_tournaments__tournament_id__stage_items__stage_item_id__upcoming_matches_get",
+        "operationId": "get_matches_to_schedule_api_tournaments__tournament_id__stage_items__stage_item_id__upcoming_matches_get",
         "parameters": [
           {
             "in": "path",
@@ -5415,9 +5670,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stages": {
+    "/api/tournaments/{tournament_id}/stages": {
       "get": {
-        "operationId": "get_stages_tournaments__tournament_id__stages_get",
+        "operationId": "get_stages_api_tournaments__tournament_id__stages_get",
         "parameters": [
           {
             "in": "path",
@@ -5467,7 +5722,7 @@
         ]
       },
       "post": {
-        "operationId": "create_stage_tournaments__tournament_id__stages_post",
+        "operationId": "create_stage_api_tournaments__tournament_id__stages_post",
         "parameters": [
           {
             "in": "path",
@@ -5512,9 +5767,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stages/activate": {
+    "/api/tournaments/{tournament_id}/stages/activate": {
       "post": {
-        "operationId": "activate_next_stage_tournaments__tournament_id__stages_activate_post",
+        "operationId": "activate_next_stage_api_tournaments__tournament_id__stages_activate_post",
         "parameters": [
           {
             "in": "path",
@@ -5569,9 +5824,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/stages/{stage_id}": {
+    "/api/tournaments/{tournament_id}/stages/{stage_id}": {
       "delete": {
-        "operationId": "delete_stage_tournaments__tournament_id__stages__stage_id__delete",
+        "operationId": "delete_stage_api_tournaments__tournament_id__stages__stage_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -5625,7 +5880,7 @@
         ]
       },
       "put": {
-        "operationId": "update_stage_tournaments__tournament_id__stages__stage_id__put",
+        "operationId": "update_stage_api_tournaments__tournament_id__stages__stage_id__put",
         "parameters": [
           {
             "in": "path",
@@ -5689,9 +5944,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/teams": {
+    "/api/tournaments/{tournament_id}/teams": {
       "get": {
-        "operationId": "get_teams_tournaments__tournament_id__teams_get",
+        "operationId": "get_teams_api_tournaments__tournament_id__teams_get",
         "parameters": [
           {
             "in": "path",
@@ -5792,7 +6047,7 @@
         ]
       },
       "post": {
-        "operationId": "create_team_tournaments__tournament_id__teams_post",
+        "operationId": "create_team_api_tournaments__tournament_id__teams_post",
         "parameters": [
           {
             "in": "path",
@@ -5847,9 +6102,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/teams/{team_id}": {
+    "/api/tournaments/{tournament_id}/teams/{team_id}": {
       "delete": {
-        "operationId": "delete_team_tournaments__tournament_id__teams__team_id__delete",
+        "operationId": "delete_team_api_tournaments__tournament_id__teams__team_id__delete",
         "parameters": [
           {
             "in": "path",
@@ -5903,7 +6158,7 @@
         ]
       },
       "put": {
-        "operationId": "update_team_by_id_tournaments__tournament_id__teams__team_id__put",
+        "operationId": "update_team_by_id_api_tournaments__tournament_id__teams__team_id__put",
         "parameters": [
           {
             "in": "path",
@@ -5967,9 +6222,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/teams/{team_id}/logo": {
+    "/api/tournaments/{tournament_id}/teams/{team_id}/logo": {
       "post": {
-        "operationId": "update_team_logo_tournaments__tournament_id__teams__team_id__logo_post",
+        "operationId": "update_team_logo_api_tournaments__tournament_id__teams__team_id__logo_post",
         "parameters": [
           {
             "in": "path",
@@ -5994,7 +6249,7 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/Body_update_team_logo_tournaments__tournament_id__teams__team_id__logo_post"
+                "$ref": "#/components/schemas/Body_update_team_logo_api_tournaments__tournament_id__teams__team_id__logo_post"
               }
             }
           }
@@ -6032,9 +6287,9 @@
         ]
       }
     },
-    "/tournaments/{tournament_id}/teams_multi": {
+    "/api/tournaments/{tournament_id}/teams_multi": {
       "post": {
-        "operationId": "create_multiple_teams_tournaments__tournament_id__teams_multi_post",
+        "operationId": "create_multiple_teams_api_tournaments__tournament_id__teams_multi_post",
         "parameters": [
           {
             "in": "path",
@@ -6089,9 +6344,9 @@
         ]
       }
     },
-    "/users/me": {
+    "/api/users/me": {
       "get": {
-        "operationId": "get_user_users_me_get",
+        "operationId": "get_user_api_users_me_get",
         "responses": {
           "200": {
             "content": {
@@ -6115,9 +6370,9 @@
         ]
       }
     },
-    "/users/register": {
+    "/api/users/register": {
       "post": {
-        "operationId": "register_user_users_register_post",
+        "operationId": "register_user_api_users_register_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6156,9 +6411,9 @@
         ]
       }
     },
-    "/users/register_demo": {
+    "/api/users/register_demo": {
       "post": {
-        "operationId": "register_demo_user_users_register_demo_post",
+        "operationId": "register_demo_user_api_users_register_demo_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6197,9 +6452,9 @@
         ]
       }
     },
-    "/users/{user_id}": {
+    "/api/users/{user_id}": {
       "get": {
-        "operationId": "get_me_users__user_id__get",
+        "operationId": "get_me_api_users__user_id__get",
         "parameters": [
           {
             "in": "path",
@@ -6244,7 +6499,7 @@
         ]
       },
       "put": {
-        "operationId": "update_user_details_users__user_id__put",
+        "operationId": "update_user_details_api_users__user_id__put",
         "parameters": [
           {
             "in": "path",
@@ -6299,9 +6554,9 @@
         ]
       }
     },
-    "/users/{user_id}/password": {
+    "/api/users/{user_id}/password": {
       "put": {
-        "operationId": "put_user_password_users__user_id__password_put",
+        "operationId": "put_user_password_api_users__user_id__password_put",
         "parameters": [
           {
             "in": "path",
@@ -6354,6 +6609,43 @@
         "tags": [
           "Users"
         ]
+      }
+    },
+    "/{full_path}": {
+      "get": {
+        "operationId": "frontend__full_path__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "full_path",
+            "required": true,
+            "schema": {
+              "title": "Full Path",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Frontend"
       }
     }
   }

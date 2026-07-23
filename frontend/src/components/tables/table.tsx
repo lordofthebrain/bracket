@@ -21,6 +21,8 @@ export interface ThProps {
   state: TableState;
   field: string;
   visibleFrom?: string;
+  align?: 'left' | 'right';
+  width?: string;
 }
 
 export const setSorting = (state: TableState, newSortField: string) => {
@@ -65,23 +67,30 @@ export function sortTableEntries(r1: any, r2: any, tableState: TableState) {
   return (tableState.reversed ? order : !order) ? 1 : -1;
 }
 
-export function getSortIcon(sorted: boolean, reversed: boolean) {
-  if (!sorted) return <MdSort />;
-  if (reversed) return <HiSortDescending />;
-  return <HiSortAscending />;
+export function getSortIcon(sorted: boolean, reversed: boolean, size: number = 14) {
+  if (!sorted) return <MdSort size={size} />;
+  if (reversed) return <HiSortDescending size={size} />;
+  return <HiSortAscending size={size} />;
 }
 
-export function ThSortable({ children, field, visibleFrom, state }: ThProps) {
+export function ThSortable({ children, field, visibleFrom, state, align, width }: ThProps) {
   const sorted = state.sortField === field;
   const onSort = () => setSorting(state, field);
   return (
-    <Table.Th className={classes.th} visibleFrom={visibleFrom}>
+    <Table.Th className={classes.th} visibleFrom={visibleFrom} style={{ width }}>
       <UnstyledButton onClick={onSort} className={classes.control} style={{ fontSize: 'inherit' }}>
-        <Group justify="apart">
-          <Text fw={800} inherit ml="0.5rem" my="0.25rem">
+        <Group
+          justify={align === 'right' ? 'flex-end' : 'apart'}
+          pr={align === 'right' ? 'md' : 0}
+          gap={4}
+          wrap="nowrap"
+        >
+          <Text fw={800} inherit ml={align === 'right' ? 0 : '0.5rem'} my="0.25rem">
             {children}
           </Text>
-          <Center className={classes.icon}>{getSortIcon(sorted, state.reversed)}</Center>
+          {sorted && (
+            <Center className={classes.icon}>{getSortIcon(sorted, state.reversed)}</Center>
+          )}
         </Group>
       </UnstyledButton>
     </Table.Th>
@@ -91,14 +100,22 @@ export function ThSortable({ children, field, visibleFrom, state }: ThProps) {
 export function ThNotSortable({
   children,
   visibleFrom,
+  align,
+  width,
 }: {
   children: React.ReactNode;
   visibleFrom?: string;
+  align?: 'left' | 'right';
+  width?: string;
 }) {
   return (
-    <Table.Th className={classes.th} visibleFrom={visibleFrom}>
-      <Group justify="apart" ml="20px">
-        <Text fw={800} inherit>
+    <Table.Th className={classes.th} visibleFrom={visibleFrom} style={{ width }}>
+      <Group
+        justify={align === 'right' ? 'flex-end' : 'apart'}
+        ml={align === 'right' ? 0 : '20px'}
+        pr={align === 'right' ? 'md' : 0}
+      >
+        <Text fw={800} inherit my="0.25rem">
           {children}
         </Text>
       </Group>
