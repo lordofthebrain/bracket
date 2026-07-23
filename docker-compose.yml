@@ -2,13 +2,10 @@ networks:
   bracket_lan:
     driver: bridge
 
-volumes:
-  bracket_pg_data:
-  bracket_static_data:
-
 services:
   bracket:
     container_name: bracket
+    user: "${UID}:${GID}"
     depends_on:
       - postgres
     environment:
@@ -17,23 +14,40 @@ services:
       PG_DSN: postgresql://bracket_dev:bracket_dev@postgres:5432/bracket_dev
       SERVE_FRONTEND: true
       API_PREFIX: '/api'
+      HOME: /tmp
     image: ghcr.io/evroon/bracket
+    networks:
+      - bracket_lan
+    restart: unless-stopped
+    volumes:
+      - ./backend/static:/app/static
+      - ./backend/bracket:/app/bracket
+      - ./backend/alembic:/app/alembic
+      - ./backend/openapi:/app/openapi
+      - ./frontend:/app/frontend
+
+  frontend-dev:
+    container_name: bracket-frontend-dev
+    working_dir: /app
+    image: node:25-alpine
+    environment:
+      VITE_API_BASE_URL: http://localhost:8400/api
+    command: sh -c "npm install -g pnpm && (pnpm install || true) && pnpm approve-builds --all && pnpm install && pnpm dev --host 0.0.0.0 --port 8400"
     networks:
       - bracket_lan
     ports:
       - 8400:8400
-    restart: unless-stopped
     volumes:
-      - bracket_static_data:/app/static
+      - ./frontend:/app
 
   postgres:
     environment:
       POSTGRES_DB: bracket_dev
       POSTGRES_PASSWORD: bracket_dev
       POSTGRES_USER: bracket_dev
-    image: postgres
+    image: postgres:18.4
     networks:
       - bracket_lan
     restart: always
     volumes:
-      - bracket_pg_data:/var/lib/postgresql
+      - ./data/postgres:/var/lib/postgresql

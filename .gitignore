@@ -17,3 +17,5 @@ backend/static
 backend/frontend-dist
 
 /process-compose.yml
+/data
+*.sql
