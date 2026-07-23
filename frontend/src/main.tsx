@@ -1,4 +1,11 @@
-import { Autocomplete, MantineProvider, MultiSelect, Select, TagsInput, createTheme } from '@mantine/core';
+import {
+  Autocomplete,
+  MantineProvider,
+  MultiSelect,
+  Select,
+  TagsInput,
+  createTheme,
+} from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';

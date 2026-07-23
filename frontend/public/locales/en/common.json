@@ -235,6 +235,7 @@
     "bulk_round_assignment_title": "Assign matches to rounds",
     "validate_and_save_button": "Validate & save",
     "round_robin_description": "Each team plays every other team once.",
+    "double_round_robin_checkbox_label": "Double round-robin",
     "save_button": "Save",
     "save_players_button": "Save players",
     "save_ranking_button": "Save Ranking",

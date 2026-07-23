@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   Divider,
   Grid,
   Image,
@@ -161,6 +162,20 @@ function TeamCountInput({ form }: { form: UseFormReturnType<any> }) {
   return <TeamCountInputRoundRobin form={form} />;
 }
 
+function DoubleRoundRobinCheckbox({ form }: { form: UseFormReturnType<any> }) {
+  const { t } = useTranslation();
+  if (form.values.type !== 'ROUND_ROBIN') {
+    return null;
+  }
+  return (
+    <Checkbox
+      mt="1rem"
+      label={t('double_round_robin_checkbox_label')}
+      {...form.getInputProps('double_round_robin', { type: 'checkbox' })}
+    />
+  );
+}
+
 function getTeamCount(values: any) {
   return Number(
     values.type === 'SINGLE_ELIMINATION'
@@ -173,6 +188,7 @@ interface FormValues {
   type: 'ROUND_ROBIN' | 'SWISS' | 'SINGLE_ELIMINATION';
   team_count_round_robin: number;
   team_count_elimination: number;
+  double_round_robin: boolean;
 }
 export function CreateStageItemModal({
   tournament,
@@ -189,7 +205,12 @@ export function CreateStageItemModal({
   const [opened, setOpened] = useState(false);
 
   const form = useForm<FormValues>({
-    initialValues: { type: 'ROUND_ROBIN', team_count_round_robin: 4, team_count_elimination: 2 },
+    initialValues: {
+      type: 'ROUND_ROBIN',
+      team_count_round_robin: 4,
+      team_count_elimination: 2,
+      double_round_robin: false,
+    },
     validate: {
       team_count_round_robin: (value) => (value >= 2 ? null : t('at_least_two_team_validation')),
       team_count_elimination: (value) => (value >= 2 ? null : t('at_least_two_team_validation')),
@@ -214,7 +235,13 @@ export function CreateStageItemModal({
       >
         <form
           onSubmit={form.onSubmit(async (values) => {
-            await createStageItem(tournament.id, stage.id, values.type, getTeamCount(values));
+            await createStageItem(
+              tournament.id,
+              stage.id,
+              values.type,
+              getTeamCount(values),
+              values.double_round_robin
+            );
             await swrStagesResponse.mutate();
             await swrAvailableInputsResponse.mutate();
             setOpened(false);
@@ -229,6 +256,7 @@ export function CreateStageItemModal({
           />
           <Divider mt="1rem" />
           <TeamCountInput form={form} />
+          <DoubleRoundRobinCheckbox form={form} />
 
           <Button fullWidth mt="1.5rem" color="green" type="submit">
             {t('create_stage_item_button')}

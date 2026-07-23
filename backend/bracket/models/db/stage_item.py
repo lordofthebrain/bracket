@@ -27,6 +27,7 @@ class StageItemInsertable(BaseModelORM):
     type: StageType
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
+    double_round_robin: bool = False
 
 
 class StageItem(StageItemInsertable):
@@ -48,6 +49,7 @@ class StageItemCreateBody(BaseModelORM):
     type: StageType
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
+    double_round_robin: bool = False
 
     def get_name_or_default_name(self) -> str:
         return (

@@ -39,10 +39,15 @@ async def build_round_robin_stage_item(
     tournament_id: TournamentId, stage_item: StageItemWithRounds
 ) -> None:
     matches = get_round_robin_combinations(stage_item.team_count)
+    single_leg_round_count = len(matches)
     tournament = await sql_get_tournament(tournament_id)
 
     for i, round_ in enumerate(stage_item.rounds):
-        for team_1_id, team_2_id in matches[i]:
+        is_return_leg = i >= single_leg_round_count
+        for team_1_id, team_2_id in matches[i % single_leg_round_count]:
+            if is_return_leg:
+                team_1_id, team_2_id = team_2_id, team_1_id
+
             if team_1_id < stage_item.team_count and team_2_id < stage_item.team_count:
                 stage_item_1, stage_item_2 = (
                     stage_item.inputs[team_1_id],
@@ -64,10 +69,13 @@ async def build_round_robin_stage_item(
                 await sql_create_match(match)
 
 
-def get_number_of_rounds_to_create_round_robin(team_count: int) -> int:
+def get_number_of_rounds_to_create_round_robin(
+    team_count: int, double_round_robin: bool = False
+) -> int:
     if team_count < 1:
         return 0
 
     # concurrency = team_count // 2
     # number_of_games = (team_count - 1) * math.floor(team_count / 2)
-    return team_count - 1 if team_count % 2 == 0 else team_count
+    rounds = team_count - 1 if team_count % 2 == 0 else team_count
+    return rounds * 2 if double_round_robin else rounds

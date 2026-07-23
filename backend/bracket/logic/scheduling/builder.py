@@ -31,7 +31,9 @@ async def create_rounds_for_new_stage_item(
     rounds_count: int
     match stage_item.type:
         case StageType.ROUND_ROBIN:
-            rounds_count = get_number_of_rounds_to_create_round_robin(stage_item.team_count)
+            rounds_count = get_number_of_rounds_to_create_round_robin(
+                stage_item.team_count, stage_item.double_round_robin
+            )
         case StageType.SINGLE_ELIMINATION:
             rounds_count = get_number_of_rounds_to_create_single_elimination(stage_item.team_count)
         case StageType.SWISS:

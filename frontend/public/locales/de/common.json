@@ -235,6 +235,7 @@
     "bulk_round_assignment_title": "Matches den Runden zuordnen",
     "validate_and_save_button": "Validieren & Speichern",
     "round_robin_description": "Jedes Team spiel einmal gegen jedes andere Team.",
+    "double_round_robin_checkbox_label": "Mit Rückrunde",
     "save_button": "Speichern",
     "save_players_button": "Spieler speichern",
     "save_ranking_button": "Rangliste speichern",

@@ -15,8 +15,8 @@ async def sql_create_stage_item(
     tournament_id: TournamentId, stage_item: StageItemCreateBody
 ) -> StageItem:
     query = """
-            INSERT INTO stage_items (type, stage_id, name, team_count, ranking_id)
-            VALUES (:stage_item_type, :stage_id, :name, :team_count, :ranking_id)
+            INSERT INTO stage_items (type, stage_id, name, team_count, ranking_id, double_round_robin)
+            VALUES (:stage_item_type, :stage_id, :name, :team_count, :ranking_id, :double_round_robin)
             RETURNING *
             """
     result = await database.fetch_one(
@@ -29,6 +29,7 @@ async def sql_create_stage_item(
             "ranking_id": stage_item.ranking_id
             if stage_item.ranking_id
             else (await get_default_rankings_in_tournament(tournament_id)).id,
+            "double_round_robin": stage_item.double_round_robin,
         },
     )
     if result is None:

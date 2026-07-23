@@ -252,9 +252,7 @@ export function StandingsTableForStageItem({
       <Table.Tr
         key={team_with_input.id}
         style={
-          zone != null
-            ? { borderLeft: `4px solid ${getZoneColorCssVar(zone.color)}` }
-            : undefined
+          zone != null ? { borderLeft: `4px solid ${getZoneColorCssVar(zone.color)}` } : undefined
         }
       >
         <Table.Td style={{ width: '2rem' }}>{isTiedWithPrevious ? '' : index + 1}</Table.Td>

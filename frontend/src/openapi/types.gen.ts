@@ -1007,6 +1007,10 @@ export type StageItemActivateNextBody = {
  */
 export type StageItemCreateBody = {
   /**
+   * Double Round Robin
+   */
+  double_round_robin: boolean;
+  /**
    * Name
    */
   name: string | null;
@@ -1316,6 +1320,10 @@ export type StageItemWithRounds = {
    * Created
    */
   created: string;
+  /**
+   * Double Round Robin
+   */
+  double_round_robin: boolean;
   /**
    * Id
    */

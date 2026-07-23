@@ -1895,6 +1895,11 @@
       },
       "StageItemCreateBody": {
         "properties": {
+          "double_round_robin": {
+            "default": false,
+            "title": "Double Round Robin",
+            "type": "boolean"
+          },
           "name": {
             "anyOf": [
               {
@@ -1936,7 +1941,8 @@
           "name",
           "type",
           "team_count",
-          "ranking_id"
+          "ranking_id",
+          "double_round_robin"
         ],
         "title": "StageItemCreateBody",
         "type": "object"
@@ -2384,6 +2390,11 @@
             "title": "Created",
             "type": "string"
           },
+          "double_round_robin": {
+            "default": false,
+            "title": "Double Round Robin",
+            "type": "boolean"
+          },
           "id": {
             "title": "Id",
             "type": "integer"
@@ -2452,6 +2463,7 @@
           "type",
           "team_count",
           "ranking_id",
+          "double_round_robin",
           "id",
           "rounds",
           "inputs",

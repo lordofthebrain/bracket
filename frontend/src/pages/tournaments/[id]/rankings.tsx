@@ -34,15 +34,7 @@ import TournamentLayout from '@pages/tournaments/_tournament_layout';
 import { getRankings, getTournamentById } from '@services/adapter';
 import { createRanking, deleteRanking, editRanking } from '@services/ranking';
 
-const STANDINGS_ZONE_COLOR_OPTIONS = [
-  'green',
-  'blue',
-  'yellow',
-  'orange',
-  'red',
-  'grape',
-  'gray',
-];
+const STANDINGS_ZONE_COLOR_OPTIONS = ['green', 'blue', 'yellow', 'orange', 'red', 'grape', 'gray'];
 
 function ColorSelect({ value, onChange }: { value: string; onChange: (color: string) => void }) {
   return (
@@ -155,11 +147,7 @@ function RankingNameModal({
 
   return (
     <>
-      <Modal
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title={t('edit_ranking_name_title')}
-      >
+      <Modal opened={opened} onClose={() => setOpened(false)} title={t('edit_ranking_name_title')}>
         <form
           onSubmit={(event) => {
             // Stop this submit from bubbling up to the outer ranking form: Mantine's
