@@ -1,14 +1,50 @@
-import { Group, Image, Select, Table, Text } from '@mantine/core';
+import { Badge, Group, Image, Select, Table, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PlayerScore } from '@components/info/player_score';
 import { EmptyTableInfo } from '@components/no_content/empty_table_info';
 import { formatStageItemInput } from '@components/utils/stage_item_input';
-import { MatchWithDetails, StageItemInputFinal, StageItemWithRounds } from '@openapi';
+import { MatchWithDetails, RankingZone, StageItemInputFinal, StageItemWithRounds } from '@openapi';
 import { getBaseApiUrl, getRankings } from '@services/adapter';
 import { ThSortable, getTableState, sortTableEntries } from './table';
 import TableLayoutLarge from './table_large';
+
+export function getZoneColorCssVar(color: string): string {
+  // Mantine's yellow-6 skews towards orange/amber, so use a lighter shade for it.
+  const shade = color === 'yellow' ? 4 : 6;
+  return `var(--mantine-color-${color}-${shade})`;
+}
+
+function getZoneForIndex(zones: RankingZone[], index: number, total: number): RankingZone | null {
+  let topOffset = 0;
+  for (const zone of zones.filter((z) => z.direction === 'top')) {
+    if (index >= topOffset && index < topOffset + zone.count) return zone;
+    topOffset += zone.count;
+  }
+
+  let bottomOffset = 0;
+  for (const zone of zones.filter((z) => z.direction === 'bottom')) {
+    if (index >= total - bottomOffset - zone.count && index < total - bottomOffset) return zone;
+    bottomOffset += zone.count;
+  }
+
+  return null;
+}
+
+function StandingsZonesLegend({ zones }: { zones: RankingZone[] }) {
+  if (zones.length < 1) return null;
+  return (
+    <Group gap="xs" mb="sm">
+      {zones.map((zone, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <Badge key={index} color={zone.color} variant="light">
+          {zone.label}
+        </Badge>
+      ))}
+    </Group>
+  );
+}
 
 function TeamLogo({ logoPath }: { logoPath: string | null | undefined }) {
   if (logoPath == null) return null;
@@ -208,8 +244,19 @@ export function StandingsTableForStageItem({
       previous.goal_difference === team_with_input.goal_difference &&
       previous.goals_for === team_with_input.goals_for;
 
+    const zone = ranking?.standings_zones
+      ? getZoneForIndex(ranking.standings_zones, index, sortedTeams.length)
+      : null;
+
     return (
-      <Table.Tr key={team_with_input.id}>
+      <Table.Tr
+        key={team_with_input.id}
+        style={
+          zone != null
+            ? { borderLeft: `4px solid ${getZoneColorCssVar(zone.color)}` }
+            : undefined
+        }
+      >
         <Table.Td style={{ width: '2rem' }}>{isTiedWithPrevious ? '' : index + 1}</Table.Td>
         <Table.Td style={{ width: '20rem' }}>
           <Group gap="xs" wrap="nowrap">
@@ -328,7 +375,14 @@ export function StandingsTableForStageItem({
           style={{ maxWidth: '20rem' }}
         />
       )}
-      {rows.length < 1 ? <EmptyTableInfo entity_name={t('teams_title')} /> : table}
+      {rows.length < 1 ? (
+        <EmptyTableInfo entity_name={t('teams_title')} />
+      ) : (
+        <>
+          <StandingsZonesLegend zones={ranking?.standings_zones ?? []} />
+          {table}
+        </>
+      )}
     </>
   );
 }

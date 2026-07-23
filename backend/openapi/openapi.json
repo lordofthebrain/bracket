@@ -1481,9 +1481,22 @@
             "title": "Loss Points",
             "type": "string"
           },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
           "position": {
             "title": "Position",
             "type": "integer"
+          },
+          "standings_zones": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RankingZone"
+            },
+            "title": "Standings Zones",
+            "type": "array"
           },
           "tournament_id": {
             "title": "Tournament Id",
@@ -1497,11 +1510,13 @@
         },
         "required": [
           "tournament_id",
+          "name",
           "win_points",
           "draw_points",
           "loss_points",
           "add_score_points",
           "position",
+          "standings_zones",
           "id",
           "created"
         ],
@@ -1538,9 +1553,22 @@
             ],
             "title": "Loss Points"
           },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
           "position": {
             "title": "Position",
             "type": "integer"
+          },
+          "standings_zones": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RankingZone"
+            },
+            "title": "Standings Zones",
+            "type": "array"
           },
           "win_points": {
             "anyOf": [
@@ -1556,11 +1584,13 @@
           }
         },
         "required": [
+          "name",
           "win_points",
           "draw_points",
           "loss_points",
           "add_score_points",
-          "position"
+          "position",
+          "standings_zones"
         ],
         "title": "RankingBody",
         "type": "object"
@@ -1598,6 +1628,19 @@
             "default": "0.0",
             "title": "Loss Points"
           },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "standings_zones": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RankingZone"
+            },
+            "title": "Standings Zones",
+            "type": "array"
+          },
           "win_points": {
             "anyOf": [
               {
@@ -1613,12 +1656,46 @@
           }
         },
         "required": [
+          "name",
           "win_points",
           "draw_points",
           "loss_points",
-          "add_score_points"
+          "add_score_points",
+          "standings_zones"
         ],
         "title": "RankingCreateBody",
+        "type": "object"
+      },
+      "RankingZone": {
+        "properties": {
+          "color": {
+            "title": "Color",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "direction": {
+            "enum": [
+              "top",
+              "bottom"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "color",
+          "direction",
+          "count"
+        ],
+        "title": "RankingZone",
         "type": "object"
       },
       "RankingsResponse": {

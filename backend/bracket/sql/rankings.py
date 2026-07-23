@@ -49,10 +49,12 @@ async def sql_update_ranking(
     query = """
         UPDATE rankings
         SET position = :position,
+            name = :name,
             win_points = :win_points,
             draw_points = :draw_points,
             loss_points = :loss_points,
-            add_score_points = :add_score_points
+            add_score_points = :add_score_points,
+            standings_zones = :standings_zones
         WHERE rankings.tournament_id = :tournament_id
         AND rankings.id = :ranking_id
         """
@@ -61,11 +63,13 @@ async def sql_update_ranking(
         values={
             "ranking_id": ranking_id,
             "tournament_id": tournament_id,
+            "name": ranking_body.name,
             "win_points": float(ranking_body.win_points),
             "draw_points": float(ranking_body.draw_points),
             "loss_points": float(ranking_body.loss_points),
             "add_score_points": ranking_body.add_score_points,
             "position": ranking_body.position,
+            "standings_zones": [zone.model_dump() for zone in ranking_body.standings_zones],
         },
     )
     return [Ranking.model_validate(dict(x._mapping)) for x in result]
@@ -83,14 +87,16 @@ async def sql_create_ranking(
 ) -> None:
     query = """
         INSERT INTO rankings
-        (tournament_id, position, win_points, draw_points, loss_points, add_score_points)
+        (tournament_id, position, name, win_points, draw_points, loss_points, add_score_points, standings_zones)
         VALUES (
             :tournament_id,
             :position,
+            :name,
             :win_points,
             :draw_points,
             :loss_points,
-            :add_score_points
+            :add_score_points,
+            :standings_zones
         )
         """
 
@@ -98,10 +104,12 @@ async def sql_create_ranking(
         query=query,
         values={
             "tournament_id": tournament_id,
+            "name": ranking_body.name,
             "win_points": float(ranking_body.win_points),
             "draw_points": float(ranking_body.draw_points),
             "loss_points": float(ranking_body.loss_points),
             "add_score_points": ranking_body.add_score_points,
             "position": position,
+            "standings_zones": [zone.model_dump() for zone in ranking_body.standings_zones],
         },
     )

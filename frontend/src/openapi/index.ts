@@ -299,6 +299,7 @@ export type {
   Ranking,
   RankingBody,
   RankingCreateBody,
+  RankingZone,
   RankingsResponse,
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostData,
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostError,

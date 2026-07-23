@@ -779,9 +779,17 @@ export type Ranking = {
    */
   loss_points: string;
   /**
+   * Name
+   */
+  name: string;
+  /**
    * Position
    */
   position: number;
+  /**
+   * Standings Zones
+   */
+  standings_zones: Array<RankingZone>;
   /**
    * Tournament Id
    */
@@ -809,9 +817,17 @@ export type RankingBody = {
    */
   loss_points: number | string;
   /**
+   * Name
+   */
+  name: string;
+  /**
    * Position
    */
   position: number;
+  /**
+   * Standings Zones
+   */
+  standings_zones: Array<RankingZone>;
   /**
    * Win Points
    */
@@ -835,9 +851,39 @@ export type RankingCreateBody = {
    */
   loss_points: number | string;
   /**
+   * Name
+   */
+  name: string;
+  /**
+   * Standings Zones
+   */
+  standings_zones: Array<RankingZone>;
+  /**
    * Win Points
    */
   win_points: number | string;
+};
+
+/**
+ * RankingZone
+ */
+export type RankingZone = {
+  /**
+   * Color
+   */
+  color: string;
+  /**
+   * Count
+   */
+  count: number;
+  /**
+   * Direction
+   */
+  direction: 'top' | 'bottom';
+  /**
+   * Label
+   */
+  label: string;
 };
 
 /**

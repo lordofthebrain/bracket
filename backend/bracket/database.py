@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import sqlalchemy
@@ -20,6 +21,12 @@ async def asyncpg_init(connection: Any) -> None:
             decoder=datetime_decoder,
             schema="pg_catalog",
         )
+    await connection.set_type_codec(
+        "jsonb",
+        encoder=json.dumps,
+        decoder=json.loads,
+        schema="pg_catalog",
+    )
 
 
 database = Database(str(config.pg_dsn), init=asyncpg_init)
