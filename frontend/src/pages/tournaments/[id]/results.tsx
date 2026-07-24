@@ -5,6 +5,7 @@ import {
   Grid,
   Group,
   Image,
+  Loader,
   Select,
   Stack,
   Text,
@@ -13,7 +14,7 @@ import {
 } from '@mantine/core';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import { IconAlertCircle } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
@@ -145,12 +146,13 @@ function Schedule({
   roundFilter: string | null;
 }) {
   const matches: any[] = Object.values(matchesLookup);
-  const sortedMatches = matches
-    .filter((m1: any) => m1.match.start_time != null)
-    .filter(
-      (m1: any) => roundFilter == null || roundFilter === 'all' || `${m1.round.id}` === roundFilter
-    )
-    .sort((m1: any, m2: any) => m1.round.id - m2.round.id);
+  const sortedMatches =
+    roundFilter == null
+      ? []
+      : matches
+          .filter((m1: any) => m1.match.start_time != null)
+          .filter((m1: any) => `${m1.round.id}` === roundFilter)
+          .sort((m1: any, m2: any) => m1.round.id - m2.round.id);
 
   const rows: React.JSX.Element[] = [];
   let lastRoundId: number | null = null;
@@ -209,7 +211,7 @@ function Schedule({
 export default function ResultsPage() {
   const [modalOpened, modalSetOpened] = useState(false);
   const [match, setMatch] = useState<MatchWithDetails | null>(null);
-  const [roundFilter, setRoundFilter] = useState<string | null>('all');
+  const [roundFilter, setRoundFilter] = useState<string | null>(null);
 
   const { t } = useTranslation();
   const { tournamentData } = getTournamentIdFromRouter();
@@ -225,12 +227,23 @@ export default function ResultsPage() {
   Object.values(matchesLookup).forEach((data: any) => {
     roundOptionsMap.set(data.round.id, data.round.name);
   });
-  const roundOptions = [
-    { value: 'all', label: t('round_filter_placeholder') },
-    ...Array.from(roundOptionsMap.entries())
-      .sort(([id1], [id2]) => id1 - id2)
-      .map(([id, name]) => ({ value: `${id}`, label: name })),
-  ];
+  const sortedRoundIds = Array.from(roundOptionsMap.keys()).sort((id1, id2) => id1 - id2);
+  const roundOptions = sortedRoundIds.map((id) => ({
+    value: `${id}`,
+    label: roundOptionsMap.get(id) as string,
+  }));
+
+  useEffect(() => {
+    if (roundFilter != null || sortedRoundIds.length < 1) return;
+
+    const unplayedRoundId = sortedRoundIds.find((id) =>
+      Object.values(matchesLookup).some(
+        (data: any) => data.round.id === id && !data.match.is_played
+      )
+    );
+    setRoundFilter(`${unplayedRoundId ?? sortedRoundIds[sortedRoundIds.length - 1]}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortedRoundIds.join(','), roundFilter]);
 
   if (!responseIsValid(swrStagesResponse)) return null;
   if (!responseIsValid(swrCourtsResponse)) return null;
@@ -270,13 +283,17 @@ export default function ResultsPage() {
         />
       </Center>
       <Center mt="1rem">
-        <Schedule
-          t={t}
-          matchesLookup={matchesLookup}
-          stageItemsLookup={stageItemsLookup}
-          openMatchModal={openMatchModal}
-          roundFilter={roundFilter}
-        />
+        {roundFilter == null ? (
+          <Loader />
+        ) : (
+          <Schedule
+            t={t}
+            matchesLookup={matchesLookup}
+            stageItemsLookup={stageItemsLookup}
+            openMatchModal={openMatchModal}
+            roundFilter={roundFilter}
+          />
+        )}
       </Center>
     </TournamentLayout>
   );
