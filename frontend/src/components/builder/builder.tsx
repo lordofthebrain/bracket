@@ -1,12 +1,15 @@
 import {
   ActionIcon,
+  Alert,
   Badge,
+  Button,
   Card,
   CheckIcon,
   Combobox,
   Group,
   InputBase,
   Menu,
+  Modal,
   Stack,
   Text,
   Tooltip,
@@ -16,7 +19,7 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { BiCheck } from '@react-icons/all-files/bi/BiCheck';
-import { IconDots, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconAlertCircle, IconDots, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiSolidWrench } from 'react-icons/bi';
@@ -258,6 +261,7 @@ function StageItemRow({
 }) {
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
+  const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
 
   const inputs = stageItem.inputs
     .sort((i1, i2) => (i1.slot > i2.slot ? 1 : -1))
@@ -310,48 +314,55 @@ function StageItemRow({
                 </ActionIcon>
               </Tooltip>
             ) : null}
-            <Menu withinPortal position="bottom-end" shadow="sm">
-              <Menu.Target>
-                <ActionIcon variant="transparent" color="gray">
-                  <IconDots size="1.25rem" />
-                </ActionIcon>
-              </Menu.Target>
-
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<IconPencil size="1.5rem" />}
-                  onClick={() => {
-                    setOpened(true);
-                  }}
-                >
-                  {t('edit_stage_item_label')}
-                </Menu.Item>
-                {stageItem.type === 'SWISS' || stageItem.type === 'ROUND_ROBIN' ? (
-                  <Menu.Item
-                    leftSection={<BiSolidWrench size="1.5rem" />}
-                    component={PreloadLink}
-                    href={`/tournaments/${tournament.id}/stages/swiss/${stageItem.id}`}
-                  >
-                    {t('manage_rounds_button')}
-                  </Menu.Item>
-                ) : null}
-                <Menu.Item
-                  leftSection={<IconTrash size="1.5rem" />}
-                  onClick={async () => {
-                    await deleteStageItem(tournament.id, stageItem.id);
-                    await swrStagesResponse.mutate();
-                    await swrAvailableInputsResponse.mutate();
-                  }}
-                  color="red"
-                >
-                  {t('delete_button')}
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Tooltip label={t('edit_stage_item_label')}>
+              <ActionIcon
+                variant="transparent"
+                color="gray"
+                onClick={() => {
+                  setOpened(true);
+                }}
+              >
+                <IconPencil size="1.25rem" />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label={t('delete_button')}>
+              <ActionIcon
+                variant="transparent"
+                color="red.6"
+                onClick={() => setDeleteConfirmOpened(true)}
+              >
+                <IconTrash size="1.25rem" />
+              </ActionIcon>
+            </Tooltip>
           </Group>
         </Group>
       </Card.Section>
       {inputs}
+      <Modal
+        opened={deleteConfirmOpened}
+        onClose={() => setDeleteConfirmOpened(false)}
+        title={t('delete_modal_title', { type: t('stage_item_title') })}
+      >
+        <Alert icon={<IconAlertCircle size={16} />} color="red" radius="lg">
+          {t('delete_modal_description', { name: stageItem.name })}
+        </Alert>
+        <Group justify="flex-end" mt="lg">
+          <Button variant="default" onClick={() => setDeleteConfirmOpened(false)}>
+            {t('cancel_button')}
+          </Button>
+          <Button
+            color="red"
+            onClick={async () => {
+              await deleteStageItem(tournament.id, stageItem.id);
+              await swrStagesResponse.mutate();
+              await swrAvailableInputsResponse.mutate();
+              setDeleteConfirmOpened(false);
+            }}
+          >
+            {t('delete_button')}
+          </Button>
+        </Group>
+      </Modal>
     </Card>
   );
 }

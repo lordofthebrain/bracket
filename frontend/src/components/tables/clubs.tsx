@@ -50,10 +50,10 @@ export default function ClubsTable({
       <Modal
         opened={clubPendingDeletion != null}
         onClose={() => setClubPendingDeletion(null)}
-        title={t('delete_club_modal_title')}
+        title={t('delete_modal_title', { type: t('club_select_label') })}
       >
         <Alert icon={<IconAlertCircle size={16} />} color="red" radius="lg">
-          {t('delete_club_modal_description', { name: clubPendingDeletion?.name })}
+          {t('delete_modal_description', { name: clubPendingDeletion?.name })}
         </Alert>
         <Group justify="flex-end" mt="lg">
           <Button variant="default" onClick={() => setClubPendingDeletion(null)}>
