@@ -18,7 +18,6 @@ services:
     image: ghcr.io/evroon/bracket
     networks:
       - bracket_lan
-    restart: unless-stopped
     volumes:
       - ./backend/static:/app/static
       - ./backend/bracket:/app/bracket
@@ -48,6 +47,5 @@ services:
     image: postgres:18.4
     networks:
       - bracket_lan
-    restart: always
     volumes:
       - ./data/postgres:/var/lib/postgresql
