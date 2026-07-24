@@ -8,7 +8,6 @@ import {
   Combobox,
   Group,
   InputBase,
-  Menu,
   Modal,
   Stack,
   Text,
@@ -19,7 +18,7 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { BiCheck } from '@react-icons/all-files/bi/BiCheck';
-import { IconAlertCircle, IconDots, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconAlertCircle, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiSolidWrench } from 'react-icons/bi';
@@ -384,6 +383,7 @@ function StageColumn({
 }) {
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
+  const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
   const teamsMap = getTeamsLookup(tournament != null ? tournament.id : -1);
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
 
@@ -432,36 +432,54 @@ function StageColumn({
           {stage.name}
           {stage.is_active ? <Badge color="green">{t('active_badge_label')}</Badge> : null}
         </Group>
-        <Menu withinPortal position="bottom-end" shadow="sm">
-          <Menu.Target>
-            <ActionIcon variant="transparent" color="gray">
-              <IconDots size="1.25rem" />
-            </ActionIcon>
-          </Menu.Target>
-
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<IconPencil size="1.5rem" />}
+        <Group gap="0rem">
+          <Tooltip label={t('edit_stage_label')}>
+            <ActionIcon
+              variant="transparent"
+              color="gray"
               onClick={() => {
                 setOpened(true);
               }}
             >
-              {t('edit_stage_label')}
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconTrash size="1.5rem" />}
-              onClick={async () => {
-                await deleteStage(tournament.id, stage.id);
-                await swrStagesResponse.mutate();
-                await swrAvailableInputsResponse.mutate();
-              }}
-              color="red"
+              <IconPencil size="1.25rem" />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label={t('delete_button')}>
+            <ActionIcon
+              variant="transparent"
+              color="red.6"
+              onClick={() => setDeleteConfirmOpened(true)}
             >
-              {t('delete_button')}
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+              <IconTrash size="1.25rem" />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
       </Group>
+      <Modal
+        opened={deleteConfirmOpened}
+        onClose={() => setDeleteConfirmOpened(false)}
+        title={t('delete_modal_title', { type: t('stage_singular_title') })}
+      >
+        <Alert icon={<IconAlertCircle size={16} />} color="red" radius="lg">
+          {t('delete_modal_description', { name: stage.name })}
+        </Alert>
+        <Group justify="flex-end" mt="lg">
+          <Button variant="default" onClick={() => setDeleteConfirmOpened(false)}>
+            {t('cancel_button')}
+          </Button>
+          <Button
+            color="red"
+            onClick={async () => {
+              await deleteStage(tournament.id, stage.id);
+              await swrStagesResponse.mutate();
+              await swrAvailableInputsResponse.mutate();
+              setDeleteConfirmOpened(false);
+            }}
+          >
+            {t('delete_button')}
+          </Button>
+        </Group>
+      </Modal>
       {rows}
       <CreateStageItemModal
         key={-1}
