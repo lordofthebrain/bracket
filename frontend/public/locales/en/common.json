@@ -233,6 +233,7 @@
     "round_filter_label": "Filter by round",
     "round_filter_placeholder": "All rounds",
     "bulk_round_assignment_title": "Assign matches to rounds",
+    "bulk_round_assignment_return_leg_notice": "Only first-leg matchdays are shown. Moves and home/away swaps are automatically applied to the matching return-leg fixture.",
     "validate_and_save_button": "Validate & save",
     "round_robin_description": "Each team plays every other team once.",
     "double_round_robin_checkbox_label": "Double round-robin",
