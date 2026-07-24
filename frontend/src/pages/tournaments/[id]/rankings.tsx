@@ -28,7 +28,7 @@ import { getZoneColorCssVar } from '@components/tables/standings';
 import RequestErrorAlert from '@components/utils/error_alert';
 import { TableSkeletonSingleColumn } from '@components/utils/skeletons';
 import { Translator } from '@components/utils/types';
-import { getTournamentIdFromRouter } from '@components/utils/util';
+import { getRankingDisplayName, getTournamentIdFromRouter } from '@components/utils/util';
 import { Ranking, RankingsResponse, RankingZone, Tournament } from '@openapi';
 import TournamentLayout from '@pages/tournaments/_tournament_layout';
 import { getRankings, getTournamentById } from '@services/adapter';
@@ -122,10 +122,6 @@ function StandingsZonesEditor({ t, form }: { t: Translator; form: any }) {
       </Button>
     </>
   );
-}
-
-function getRankingDisplayName(t: Translator, ranking: Ranking): string {
-  return ranking.name.length > 0 ? ranking.name : `${t('ranking_title')} ${ranking.position + 1}`;
 }
 
 function RankingNameModal({

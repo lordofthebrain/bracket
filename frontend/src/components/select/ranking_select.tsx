@@ -1,6 +1,7 @@
 import { Select } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 
+import { getRankingDisplayName } from '@components/utils/util';
 import { Ranking } from '@openapi';
 
 export function RankingSelect({ form, rankings }: { form: any; rankings: Ranking[] }) {
@@ -8,7 +9,7 @@ export function RankingSelect({ form, rankings }: { form: any; rankings: Ranking
 
   const data = rankings.map((ranking: Ranking, i: number) => ({
     value: ranking.id.toString(),
-    label: `${t('ranking_title')} ${ranking.position + 1} ${i === 0 ? `(${t('default_label')})` : ''}`,
+    label: `${getRankingDisplayName(t, ranking)} ${i === 0 ? `(${t('default_label')})` : ''}`,
   }));
 
   return (

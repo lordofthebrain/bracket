@@ -3,6 +3,8 @@ import { Center } from '@mantine/core';
 import { useParams } from 'react-router';
 import { SWRResponse } from 'swr';
 
+import { Translator } from '@components/utils/types';
+import { Ranking } from '@openapi';
 import classes from '@pages/create_account.module.css';
 
 export function capitalize(str: string) {
@@ -50,6 +52,10 @@ export function truncateString(input: string, length: number) {
     return `${input.slice(0, length)}...`;
   }
   return input;
+}
+
+export function getRankingDisplayName(t: Translator, ranking: Ranking): string {
+  return ranking.name.length > 0 ? ranking.name : `${t('ranking_title')} ${ranking.position + 1}`;
 }
 
 export function HCaptchaInput({
