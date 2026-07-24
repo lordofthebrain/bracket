@@ -52,6 +52,14 @@ function ScheduleRow({
   const { t } = useTranslation();
   const scoreColor = '#656565';
 
+  // A 0:0 half-time score can't be told apart from "not entered" (the match
+  // form defaults to 0), so don't show it when the final score is also 0:0.
+  const hideHalfTime =
+    data.match.stage_item_input1_score === 0 &&
+    data.match.stage_item_input2_score === 0 &&
+    data.match.stage_item_input1_score_half_time === 0 &&
+    data.match.stage_item_input2_score_half_time === 0;
+
   return (
     <UnstyledButton style={{ width: '48rem' }}>
       <Card
@@ -88,7 +96,7 @@ function ScheduleRow({
                   {data.match.stage_item_input1_score}
                 </div>
                 <Text size="md" c="dimmed" style={{ minWidth: '1.5rem' }}>
-                  {data.match.stage_item_input1_score_half_time != null
+                  {!hideHalfTime && data.match.stage_item_input1_score_half_time != null
                     ? `(${data.match.stage_item_input1_score_half_time})`
                     : ''}
                 </Text>
@@ -119,7 +127,7 @@ function ScheduleRow({
                   {data.match.stage_item_input2_score}
                 </div>
                 <Text size="md" c="dimmed" style={{ minWidth: '1.5rem' }}>
-                  {data.match.stage_item_input2_score_half_time != null
+                  {!hideHalfTime && data.match.stage_item_input2_score_half_time != null
                     ? `(${data.match.stage_item_input2_score_half_time})`
                     : ''}
                 </Text>

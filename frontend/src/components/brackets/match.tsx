@@ -79,6 +79,14 @@ export default function Match({
 
   const [opened, setOpened] = useState(false);
 
+  // A 0:0 half-time score can't be told apart from "not entered" (the match
+  // form defaults to 0), so don't show it when the final score is also 0:0.
+  const hideHalfTime =
+    match.stage_item_input1_score === 0 &&
+    match.stage_item_input2_score === 0 &&
+    match.stage_item_input1_score_half_time === 0 &&
+    match.stage_item_input2_score_half_time === 0;
+
   const bracket = (
     <>
       {showCourtAndTime && <MatchBadge match={match} theme={theme} />}
@@ -88,11 +96,11 @@ export default function Match({
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
               <Text component="span">{match.stage_item_input1_score}</Text>
-              {match.stage_item_input1_score_half_time != null && (
-                <Text component="span" size="sm" c="dimmed">
-                  ({match.stage_item_input1_score_half_time})
-                </Text>
-              )}
+              <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
+                {!hideHalfTime && match.stage_item_input1_score_half_time != null
+                  ? `(${match.stage_item_input1_score_half_time})`
+                  : ''}
+              </Text>
             </Group>
           </Grid.Col>
         </Grid>
@@ -103,11 +111,11 @@ export default function Match({
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
               <Text component="span">{match.stage_item_input2_score}</Text>
-              {match.stage_item_input2_score_half_time != null && (
-                <Text component="span" size="sm" c="dimmed">
-                  ({match.stage_item_input2_score_half_time})
-                </Text>
-              )}
+              <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
+                {!hideHalfTime && match.stage_item_input2_score_half_time != null
+                  ? `(${match.stage_item_input2_score_half_time})`
+                  : ''}
+              </Text>
             </Group>
           </Grid.Col>
         </Grid>
