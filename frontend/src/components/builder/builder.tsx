@@ -56,6 +56,7 @@ function StageItemInputComboBox({
   stageItemInput,
   current_key,
   availableInputs,
+  teamIdsUsedInStageItem,
   swrAvailableInputsResponse,
   swrRankingsPerStageItemResponse,
   swrStagesResponse,
@@ -64,6 +65,7 @@ function StageItemInputComboBox({
   stageItemInput: StageItemInput;
   current_key: string | null;
   availableInputs: StageItemInputChoice[];
+  teamIdsUsedInStageItem: Set<number>;
   swrAvailableInputsResponse: SWRResponse<StageItemInputOptionsResponse>;
   swrRankingsPerStageItemResponse: SWRResponse<StageRankingResponse>;
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
@@ -87,7 +89,12 @@ function StageItemInputComboBox({
   });
 
   const options = availableInputs
-    .filter((option: StageItemInputChoice) => !option.already_taken)
+    // Teams may be reused across stage items but not twice within the same one; tentative "winner of X" placeholders keep the tournament-wide check.
+    .filter((option: StageItemInputChoice) =>
+      option.winner_from_stage_item_id != null
+        ? !option.already_taken
+        : option.team_id == null || !teamIdsUsedInStageItem.has(option.team_id)
+    )
     .filter((item) => (item.label || 'None').toLowerCase().includes(search.toLowerCase().trim()))
     .map((option: StageItemInputChoice, i: number) => (
       <Combobox.Option key={i} value={option.value}>
@@ -211,6 +218,7 @@ function StageItemInputSection({
   currentOptionValue,
   lastInList,
   availableInputs,
+  teamIdsUsedInStageItem,
   swrAvailableInputsResponse,
   swrStagesResponse,
   swrRankingsPerStageItemResponse,
@@ -220,6 +228,7 @@ function StageItemInputSection({
   currentOptionValue: string | null;
   lastInList: boolean;
   availableInputs: StageItemInputChoice[];
+  teamIdsUsedInStageItem: Set<number>;
   swrAvailableInputsResponse: SWRResponse<StageItemInputOptionsResponse>;
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   swrRankingsPerStageItemResponse: SWRResponse<StageRankingResponse>;
@@ -233,6 +242,7 @@ function StageItemInputSection({
         stageItemInput={stageItemInput}
         current_key={currentOptionValue}
         availableInputs={availableInputs}
+        teamIdsUsedInStageItem={teamIdsUsedInStageItem}
         swrAvailableInputsResponse={swrAvailableInputsResponse}
         swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
         swrStagesResponse={swrStagesResponse}
@@ -272,6 +282,12 @@ function StageItemRow({
         currentOptionValue = `${input.team_id}`;
       }
 
+      const teamIdsUsedInStageItem = new Set(
+        stageItem.inputs
+          .filter((other) => other.id !== input.id && other.team_id != null)
+          .map((other) => other.team_id as number)
+      );
+
       return (
         <StageItemInputSection
           key={i}
@@ -279,6 +295,7 @@ function StageItemRow({
           stageItemInput={input}
           currentOptionValue={currentOptionValue}
           availableInputs={availableInputs}
+          teamIdsUsedInStageItem={teamIdsUsedInStageItem}
           lastInList={i === stageItem.inputs.length - 1}
           swrAvailableInputsResponse={swrAvailableInputsResponse}
           swrStagesResponse={swrStagesResponse}

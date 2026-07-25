@@ -1,5 +1,6 @@
 import {
   Autocomplete,
+  ComboboxOptions,
   MantineProvider,
   MultiSelect,
   Select,
@@ -72,6 +73,9 @@ const theme = createTheme({
     MultiSelect: MultiSelect.extend({ defaultProps: dropdownScrollDefaultProps }),
     Autocomplete: Autocomplete.extend({ defaultProps: dropdownScrollDefaultProps }),
     TagsInput: TagsInput.extend({ defaultProps: dropdownScrollDefaultProps }),
+    ComboboxOptions: ComboboxOptions.extend({
+      defaultProps: { style: { maxHeight: '15rem', overflowY: 'auto' as const } },
+    }),
   },
 });
 
