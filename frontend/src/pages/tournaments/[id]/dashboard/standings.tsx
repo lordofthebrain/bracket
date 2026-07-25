@@ -20,11 +20,13 @@ export function StandingsContent({
   fontSizeInPixels,
   maxTeamsToDisplay,
   tournamentId,
+  stageId,
 }: {
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   fontSizeInPixels: number;
   maxTeamsToDisplay: number;
   tournamentId: number;
+  stageId?: number | null;
 }) {
   const { t } = useTranslation();
 
@@ -35,6 +37,7 @@ export function StandingsContent({
 
   const rows = Object.keys(stageItemTeamLookup)
     .filter((stageItemId) => stageItemsLookup[stageItemId] != null)
+    .filter((stageItemId) => stageId == null || stageItemsLookup[stageItemId].stage_id === stageId)
     .sort((si1: any, si2: any) =>
       stageItemsLookup[si1].name > stageItemsLookup[si2].name ? 1 : -1
     )

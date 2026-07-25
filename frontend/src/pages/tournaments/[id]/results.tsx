@@ -22,7 +22,7 @@ import { NoContent } from '@components/no_content/empty_table_info';
 import { formatMatchInput1, formatMatchInput2 } from '@components/utils/match';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
-import { MatchWithDetails } from '@openapi';
+import { MatchWithDetails, StageWithStageItems } from '@openapi';
 import TournamentLayout from '@pages/tournaments/_tournament_layout';
 import { getBaseApiUrl, getCourts, getStages } from '@services/adapter';
 import { getMatchLookup, getStageItemLookup } from '@services/lookups';
@@ -219,6 +219,7 @@ function Schedule({
 export default function ResultsPage() {
   const [modalOpened, modalSetOpened] = useState(false);
   const [match, setMatch] = useState<MatchWithDetails | null>(null);
+  const [stageFilter, setStageFilter] = useState<string | null>(null);
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
 
   const { t } = useTranslation();
@@ -231,10 +232,22 @@ export default function ResultsPage() {
     : [];
   const matchesLookup = responseIsValid(swrStagesResponse) ? getMatchLookup(swrStagesResponse) : [];
 
+  const stages: StageWithStageItems[] = swrStagesResponse.data?.data ?? [];
+  const stageOptions = stages.map((stage) => ({ value: `${stage.id}`, label: stage.name }));
+
+  useEffect(() => {
+    if (stageFilter != null || stages.length < 1) return;
+    const activeStage = stages.find((stage) => stage.is_active);
+    setStageFilter(`${activeStage?.id ?? stages[stages.length - 1].id}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stages.map((stage) => stage.id).join(',')]);
+
   const roundOptionsMap = new Map<number, string>();
-  Object.values(matchesLookup).forEach((data: any) => {
-    roundOptionsMap.set(data.round.id, data.round.name);
-  });
+  Object.values(matchesLookup)
+    .filter((data: any) => `${data.stageItem.stage_id}` === stageFilter)
+    .forEach((data: any) => {
+      roundOptionsMap.set(data.round.id, data.round.name);
+    });
   const sortedRoundIds = Array.from(roundOptionsMap.keys()).sort((id1, id2) => id1 - id2);
   const roundOptions = sortedRoundIds.map((id) => ({
     value: `${id}`,
@@ -242,7 +255,12 @@ export default function ResultsPage() {
   }));
 
   useEffect(() => {
-    if (roundFilter != null || sortedRoundIds.length < 1) return;
+    if (
+      sortedRoundIds.length < 1 ||
+      (roundFilter != null && sortedRoundIds.includes(Number(roundFilter)))
+    ) {
+      return;
+    }
 
     const unplayedRoundId = sortedRoundIds.find((id) =>
       Object.values(matchesLookup).some(
@@ -251,7 +269,7 @@ export default function ResultsPage() {
     );
     setRoundFilter(`${unplayedRoundId ?? sortedRoundIds[sortedRoundIds.length - 1]}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedRoundIds.join(','), roundFilter]);
+  }, [sortedRoundIds.join(','), stageFilter]);
 
   if (!responseIsValid(swrStagesResponse)) return null;
   if (!responseIsValid(swrCourtsResponse)) return null;
@@ -280,6 +298,21 @@ export default function ResultsPage() {
         round={null}
       />
       <Title>{t('results_title')}</Title>
+      {stageOptions.length > 1 && (
+        <Center mt="1rem">
+          <Select
+            label={t('stage_filter_label')}
+            data={stageOptions}
+            value={stageFilter}
+            onChange={(value) => {
+              setStageFilter(value);
+              setRoundFilter(null);
+            }}
+            allowDeselect={false}
+            style={{ width: '48rem' }}
+          />
+        </Center>
+      )}
       {sortedRoundIds.length > 0 && (
         <Center mt="1rem">
           <Select
