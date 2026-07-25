@@ -1,12 +1,8 @@
 import { Center, Divider, Group, Tooltip, UnstyledButton } from '@mantine/core';
 import {
   Icon,
-  IconBook,
   IconBrackets,
-  IconBrandGithub,
-  IconBrowser,
   IconCalendar,
-  IconDots,
   IconHome,
   IconScoreboard,
   IconSettings,
@@ -20,7 +16,6 @@ import { useLocation } from 'react-router';
 
 import PreloadLink from '@components/utils/link';
 import { capitalize } from '@components/utils/util';
-import { getBaseApiUrl } from '@services/adapter';
 import classes from './_main_links.module.css';
 
 interface MainLinkProps {
@@ -81,20 +76,6 @@ export function getBaseLinksDict() {
       label: t('user_title'),
       links: [],
       icon: IconUser,
-    },
-    {
-      icon: IconDots,
-      link: '',
-      label: t('more_title'),
-      links: [
-        { link: 'https://docs.bracketapp.nl/', label: t('website_title'), icon: IconBrowser },
-        {
-          link: 'https://github.com/evroon/bracket',
-          label: t('github_title'),
-          icon: IconBrandGithub,
-        },
-        { link: `${getBaseApiUrl()}/docs`, label: t('api_docs_title'), icon: IconBook },
-      ],
     },
   ];
 }
