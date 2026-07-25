@@ -280,18 +280,26 @@ export default function ResultsPage() {
         round={null}
       />
       <Title>{t('results_title')}</Title>
+      {sortedRoundIds.length > 0 && (
+        <Center mt="1rem">
+          <Select
+            label={t('round_filter_label')}
+            data={roundOptions}
+            value={roundFilter}
+            onChange={setRoundFilter}
+            allowDeselect={false}
+            style={{ width: '48rem' }}
+          />
+        </Center>
+      )}
       <Center mt="1rem">
-        <Select
-          label={t('round_filter_label')}
-          data={roundOptions}
-          value={roundFilter}
-          onChange={setRoundFilter}
-          allowDeselect={false}
-          style={{ width: '48rem' }}
-        />
-      </Center>
-      <Center mt="1rem">
-        {roundFilter == null ? (
+        {sortedRoundIds.length < 1 ? (
+          <NoContent
+            title={t('no_matches_title')}
+            description={t('no_matches_description')}
+            icon={<AiOutlineHourglass />}
+          />
+        ) : roundFilter == null ? (
           <Loader />
         ) : (
           <Schedule
