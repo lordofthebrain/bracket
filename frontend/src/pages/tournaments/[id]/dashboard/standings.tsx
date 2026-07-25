@@ -54,7 +54,7 @@ export function StandingsContent({
   if (rows.length < 1) {
     return (
       <NoContent
-        title={`${t('could_not_find_any_alert')} ${t('teams_title')}`}
+        title={t('could_not_find_any_alert', { entity: t('teams_title') })}
         description=""
         icon={<AiOutlineHourglass />}
       />
