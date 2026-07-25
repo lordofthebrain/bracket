@@ -1,5 +1,6 @@
 import {
   Alert,
+  Anchor,
   Card,
   Center,
   Grid,
@@ -216,35 +217,26 @@ function Schedule({
   );
 }
 
-export default function ResultsPage() {
-  const [modalOpened, modalSetOpened] = useState(false);
-  const [match, setMatch] = useState<MatchWithDetails | null>(null);
-  const [stageFilter, setStageFilter] = useState<string | null>(null);
+function ResultsForStageItem({
+  t,
+  stageItem,
+  stageItemsLookup,
+  matchesLookup,
+  openMatchModal,
+  jumpTo,
+}: {
+  t: Translator;
+  stageItem: any;
+  stageItemsLookup: any;
+  matchesLookup: any;
+  openMatchModal: CallableFunction;
+  jumpTo?: { targetId: string; label: string } | null;
+}) {
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
-
-  const { t } = useTranslation();
-  const { tournamentData } = getTournamentIdFromRouter();
-  const swrStagesResponse = getStages(tournamentData.id);
-  const swrCourtsResponse = getCourts(tournamentData.id);
-
-  const stageItemsLookup = responseIsValid(swrStagesResponse)
-    ? getStageItemLookup(swrStagesResponse)
-    : [];
-  const matchesLookup = responseIsValid(swrStagesResponse) ? getMatchLookup(swrStagesResponse) : [];
-
-  const stages: StageWithStageItems[] = swrStagesResponse.data?.data ?? [];
-  const stageOptions = stages.map((stage) => ({ value: `${stage.id}`, label: stage.name }));
-
-  useEffect(() => {
-    if (stageFilter != null || stages.length < 1) return;
-    const activeStage = stages.find((stage) => stage.is_active);
-    setStageFilter(`${activeStage?.id ?? stages[stages.length - 1].id}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stages.map((stage) => stage.id).join(',')]);
 
   const roundOptionsMap = new Map<number, string>();
   Object.values(matchesLookup)
-    .filter((data: any) => `${data.stageItem.stage_id}` === stageFilter)
+    .filter((data: any) => data.stageItem.id === stageItem.id)
     .forEach((data: any) => {
       roundOptionsMap.set(data.round.id, data.round.name);
     });
@@ -264,12 +256,90 @@ export default function ResultsPage() {
 
     const unplayedRoundId = sortedRoundIds.find((id) =>
       Object.values(matchesLookup).some(
-        (data: any) => data.round.id === id && !data.match.is_played
+        (data: any) =>
+          data.stageItem.id === stageItem.id && data.round.id === id && !data.match.is_played
       )
     );
     setRoundFilter(`${unplayedRoundId ?? sortedRoundIds[sortedRoundIds.length - 1]}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedRoundIds.join(','), stageFilter]);
+  }, [sortedRoundIds.join(',')]);
+
+  return (
+    <div>
+      <Center>
+        <Group justify="space-between" align="baseline" mb="sm" style={{ width: '48rem' }}>
+          <Title order={3}>{stageItem.name}</Title>
+          {jumpTo != null && <Anchor href={`#${jumpTo.targetId}`}>{jumpTo.label}</Anchor>}
+        </Group>
+      </Center>
+      {roundOptions.length > 0 && (
+        <Center>
+          <Select
+            label={t('round_filter_label')}
+            data={roundOptions}
+            value={roundFilter}
+            onChange={setRoundFilter}
+            allowDeselect={false}
+            style={{ width: '48rem' }}
+          />
+        </Center>
+      )}
+      <Center mt="1rem">
+        {sortedRoundIds.length < 1 ? (
+          <NoContent
+            title={t('no_matches_title')}
+            description={t('no_matches_description')}
+            icon={<AiOutlineHourglass />}
+          />
+        ) : roundFilter == null ? (
+          <Loader />
+        ) : (
+          <Schedule
+            t={t}
+            matchesLookup={matchesLookup}
+            stageItemsLookup={stageItemsLookup}
+            openMatchModal={openMatchModal}
+            roundFilter={roundFilter}
+          />
+        )}
+      </Center>
+    </div>
+  );
+}
+
+export default function ResultsPage() {
+  const [modalOpened, modalSetOpened] = useState(false);
+  const [match, setMatch] = useState<MatchWithDetails | null>(null);
+  const [stageFilter, setStageFilter] = useState<string | null>(null);
+
+  const { t } = useTranslation();
+  const { tournamentData } = getTournamentIdFromRouter();
+  const swrStagesResponse = getStages(tournamentData.id);
+  const swrCourtsResponse = getCourts(tournamentData.id);
+
+  const stageItemsLookup: any = responseIsValid(swrStagesResponse)
+    ? getStageItemLookup(swrStagesResponse)
+    : [];
+  const matchesLookup = responseIsValid(swrStagesResponse) ? getMatchLookup(swrStagesResponse) : [];
+
+  const stages: StageWithStageItems[] = swrStagesResponse.data?.data ?? [];
+  const stageOptions = stages.map((stage) => ({ value: `${stage.id}`, label: stage.name }));
+
+  useEffect(() => {
+    if (stageFilter != null || stages.length < 1) return;
+    const activeStage = stages.find((stage) => stage.is_active);
+    setStageFilter(`${activeStage?.id ?? stages[stages.length - 1].id}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stages.map((stage) => stage.id).join(',')]);
+
+  const stageItemIds = Object.values(stageItemsLookup)
+    .filter((stageItem: any) => stageFilter == null || `${stageItem.stage_id}` === stageFilter)
+    .sort((si1: any, si2: any) => (si1.name > si2.name ? 1 : -1))
+    .map((stageItem: any) => stageItem.id);
+
+  const anchorId = (stageItemId: number) => `results-stage-item-${stageItemId}`;
+  const firstStageItemId = stageItemIds[0];
+  const lastStageItemId = stageItemIds[stageItemIds.length - 1];
 
   if (!responseIsValid(swrStagesResponse)) return null;
   if (!responseIsValid(swrCourtsResponse)) return null;
@@ -304,46 +374,59 @@ export default function ResultsPage() {
             label={t('stage_filter_label')}
             data={stageOptions}
             value={stageFilter}
-            onChange={(value) => {
-              setStageFilter(value);
-              setRoundFilter(null);
-            }}
+            onChange={setStageFilter}
             allowDeselect={false}
             style={{ width: '48rem' }}
           />
         </Center>
       )}
-      {sortedRoundIds.length > 0 && (
+      {stageItemIds.length < 1 ? (
         <Center mt="1rem">
-          <Select
-            label={t('round_filter_label')}
-            data={roundOptions}
-            value={roundFilter}
-            onChange={setRoundFilter}
-            allowDeselect={false}
-            style={{ width: '48rem' }}
-          />
-        </Center>
-      )}
-      <Center mt="1rem">
-        {sortedRoundIds.length < 1 ? (
           <NoContent
             title={t('no_matches_title')}
             description={t('no_matches_description')}
             icon={<AiOutlineHourglass />}
           />
-        ) : roundFilter == null ? (
-          <Loader />
-        ) : (
-          <Schedule
-            t={t}
-            matchesLookup={matchesLookup}
-            stageItemsLookup={stageItemsLookup}
-            openMatchModal={openMatchModal}
-            roundFilter={roundFilter}
-          />
-        )}
-      </Center>
+        </Center>
+      ) : (
+        stageItemIds.map((stageItemId: number, index: number) => {
+          let jumpTo = null;
+          if (stageItemIds.length > 1) {
+            if (stageItemId === firstStageItemId) {
+              jumpTo = {
+                targetId: anchorId(lastStageItemId),
+                label: `↓ ${stageItemsLookup[lastStageItemId].name}`,
+              };
+            } else if (stageItemId === lastStageItemId) {
+              jumpTo = {
+                targetId: anchorId(firstStageItemId),
+                label: `↑ ${stageItemsLookup[firstStageItemId].name}`,
+              };
+            }
+          }
+
+          return (
+            <div
+              key={stageItemId}
+              id={anchorId(stageItemId)}
+              style={{
+                marginTop: index > 0 ? '3rem' : '1rem',
+                marginBottom: index === stageItemIds.length - 1 ? '3rem' : undefined,
+                scrollMarginTop: '4.9rem',
+              }}
+            >
+              <ResultsForStageItem
+                t={t}
+                stageItem={stageItemsLookup[stageItemId]}
+                stageItemsLookup={stageItemsLookup}
+                matchesLookup={matchesLookup}
+                openMatchModal={openMatchModal}
+                jumpTo={jumpTo}
+              />
+            </div>
+          );
+        })
+      )}
     </TournamentLayout>
   );
 }
