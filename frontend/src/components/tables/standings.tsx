@@ -32,6 +32,28 @@ function getZoneForIndex(zones: RankingZone[], index: number, total: number): Ra
   return null;
 }
 
+function getSeasonMarker(
+  input: StageItemInputFinal,
+  stageItem: StageItemWithRounds,
+  stageItemsLookup: any,
+  t: (key: string) => string,
+  language: string
+): string | null {
+  // No established convention for this in English-language tables, so only show it in German.
+  if (!language.startsWith('de')) return null;
+
+  const sourceStageItemId = input.winner_from_stage_item_id;
+  if (sourceStageItemId == null) return null;
+
+  const sourceStageItem = stageItemsLookup[sourceStageItemId];
+  if (sourceStageItem == null) return null;
+
+  if (sourceStageItem.name === stageItem.name) {
+    return input.winner_position === 1 ? t('champion_marker') : null;
+  }
+  return t('promoted_marker');
+}
+
 function StandingsZonesLegend({ zones }: { zones: RankingZone[] }) {
   if (zones.length < 1) return null;
   return (
@@ -147,7 +169,7 @@ export function StandingsTableForStageItem({
   tournamentId: number;
   jumpTo?: { targetId: string; label: string } | null;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tableState = getTableState('rank', false);
 
   const sortedRounds = [...stageItem.rounds].sort((r1, r2) => r1.id - r2.id);
@@ -250,6 +272,14 @@ export function StandingsTableForStageItem({
       ? getZoneForIndex(ranking.standings_zones, index, sortedTeams.length)
       : null;
 
+    const seasonMarker = getSeasonMarker(
+      team_with_input,
+      stageItem,
+      stageItemsLookup,
+      t,
+      i18n.language
+    );
+
     return (
       <Table.Tr
         key={team_with_input.id}
@@ -263,6 +293,7 @@ export function StandingsTableForStageItem({
             <TeamLogo logoPath={team_with_input.team?.logo_path} />
             <Text truncate="end" lineClamp={1} inherit>
               {formatStageItemInput(team_with_input, stageItemsLookup)}
+              {seasonMarker != null ? ` (${seasonMarker})` : ''}
             </Text>
           </Group>
         </Table.Td>
