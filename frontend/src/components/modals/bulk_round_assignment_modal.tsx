@@ -173,9 +173,20 @@ export default function BulkRoundAssignmentModal({
       const swapped = swaps[match.id] ?? false;
       const homeLabel = swapped ? team2Label : team1Label;
       const awayLabel = swapped ? team1Label : team2Label;
+      const roundChanged =
+        assignments[match.id] != null && parseInt(assignments[match.id], 10) !== roundId;
 
       return (
-        <Table.Tr key={match.id}>
+        <Table.Tr
+          key={match.id}
+          style={
+            roundChanged
+              ? {
+                  backgroundColor: 'light-dark(#f2d98a, #4a3c14)',
+                }
+              : undefined
+          }
+        >
           <Table.Td>{homeLabel}</Table.Td>
           <Table.Td>{awayLabel}</Table.Td>
           <Table.Td>
