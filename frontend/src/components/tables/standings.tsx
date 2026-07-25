@@ -1,4 +1,4 @@
-import { Badge, Group, Image, Select, Table, Text } from '@mantine/core';
+import { Anchor, Badge, Group, Image, Select, Table, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -137,6 +137,7 @@ export function StandingsTableForStageItem({
   stageItemsLookup,
   maxTeamsToDisplay,
   tournamentId,
+  jumpTo,
 }: {
   teams_with_inputs: StageItemInputFinal[];
   stageItem: StageItemWithRounds;
@@ -144,6 +145,7 @@ export function StandingsTableForStageItem({
   stageItemsLookup: any;
   maxTeamsToDisplay: number;
   tournamentId: number;
+  jumpTo?: { targetId: string; label: string } | null;
 }) {
   const { t } = useTranslation();
   const tableState = getTableState('rank', false);
@@ -362,6 +364,10 @@ export function StandingsTableForStageItem({
 
   return (
     <>
+      <Group justify="space-between" align="baseline" mb="sm" style={{ maxWidth: '20rem' }}>
+        <Title order={3}>{stageItem.name}</Title>
+        {jumpTo != null && <Anchor href={`#${jumpTo.targetId}`}>{jumpTo.label}</Anchor>}
+      </Group>
       {roundOptions.length > 0 && (
         <Select
           label={t('round_filter_label')}

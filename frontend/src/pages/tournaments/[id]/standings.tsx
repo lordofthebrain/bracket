@@ -29,7 +29,7 @@ export default function StandingsPage() {
 
   return (
     <TournamentLayout tournament_id={tournamentData.id}>
-      <Container size="md">
+      <Container size="md" mb="1rem">
         <Title>{t('standings_title')}</Title>
         {stageOptions.length > 1 && (
           <Select

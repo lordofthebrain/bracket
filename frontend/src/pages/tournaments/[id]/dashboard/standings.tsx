@@ -35,26 +35,14 @@ export function StandingsContent({
     ? getStageItemTeamsLookup(swrStagesResponse)
     : {};
 
-  const rows = Object.keys(stageItemTeamLookup)
+  const stageItemIds = Object.keys(stageItemTeamLookup)
     .filter((stageItemId) => stageItemsLookup[stageItemId] != null)
     .filter((stageItemId) => stageId == null || stageItemsLookup[stageItemId].stage_id === stageId)
     .sort((si1: any, si2: any) =>
       stageItemsLookup[si1].name > stageItemsLookup[si2].name ? 1 : -1
-    )
-    .map((stageItemId) => (
-      <div key={stageItemId}>
-        <StandingsTableForStageItem
-          teams_with_inputs={stageItemTeamLookup[stageItemId]}
-          stageItem={stageItemsLookup[stageItemId]}
-          stageItemsLookup={stageItemsLookup}
-          fontSizeInPixels={fontSizeInPixels}
-          maxTeamsToDisplay={maxTeamsToDisplay}
-          tournamentId={tournamentId}
-        />
-      </div>
-    ));
+    );
 
-  if (rows.length < 1) {
+  if (stageItemIds.length < 1) {
     return (
       <NoContent
         title={t('could_not_find_any_alert', { entity: t('teams_title') })}
@@ -63,6 +51,46 @@ export function StandingsContent({
       />
     );
   }
+
+  const anchorId = (stageItemId: string) => `standings-stage-item-${stageItemId}`;
+  const firstStageItemId = stageItemIds[0];
+  const lastStageItemId = stageItemIds[stageItemIds.length - 1];
+
+  const rows = stageItemIds.map((stageItemId, index) => {
+    let jumpTo = null;
+    if (stageItemIds.length > 1) {
+      if (stageItemId === firstStageItemId) {
+        jumpTo = {
+          targetId: anchorId(lastStageItemId),
+          label: `↓ ${stageItemsLookup[lastStageItemId].name}`,
+        };
+      } else if (stageItemId === lastStageItemId) {
+        jumpTo = {
+          targetId: anchorId(firstStageItemId),
+          label: `↑ ${stageItemsLookup[firstStageItemId].name}`,
+        };
+      }
+    }
+
+    return (
+      <div
+        key={stageItemId}
+        id={anchorId(stageItemId)}
+        style={{ marginTop: index > 0 ? '3rem' : undefined, scrollMarginTop: '4.9rem' }}
+      >
+        <StandingsTableForStageItem
+          teams_with_inputs={stageItemTeamLookup[stageItemId]}
+          stageItem={stageItemsLookup[stageItemId]}
+          stageItemsLookup={stageItemsLookup}
+          fontSizeInPixels={fontSizeInPixels}
+          maxTeamsToDisplay={maxTeamsToDisplay}
+          tournamentId={tournamentId}
+          jumpTo={jumpTo}
+        />
+      </div>
+    );
+  });
+
   return rows;
 }
 
