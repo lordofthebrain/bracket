@@ -367,7 +367,9 @@ export default function ResultsPage() {
         setOpened={modalSetOpenedAndUpdateMatch}
         round={null}
       />
-      <Title>{t('results_title')}</Title>
+      <Center>
+        <Title style={{ width: '48rem' }}>{t('results_title')}</Title>
+      </Center>
       {stageOptions.length > 1 && (
         <Center mt="1rem">
           <Select
