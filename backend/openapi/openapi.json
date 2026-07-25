@@ -1922,6 +1922,11 @@
             ],
             "title": "Ranking Id"
           },
+          "round_name_pattern": {
+            "default": "Round {02d}",
+            "title": "Round Name Pattern",
+            "type": "string"
+          },
           "stage_id": {
             "title": "Stage Id",
             "type": "integer"
@@ -1942,7 +1947,8 @@
           "type",
           "team_count",
           "ranking_id",
-          "double_round_robin"
+          "double_round_robin",
+          "round_name_pattern"
         ],
         "title": "StageItemCreateBody",
         "type": "object"
@@ -2374,11 +2380,17 @@
           "ranking_id": {
             "title": "Ranking Id",
             "type": "integer"
+          },
+          "round_name_pattern": {
+            "default": "Round {02d}",
+            "title": "Round Name Pattern",
+            "type": "string"
           }
         },
         "required": [
           "name",
-          "ranking_id"
+          "ranking_id",
+          "round_name_pattern"
         ],
         "title": "StageItemUpdateBody",
         "type": "object"
@@ -2431,6 +2443,11 @@
             ],
             "title": "Ranking Id"
           },
+          "round_name_pattern": {
+            "default": "Round {02d}",
+            "title": "Round Name Pattern",
+            "type": "string"
+          },
           "rounds": {
             "items": {
               "$ref": "#/components/schemas/RoundWithMatches"
@@ -2464,6 +2481,7 @@
           "team_count",
           "ranking_id",
           "double_round_robin",
+          "round_name_pattern",
           "id",
           "rounds",
           "inputs",

@@ -2,12 +2,22 @@ from enum import auto
 from typing import Any
 
 from heliclockter import datetime_utc
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
+from bracket.logic.rounds import DEFAULT_ROUND_NAME_PATTERN, is_valid_round_name_pattern
 from bracket.models.db.shared import BaseModelORM
 from bracket.models.db.stage_item_inputs import StageItemInputCreateBody
 from bracket.utils.id_types import RankingId, StageId, StageItemId
 from bracket.utils.types import EnumAutoStr
+
+
+def _validate_round_name_pattern(value: str) -> str:
+    if not is_valid_round_name_pattern(value):
+        raise ValueError(
+            "round_name_pattern must contain exactly one {d} or {0Nd} placeholder "
+            "and no other curly braces"
+        )
+    return value
 
 
 class StageType(EnumAutoStr):
@@ -28,6 +38,11 @@ class StageItemInsertable(BaseModelORM):
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
     double_round_robin: bool = False
+    round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
+
+    _validate_round_name_pattern = field_validator("round_name_pattern")(
+        _validate_round_name_pattern
+    )
 
 
 class StageItem(StageItemInsertable):
@@ -37,6 +52,11 @@ class StageItem(StageItemInsertable):
 class StageItemUpdateBody(BaseModelORM):
     name: str
     ranking_id: RankingId
+    round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
+
+    _validate_round_name_pattern = field_validator("round_name_pattern")(
+        _validate_round_name_pattern
+    )
 
 
 class StageItemActivateNextBody(BaseModelORM):
@@ -50,6 +70,11 @@ class StageItemCreateBody(BaseModelORM):
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
     double_round_robin: bool = False
+    round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
+
+    _validate_round_name_pattern = field_validator("round_name_pattern")(
+        _validate_round_name_pattern
+    )
 
     def get_name_or_default_name(self) -> str:
         return (

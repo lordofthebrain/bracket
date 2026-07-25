@@ -9,6 +9,7 @@ import {
   NumberInput,
   Select,
   Text,
+  TextInput,
   UnstyledButton,
 } from '@mantine/core';
 import { UseFormReturnType, useForm } from '@mantine/form';
@@ -24,6 +25,7 @@ import {
   StagesWithStageItemsResponse,
   Tournament,
 } from '@openapi';
+import { ROUND_NAME_PATTERN_RE } from '@components/utils/util';
 import { getStageItemLookup, getTeamsLookup } from '@services/lookups';
 import { createStageItem } from '@services/stage_item';
 import classes from './create_stage_item.module.css';
@@ -176,6 +178,18 @@ function DoubleRoundRobinCheckbox({ form }: { form: UseFormReturnType<any> }) {
   );
 }
 
+function RoundNamePatternInput({ form }: { form: UseFormReturnType<any> }) {
+  const { t } = useTranslation();
+  return (
+    <TextInput
+      mt="1rem"
+      label={t('round_name_pattern_input_label')}
+      description={t('round_name_pattern_input_description')}
+      {...form.getInputProps('round_name_pattern')}
+    />
+  );
+}
+
 function getTeamCount(values: any) {
   return Number(
     values.type === 'SINGLE_ELIMINATION'
@@ -189,6 +203,7 @@ interface FormValues {
   team_count_round_robin: number;
   team_count_elimination: number;
   double_round_robin: boolean;
+  round_name_pattern: string;
 }
 export function CreateStageItemModal({
   tournament,
@@ -210,10 +225,13 @@ export function CreateStageItemModal({
       team_count_round_robin: 4,
       team_count_elimination: 2,
       double_round_robin: false,
+      round_name_pattern: 'Round {02d}',
     },
     validate: {
       team_count_round_robin: (value) => (value >= 2 ? null : t('at_least_two_team_validation')),
       team_count_elimination: (value) => (value >= 2 ? null : t('at_least_two_team_validation')),
+      round_name_pattern: (value) =>
+        ROUND_NAME_PATTERN_RE.test(value) ? null : t('round_name_pattern_validation'),
     },
   });
 
@@ -240,7 +258,8 @@ export function CreateStageItemModal({
               stage.id,
               values.type,
               getTeamCount(values),
-              values.double_round_robin
+              values.double_round_robin,
+              values.round_name_pattern
             );
             await swrStagesResponse.mutate();
             await swrAvailableInputsResponse.mutate();
@@ -256,6 +275,7 @@ export function CreateStageItemModal({
           />
           <Divider mt="1rem" />
           <TeamCountInput form={form} />
+          <RoundNamePatternInput form={form} />
           <DoubleRoundRobinCheckbox form={form} />
 
           <Button fullWidth mt="1.5rem" color="green" type="submit">

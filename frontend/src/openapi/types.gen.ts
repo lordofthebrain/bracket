@@ -1019,6 +1019,10 @@ export type StageItemCreateBody = {
    */
   ranking_id: number | null;
   /**
+   * Round Name Pattern
+   */
+  round_name_pattern: string;
+  /**
    * Stage Id
    */
   stage_id: number;
@@ -1310,6 +1314,10 @@ export type StageItemUpdateBody = {
    * Ranking Id
    */
   ranking_id: number;
+  /**
+   * Round Name Pattern
+   */
+  round_name_pattern: string;
 };
 
 /**
@@ -1340,6 +1348,10 @@ export type StageItemWithRounds = {
    * Ranking Id
    */
   ranking_id: number | null;
+  /**
+   * Round Name Pattern
+   */
+  round_name_pattern: string;
   /**
    * Rounds
    */

@@ -1,4 +1,5 @@
 from bracket.database import database
+from bracket.logic.rounds import format_round_name
 from bracket.models.db.round import RoundInsertable
 from bracket.models.db.util import RoundWithMatches
 from bracket.sql.stage_items import get_stage_item
@@ -46,18 +47,19 @@ async def get_round_by_id(tournament_id: TournamentId, round_id: RoundId) -> Rou
 
 async def get_next_round_name(tournament_id: TournamentId, stage_item_id: StageItemId) -> str:
     query = """
-        SELECT count(*) FROM rounds
-        JOIN stage_items on stage_items.id = rounds.stage_item_id
+        SELECT stage_items.round_name_pattern, count(rounds.id) AS round_count
+        FROM stage_items
         JOIN stages on stage_items.stage_id = stages.id
+        LEFT JOIN rounds on rounds.stage_item_id = stage_items.id
         WHERE stages.tournament_id = :tournament_id
-        AND rounds.stage_item_id = :stage_item_id
+        AND stage_items.id = :stage_item_id
+        GROUP BY stage_items.round_name_pattern
     """
-    round_count = int(
-        await database.fetch_val(
-            query=query, values={"tournament_id": tournament_id, "stage_item_id": stage_item_id}
-        )
+    row = await database.fetch_one(
+        query=query, values={"tournament_id": tournament_id, "stage_item_id": stage_item_id}
     )
-    return f"Round {round_count + 1:02d}"
+    assert row is not None
+    return format_round_name(row["round_name_pattern"], row["round_count"] + 1)
 
 
 async def sql_delete_rounds_for_stage_item_id(stage_item_id: StageItemId) -> None:

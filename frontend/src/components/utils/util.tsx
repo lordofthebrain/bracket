@@ -83,3 +83,5 @@ export interface Pagination {
 export const setTitle = (title: string) => {
   document.title = title;
 };
+
+export const ROUND_NAME_PATTERN_RE = /^[^{}]*(\{d\}|\{0\d{1,2}d\})[^{}]*$/;

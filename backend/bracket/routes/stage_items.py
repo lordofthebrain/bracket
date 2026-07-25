@@ -117,12 +117,16 @@ async def update_stage_item(
 
     query = """
         UPDATE stage_items
-        SET name = :name
+        SET name = :name, round_name_pattern = :round_name_pattern
         WHERE stage_items.id = :stage_item_id
     """
     await database.execute(
         query=query,
-        values={"stage_item_id": stage_item_id, "name": stage_item_body.name},
+        values={
+            "stage_item_id": stage_item_id,
+            "name": stage_item_body.name,
+            "round_name_pattern": stage_item_body.round_name_pattern,
+        },
     )
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)
     if stage_item.type == StageType.SINGLE_ELIMINATION:
