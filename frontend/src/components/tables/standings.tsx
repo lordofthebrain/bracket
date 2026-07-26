@@ -160,6 +160,7 @@ export function StandingsTableForStageItem({
   maxTeamsToDisplay,
   tournamentId,
   jumpTo,
+  cupWinnerTeamIds,
 }: {
   teams_with_inputs: StageItemInputFinal[];
   stageItem: StageItemWithRounds;
@@ -168,6 +169,7 @@ export function StandingsTableForStageItem({
   maxTeamsToDisplay: number;
   tournamentId: number;
   jumpTo: { targetId: string; label: string }[];
+  cupWinnerTeamIds?: Set<number>;
 }) {
   const { t, i18n } = useTranslation();
   const tableState = getTableState('rank', false);
@@ -279,6 +281,13 @@ export function StandingsTableForStageItem({
       t,
       i18n.language
     );
+    const isCupWinner =
+      i18n.language.startsWith('de') &&
+      team_with_input.team_id != null &&
+      cupWinnerTeamIds?.has(team_with_input.team_id) === true;
+    const markers = [seasonMarker, isCupWinner ? t('cup_winner_marker') : null].filter(
+      (marker) => marker != null
+    );
 
     return (
       <Table.Tr
@@ -293,7 +302,7 @@ export function StandingsTableForStageItem({
             <TeamLogo logoPath={team_with_input.team?.logo_path} />
             <Text truncate="end" lineClamp={1} inherit>
               {formatStageItemInput(team_with_input, stageItemsLookup)}
-              {seasonMarker != null ? ` (${seasonMarker})` : ''}
+              {markers.length > 0 ? ` (${markers.join(', ')})` : ''}
             </Text>
           </Group>
         </Table.Td>

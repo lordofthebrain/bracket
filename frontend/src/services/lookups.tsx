@@ -1,6 +1,7 @@
 import { SWRResponse } from 'swr';
 
 import { assert_not_none } from '@components/utils/assert';
+import { getMatchWinner } from '@components/utils/match';
 import { groupBy, responseIsValid } from '@components/utils/util';
 import {
   Court,
@@ -90,6 +91,35 @@ export function getMatchLookup(swrStagesResponse: SWRResponse) {
     })
   );
   return Object.fromEntries(result);
+}
+
+export function getCupWinnerTeamIds(swrStagesResponse: SWRResponse): Set<number> {
+  const winnerTeamIds = new Set<number>();
+  if (swrStagesResponse?.data == null) return winnerTeamIds;
+
+  swrStagesResponse.data.data.forEach((stage: StageWithStageItems) =>
+    stage.stage_items
+      .filter((stageItem) => stageItem.type === 'SINGLE_ELIMINATION')
+      .forEach((stageItem) => {
+        const sortedRounds = [...stageItem.rounds].sort((r1, r2) => r1.id - r2.id);
+        const finalRound = sortedRounds[sortedRounds.length - 1];
+        const finalMatch = finalRound?.matches[0];
+        if (finalMatch == null || !finalMatch.is_played) return;
+
+        const winner = getMatchWinner(finalMatch);
+        const winnerInput =
+          winner === 1
+            ? finalMatch.stage_item_input1
+            : winner === 2
+              ? finalMatch.stage_item_input2
+              : null;
+        if (winnerInput != null && 'team_id' in winnerInput && winnerInput.team_id != null) {
+          winnerTeamIds.add(winnerInput.team_id);
+        }
+      })
+  );
+
+  return winnerTeamIds;
 }
 
 export function stringToColour(input: string) {
