@@ -7,7 +7,13 @@ import { SWRResponse } from 'swr';
 import MatchModal from '@components/modals/match_modal';
 import { assert_not_none } from '@components/utils/assert';
 import { Time } from '@components/utils/datetime';
-import { formatMatchInput1, formatMatchInput2, isMatchHappening } from '@components/utils/match';
+import {
+  formatMatchInput1,
+  formatMatchInput2,
+  getMatchResultDisplay,
+  getMatchWinner,
+  isMatchHappening,
+} from '@components/utils/match';
 import { TournamentMinimal } from '@components/utils/tournament';
 import { MatchWithDetails, RoundWithMatches, StagesWithStageItemsResponse } from '@openapi';
 import { getMatchLookup, getStageItemLookup } from '@services/lookups';
@@ -65,41 +71,37 @@ export default function Match({
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
   const matchesLookup = getMatchLookup(swrStagesResponse);
 
-  const team1_style =
-    highlightWinner && match.stage_item_input1_score > match.stage_item_input2_score
-      ? winner_style
-      : {};
-  const team2_style =
-    highlightWinner && match.stage_item_input1_score < match.stage_item_input2_score
-      ? winner_style
-      : {};
+  const winner = getMatchWinner(match);
+  const team1_style = highlightWinner && winner === 1 ? winner_style : {};
+  const team2_style = highlightWinner && winner === 2 ? winner_style : {};
 
   const team1_label = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
   const team2_label = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
 
   const [opened, setOpened] = useState(false);
 
-  // A 0:0 half-time score can't be told apart from "not entered" (the match
-  // form defaults to 0), so don't show it when the final score is also 0:0.
-  const hideHalfTime =
-    match.stage_item_input1_score === 0 &&
-    match.stage_item_input2_score === 0 &&
-    match.stage_item_input1_score_half_time === 0 &&
-    match.stage_item_input2_score_half_time === 0;
+  const result = getMatchResultDisplay(match);
+  const checkpointsText = (teamIndex: 0 | 1) =>
+    result.checkpoints.map((checkpoint) => checkpoint[teamIndex]).join(', ');
 
   const bracket = (
     <>
       {showCourtAndTime && <MatchBadge match={match} theme={theme} />}
+      {result.prefix != null && (
+        <Center>
+          <Text size="xs" c="dimmed" fw={700}>
+            {result.prefix}
+          </Text>
+        </Center>
+      )}
       <div className={classes.top} style={team1_style}>
         <Grid grow>
           <Grid.Col span={10}>{team1_label}</Grid.Col>
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
-              <Text component="span">{match.stage_item_input1_score}</Text>
+              <Text component="span">{result.headline[0]}</Text>
               <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                {!hideHalfTime && match.stage_item_input1_score_half_time != null
-                  ? `(${match.stage_item_input1_score_half_time})`
-                  : ''}
+                {result.checkpoints.length > 0 ? `(${checkpointsText(0)})` : ''}
               </Text>
             </Group>
           </Grid.Col>
@@ -110,11 +112,9 @@ export default function Match({
           <Grid.Col span={10}>{team2_label}</Grid.Col>
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
-              <Text component="span">{match.stage_item_input2_score}</Text>
+              <Text component="span">{result.headline[1]}</Text>
               <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                {!hideHalfTime && match.stage_item_input2_score_half_time != null
-                  ? `(${match.stage_item_input2_score_half_time})`
-                  : ''}
+                {result.checkpoints.length > 0 ? `(${checkpointsText(1)})` : ''}
               </Text>
             </Group>
           </Grid.Col>

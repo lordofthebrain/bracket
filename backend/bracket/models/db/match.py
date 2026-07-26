@@ -23,6 +23,12 @@ class MatchBaseInsertable(BaseModelORM):
     stage_item_input2_score: int
     stage_item_input1_score_half_time: int | None = None
     stage_item_input2_score_half_time: int | None = None
+    stage_item_input1_score_extra_time_half: int | None = None
+    stage_item_input2_score_extra_time_half: int | None = None
+    stage_item_input1_score_after_extra_time: int | None = None
+    stage_item_input2_score_after_extra_time: int | None = None
+    stage_item_input1_score_penalties: int | None = None
+    stage_item_input2_score_penalties: int | None = None
     is_played: bool = False
     court_id: CourtId | None = None
     stage_item_input1_conflict: bool
@@ -47,6 +53,32 @@ class Match(MatchInsertable):
     stage_item_input2: StageItemInput | None = None
 
     def get_winner(self) -> StageItemInput | None:
+        if (
+            self.stage_item_input1_score_penalties is not None
+            and self.stage_item_input2_score_penalties is not None
+        ):
+            if self.stage_item_input1_score_penalties > self.stage_item_input2_score_penalties:
+                return self.stage_item_input1
+            if self.stage_item_input1_score_penalties < self.stage_item_input2_score_penalties:
+                return self.stage_item_input2
+            return None
+
+        if (
+            self.stage_item_input1_score_after_extra_time is not None
+            and self.stage_item_input2_score_after_extra_time is not None
+        ):
+            if (
+                self.stage_item_input1_score_after_extra_time
+                > self.stage_item_input2_score_after_extra_time
+            ):
+                return self.stage_item_input1
+            if (
+                self.stage_item_input1_score_after_extra_time
+                < self.stage_item_input2_score_after_extra_time
+            ):
+                return self.stage_item_input2
+            return None
+
         if self.stage_item_input1_score > self.stage_item_input2_score:
             return self.stage_item_input1
         if self.stage_item_input1_score < self.stage_item_input2_score:
@@ -95,10 +127,53 @@ class MatchBody(BaseModelORM):
     stage_item_input2_score: int = 0
     stage_item_input1_score_half_time: int | None = None
     stage_item_input2_score_half_time: int | None = None
+    stage_item_input1_score_extra_time_half: int | None = None
+    stage_item_input2_score_extra_time_half: int | None = None
+    stage_item_input1_score_after_extra_time: int | None = None
+    stage_item_input2_score_after_extra_time: int | None = None
+    stage_item_input1_score_penalties: int | None = None
+    stage_item_input2_score_penalties: int | None = None
     is_played: bool = True
     court_id: CourtId | None = None
     custom_duration_minutes: int | None = None
     custom_margin_minutes: int | None = None
+
+    def with_irrelevant_extra_time_fields_cleared(self) -> "MatchBody":
+        """
+        Extra time/penalties fields only make sense when the preceding score was tied
+        (e.g. entering them for a decisive 2:1 match would wrongly look like it went to
+        extra time). Clears whatever the client sent for fields that don't apply.
+        """
+        if self.stage_item_input1_score != self.stage_item_input2_score:
+            return self.model_copy(
+                update={
+                    "stage_item_input1_score_extra_time_half": None,
+                    "stage_item_input2_score_extra_time_half": None,
+                    "stage_item_input1_score_after_extra_time": None,
+                    "stage_item_input2_score_after_extra_time": None,
+                    "stage_item_input1_score_penalties": None,
+                    "stage_item_input2_score_penalties": None,
+                }
+            )
+
+        has_extra_time = (
+            self.stage_item_input1_score_after_extra_time is not None
+            and self.stage_item_input2_score_after_extra_time is not None
+        )
+        updates: dict[str, int | None] = {}
+        if not has_extra_time:
+            updates["stage_item_input1_score_extra_time_half"] = None
+            updates["stage_item_input2_score_extra_time_half"] = None
+
+        extra_time_tied = has_extra_time and (
+            self.stage_item_input1_score_after_extra_time
+            == self.stage_item_input2_score_after_extra_time
+        )
+        if has_extra_time and not extra_time_tied:
+            updates["stage_item_input1_score_penalties"] = None
+            updates["stage_item_input2_score_penalties"] = None
+
+        return self.model_copy(update=updates) if updates else self
 
 
 class MatchCreateBodyFrontend(BaseModelORM):

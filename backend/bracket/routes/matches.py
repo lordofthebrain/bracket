@@ -175,6 +175,7 @@ async def update_match_by_id(
     match: Match = Depends(match_dependency),
 ) -> SuccessResponse:
     await check_foreign_keys_belong_to_tournament(match_body, tournament_id)
+    match_body = match_body.with_irrelevant_extra_time_fields_cleared()
     tournament = await sql_get_tournament(tournament_id)
 
     if match_body.round_id != match.round_id:
@@ -378,7 +379,8 @@ async def reassign_winner_sources(
             assignment.stage_item_input2_winner_from_match_id,
         )
 
-    await update_inputs_in_complete_elimination_stage_item(stage_item)
-    await recalculate_ranking_for_stage_item(tournament_id, stage_item)
+    updated_stage_item = await get_stage_item(tournament_id, stage_item_id)
+    await update_inputs_in_complete_elimination_stage_item(updated_stage_item)
+    await recalculate_ranking_for_stage_item(tournament_id, updated_stage_item)
 
     return SuccessResponse()

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import matchClasses from '@components/brackets/match.module.css';
-import { formatMatchInput1, formatMatchInput2 } from '@components/utils/match';
+import { formatMatchInput1, formatMatchInput2, getMatchResultDisplay } from '@components/utils/match';
 import {
   getStageItemIdFromRouter,
   getTournamentIdFromRouter,
@@ -138,11 +138,9 @@ export default function EliminationStageItemPage() {
                 const team1_label = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
                 const team2_label = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
                 const sources = getPending(match.id, match);
-                const hideHalfTime =
-                  match.stage_item_input1_score === 0 &&
-                  match.stage_item_input2_score === 0 &&
-                  match.stage_item_input1_score_half_time === 0 &&
-                  match.stage_item_input2_score_half_time === 0;
+                const result = getMatchResultDisplay(match);
+                const checkpointsText = (teamIndex: 0 | 1) =>
+                  result.checkpoints.map((checkpoint) => checkpoint[teamIndex]).join(', ');
 
                 return (
                   <div key={match.id} className={matchClasses.root}>
@@ -167,11 +165,9 @@ export default function EliminationStageItemPage() {
                         </Grid.Col>
                         <Grid.Col span={2} style={{ display: 'flex', alignItems: 'center' }}>
                           <Group gap={4} wrap="nowrap" justify="flex-end">
-                            <Text component="span">{match.stage_item_input1_score}</Text>
+                            <Text component="span">{result.headline[0]}</Text>
                             <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                              {!hideHalfTime && match.stage_item_input1_score_half_time != null
-                                ? `(${match.stage_item_input1_score_half_time})`
-                                : ''}
+                              {result.checkpoints.length > 0 ? `(${checkpointsText(0)})` : ''}
                             </Text>
                           </Group>
                         </Grid.Col>
@@ -198,11 +194,9 @@ export default function EliminationStageItemPage() {
                         </Grid.Col>
                         <Grid.Col span={2} style={{ display: 'flex', alignItems: 'center' }}>
                           <Group gap={4} wrap="nowrap" justify="flex-end">
-                            <Text component="span">{match.stage_item_input2_score}</Text>
+                            <Text component="span">{result.headline[1]}</Text>
                             <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                              {!hideHalfTime && match.stage_item_input2_score_half_time != null
-                                ? `(${match.stage_item_input2_score_half_time})`
-                                : ''}
+                              {result.checkpoints.length > 0 ? `(${checkpointsText(1)})` : ''}
                             </Text>
                           </Group>
                         </Grid.Col>

@@ -142,6 +142,12 @@ matches = Table(
     Column("stage_item_input2_score", Integer, nullable=False),
     Column("stage_item_input1_score_half_time", Integer, nullable=True),
     Column("stage_item_input2_score_half_time", Integer, nullable=True),
+    Column("stage_item_input1_score_extra_time_half", Integer, nullable=True),
+    Column("stage_item_input2_score_extra_time_half", Integer, nullable=True),
+    Column("stage_item_input1_score_after_extra_time", Integer, nullable=True),
+    Column("stage_item_input2_score_after_extra_time", Integer, nullable=True),
+    Column("stage_item_input1_score_penalties", Integer, nullable=True),
+    Column("stage_item_input2_score_penalties", Integer, nullable=True),
     Column("is_played", Boolean, nullable=False, server_default="false"),
     Column("position_in_schedule", Integer, nullable=True),
 )

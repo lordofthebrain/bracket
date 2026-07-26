@@ -286,9 +286,21 @@ export type Match = {
    */
   stage_item_input1_score: number;
   /**
+   * Stage Item Input1 Score After Extra Time
+   */
+  stage_item_input1_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input1 Score Extra Time Half
+   */
+  stage_item_input1_score_extra_time_half: number | null;
+  /**
    * Stage Item Input1 Score Half Time
    */
   stage_item_input1_score_half_time: number | null;
+  /**
+   * Stage Item Input1 Score Penalties
+   */
+  stage_item_input1_score_penalties: number | null;
   /**
    * Stage Item Input1 Winner From Match Id
    */
@@ -310,9 +322,21 @@ export type Match = {
    */
   stage_item_input2_score: number;
   /**
+   * Stage Item Input2 Score After Extra Time
+   */
+  stage_item_input2_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input2 Score Extra Time Half
+   */
+  stage_item_input2_score_extra_time_half: number | null;
+  /**
    * Stage Item Input2 Score Half Time
    */
   stage_item_input2_score_half_time: number | null;
+  /**
+   * Stage Item Input2 Score Penalties
+   */
+  stage_item_input2_score_penalties: number | null;
   /**
    * Stage Item Input2 Winner From Match Id
    */
@@ -352,17 +376,41 @@ export type MatchBody = {
    */
   stage_item_input1_score: number;
   /**
+   * Stage Item Input1 Score After Extra Time
+   */
+  stage_item_input1_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input1 Score Extra Time Half
+   */
+  stage_item_input1_score_extra_time_half: number | null;
+  /**
    * Stage Item Input1 Score Half Time
    */
   stage_item_input1_score_half_time: number | null;
+  /**
+   * Stage Item Input1 Score Penalties
+   */
+  stage_item_input1_score_penalties: number | null;
   /**
    * Stage Item Input2 Score
    */
   stage_item_input2_score: number;
   /**
+   * Stage Item Input2 Score After Extra Time
+   */
+  stage_item_input2_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input2 Score Extra Time Half
+   */
+  stage_item_input2_score_extra_time_half: number | null;
+  /**
    * Stage Item Input2 Score Half Time
    */
   stage_item_input2_score_half_time: number | null;
+  /**
+   * Stage Item Input2 Score Penalties
+   */
+  stage_item_input2_score_penalties: number | null;
 };
 
 /**
@@ -537,9 +585,21 @@ export type MatchWithDetails = {
    */
   stage_item_input1_score: number;
   /**
+   * Stage Item Input1 Score After Extra Time
+   */
+  stage_item_input1_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input1 Score Extra Time Half
+   */
+  stage_item_input1_score_extra_time_half: number | null;
+  /**
    * Stage Item Input1 Score Half Time
    */
   stage_item_input1_score_half_time: number | null;
+  /**
+   * Stage Item Input1 Score Penalties
+   */
+  stage_item_input1_score_penalties: number | null;
   /**
    * Stage Item Input1 Winner From Match Id
    */
@@ -561,9 +621,21 @@ export type MatchWithDetails = {
    */
   stage_item_input2_score: number;
   /**
+   * Stage Item Input2 Score After Extra Time
+   */
+  stage_item_input2_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input2 Score Extra Time Half
+   */
+  stage_item_input2_score_extra_time_half: number | null;
+  /**
    * Stage Item Input2 Score Half Time
    */
   stage_item_input2_score_half_time: number | null;
+  /**
+   * Stage Item Input2 Score Penalties
+   */
+  stage_item_input2_score_penalties: number | null;
   /**
    * Stage Item Input2 Winner From Match Id
    */
@@ -636,9 +708,21 @@ export type MatchWithDetailsDefinitive = {
    */
   stage_item_input1_score: number;
   /**
+   * Stage Item Input1 Score After Extra Time
+   */
+  stage_item_input1_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input1 Score Extra Time Half
+   */
+  stage_item_input1_score_extra_time_half: number | null;
+  /**
    * Stage Item Input1 Score Half Time
    */
   stage_item_input1_score_half_time: number | null;
+  /**
+   * Stage Item Input1 Score Penalties
+   */
+  stage_item_input1_score_penalties: number | null;
   /**
    * Stage Item Input1 Winner From Match Id
    */
@@ -660,9 +744,21 @@ export type MatchWithDetailsDefinitive = {
    */
   stage_item_input2_score: number;
   /**
+   * Stage Item Input2 Score After Extra Time
+   */
+  stage_item_input2_score_after_extra_time: number | null;
+  /**
+   * Stage Item Input2 Score Extra Time Half
+   */
+  stage_item_input2_score_extra_time_half: number | null;
+  /**
    * Stage Item Input2 Score Half Time
    */
   stage_item_input2_score_half_time: number | null;
+  /**
+   * Stage Item Input2 Score Penalties
+   */
+  stage_item_input2_score_penalties: number | null;
   /**
    * Stage Item Input2 Winner From Match Id
    */

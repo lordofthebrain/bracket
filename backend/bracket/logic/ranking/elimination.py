@@ -31,6 +31,11 @@ def get_inputs_to_update_in_subsequent_elimination_rounds(
     subsequent_rounds.sort(key=lambda round_: round_.id)
     subsequent_matches = [match for round_ in subsequent_rounds for match in round_.matches]
 
+    # Only matches that actually changed as a result of this round should be returned —
+    # `affected_matches` also seeds lookups for `current_round`'s own (unchanged) matches,
+    # which must never be re-written with their stale, pre-fetched state.
+    changed_matches: dict[MatchId, Match] = {}
+
     for subsequent_match in subsequent_matches:
         updated_inputs: list[StageItemInput | None] = [
             subsequent_match.stage_item_input1,
@@ -55,7 +60,7 @@ def get_inputs_to_update_in_subsequent_elimination_rounds(
         if original_inputs != updated_inputs:
             input_ids = [input_.id if input_ else None for input_ in updated_inputs]
 
-            affected_matches[subsequent_match.id] = subsequent_match.model_copy(
+            updated_match = subsequent_match.model_copy(
                 update={
                     "stage_item_input1_id": input_ids[0],
                     "stage_item_input2_id": input_ids[1],
@@ -63,13 +68,10 @@ def get_inputs_to_update_in_subsequent_elimination_rounds(
                     "stage_item_input2": updated_inputs[1],
                 }
             )
+            affected_matches[subsequent_match.id] = updated_match
+            changed_matches[subsequent_match.id] = updated_match
 
-    # All affected matches need to be updated except for the inputs.
-    return {
-        match_id: match
-        for match_id, match in affected_matches.items()
-        if match_ids is None or match.id not in match_ids
-    }
+    return changed_matches
 
 
 async def update_inputs_in_subsequent_elimination_rounds(

@@ -21,7 +21,12 @@ import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
-import { formatMatchInput1, formatMatchInput2 } from '@components/utils/match';
+import {
+  formatMatchInput1,
+  formatMatchInput2,
+  getMatchResultDisplay,
+  getMatchWinner,
+} from '@components/utils/match';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
 import { MatchWithDetails, StageWithStageItems } from '@openapi';
@@ -54,25 +59,18 @@ function ScheduleRow({
   const { t } = useTranslation();
   const scoreColor = '#656565';
 
-  // A 0:0 half-time score can't be told apart from "not entered" (the match
-  // form defaults to 0), so don't show it when the final score is also 0:0.
-  const hideHalfTime =
-    data.match.stage_item_input1_score === 0 &&
-    data.match.stage_item_input2_score === 0 &&
-    data.match.stage_item_input1_score_half_time === 0 &&
-    data.match.stage_item_input2_score_half_time === 0;
-
   const isSingleElimination = data.stageItem?.type === 'SINGLE_ELIMINATION';
-  const input1Won =
-    isSingleElimination &&
-    data.match.is_played &&
-    data.match.stage_item_input1_score > data.match.stage_item_input2_score;
-  const input2Won =
-    isSingleElimination &&
-    data.match.is_played &&
-    data.match.stage_item_input2_score > data.match.stage_item_input1_score;
+  const result = getMatchResultDisplay(data.match);
+  const winner = getMatchWinner(data.match);
+  const input1Won = isSingleElimination && data.match.is_played && winner === 1;
+  const input2Won = isSingleElimination && data.match.is_played && winner === 2;
   const isDarkMode = useColorScheme() === 'dark';
   const winnerNameStyle = isDarkMode ? { color: 'white' } : undefined;
+
+  const checkpointStyle = {
+    fontSize: 'var(--mantine-font-size-md)',
+    color: 'var(--mantine-color-dimmed)',
+  };
 
   return (
     <UnstyledButton style={{ width: '48rem' }}>
@@ -97,6 +95,16 @@ function ScheduleRow({
             </Grid.Col>
             <Grid.Col span="content" pb="0rem">
               <Group gap="xs" wrap="nowrap">
+                {result.prefix != null && (
+                  <Text
+                    size="sm"
+                    c="dimmed"
+                    fw={700}
+                    style={{ position: 'relative', top: '0.9rem' }}
+                  >
+                    {result.prefix}
+                  </Text>
+                )}
                 <div
                   style={{
                     backgroundColor: scoreColor,
@@ -107,13 +115,15 @@ function ScheduleRow({
                     fontWeight: 800,
                   }}
                 >
-                  {data.match.stage_item_input1_score}
+                  {result.headline[0]}
                 </div>
-                <Text size="md" c="dimmed" style={{ minWidth: '1.5rem' }}>
-                  {!hideHalfTime && data.match.stage_item_input1_score_half_time != null
-                    ? `(${data.match.stage_item_input1_score_half_time})`
-                    : ''}
-                </Text>
+                <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
+                  {result.checkpoints.map((checkpoint, index) => (
+                    <div key={index} style={checkpointStyle}>
+                      ({checkpoint[0]})
+                    </div>
+                  ))}
+                </Group>
               </Group>
             </Grid.Col>
           </Grid>
@@ -138,13 +148,15 @@ function ScheduleRow({
                     fontWeight: 800,
                   }}
                 >
-                  {data.match.stage_item_input2_score}
+                  {result.headline[1]}
                 </div>
-                <Text size="md" c="dimmed" style={{ minWidth: '1.5rem' }}>
-                  {!hideHalfTime && data.match.stage_item_input2_score_half_time != null
-                    ? `(${data.match.stage_item_input2_score_half_time})`
-                    : ''}
-                </Text>
+                <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
+                  {result.checkpoints.map((checkpoint, index) => (
+                    <div key={index} style={checkpointStyle}>
+                      ({checkpoint[1]})
+                    </div>
+                  ))}
+                </Group>
               </Group>
             </Grid.Col>
           </Grid>

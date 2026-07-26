@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -75,6 +75,12 @@ function MatchModalForm({
       stage_item_input2_score: match.stage_item_input2_score,
       stage_item_input1_score_half_time: match.stage_item_input1_score_half_time ?? 0,
       stage_item_input2_score_half_time: match.stage_item_input2_score_half_time ?? 0,
+      stage_item_input1_score_extra_time_half: match.stage_item_input1_score_extra_time_half ?? 0,
+      stage_item_input2_score_extra_time_half: match.stage_item_input2_score_extra_time_half ?? 0,
+      stage_item_input1_score_after_extra_time: match.stage_item_input1_score_after_extra_time ?? 0,
+      stage_item_input2_score_after_extra_time: match.stage_item_input2_score_after_extra_time ?? 0,
+      stage_item_input1_score_penalties: match.stage_item_input1_score_penalties ?? 0,
+      stage_item_input2_score_penalties: match.stage_item_input2_score_penalties ?? 0,
       custom_duration_minutes: match.custom_duration_minutes,
       custom_margin_minutes: match.custom_margin_minutes,
     },
@@ -85,6 +91,18 @@ function MatchModalForm({
       stage_item_input1_score_half_time: (value) =>
         value == null || value >= 0 ? null : t('negative_score_validation'),
       stage_item_input2_score_half_time: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input1_score_extra_time_half: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input2_score_extra_time_half: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input1_score_after_extra_time: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input2_score_after_extra_time: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input1_score_penalties: (value) =>
+        value == null || value >= 0 ? null : t('negative_score_validation'),
+      stage_item_input2_score_penalties: (value) =>
         value == null || value >= 0 ? null : t('negative_score_validation'),
       custom_duration_minutes: (value) =>
         value == null || value >= 0 ? null : t('negative_match_duration_validation'),
@@ -99,12 +117,56 @@ function MatchModalForm({
   const [customMarginEnabled, setCustomMarginEnabled] = useState(
     match.custom_margin_minutes != null
   );
+  const [noExtraTime, setNoExtraTime] = useState(
+    match.stage_item_input1_score_penalties != null &&
+      match.stage_item_input1_score_after_extra_time == null
+  );
+  const [mainScoreEdited, setMainScoreEdited] = useState(false);
 
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
   const matchesLookup = getMatchLookup(swrStagesResponse);
 
   const team1Name = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
   const team2Name = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
+
+  const isSingleElimination = matchesLookup[match.id]?.stageItem?.type === 'SINGLE_ELIMINATION';
+  const mainScoreTied =
+    form.values.stage_item_input1_score === form.values.stage_item_input2_score;
+  const showExtraTimeFields = isSingleElimination && mainScoreTied && !noExtraTime;
+  const afterExtraTimeTied =
+    form.values.stage_item_input1_score_after_extra_time != null &&
+    form.values.stage_item_input2_score_after_extra_time != null &&
+    form.values.stage_item_input1_score_after_extra_time ===
+      form.values.stage_item_input2_score_after_extra_time;
+  const showPenaltyFields =
+    isSingleElimination &&
+    ((mainScoreTied && noExtraTime) || (showExtraTimeFields && afterExtraTimeTied));
+
+  useEffect(() => {
+    if (!mainScoreEdited || !showExtraTimeFields) return;
+    form.setFieldValue(
+      'stage_item_input1_score_after_extra_time',
+      form.values.stage_item_input1_score
+    );
+    form.setFieldValue(
+      'stage_item_input2_score_after_extra_time',
+      form.values.stage_item_input2_score
+    );
+    form.setFieldValue(
+      'stage_item_input1_score_extra_time_half',
+      form.values.stage_item_input1_score
+    );
+    form.setFieldValue(
+      'stage_item_input2_score_extra_time_half',
+      form.values.stage_item_input2_score
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    mainScoreEdited,
+    showExtraTimeFields,
+    form.values.stage_item_input1_score,
+    form.values.stage_item_input2_score,
+  ]);
 
   const roundOptions =
     round != null
@@ -125,6 +187,12 @@ function MatchModalForm({
             stage_item_input2_score: values.stage_item_input2_score,
             stage_item_input1_score_half_time: values.stage_item_input1_score_half_time,
             stage_item_input2_score_half_time: values.stage_item_input2_score_half_time,
+            stage_item_input1_score_extra_time_half: values.stage_item_input1_score_extra_time_half,
+            stage_item_input2_score_extra_time_half: values.stage_item_input2_score_extra_time_half,
+            stage_item_input1_score_after_extra_time: values.stage_item_input1_score_after_extra_time,
+            stage_item_input2_score_after_extra_time: values.stage_item_input2_score_after_extra_time,
+            stage_item_input1_score_penalties: values.stage_item_input1_score_penalties,
+            stage_item_input2_score_penalties: values.stage_item_input2_score_penalties,
             is_played: true,
             court_id: match.court_id || null,
             custom_duration_minutes: customDurationEnabled ? values.custom_duration_minutes : null,
@@ -153,6 +221,10 @@ function MatchModalForm({
               label={`${t('score_of_label')} ${team1Name}`}
               placeholder={`${t('score_of_label')} ${team1Name}`}
               {...form.getInputProps('stage_item_input1_score')}
+              onChange={(value) => {
+                setMainScoreEdited(true);
+                form.setFieldValue('stage_item_input1_score', typeof value === 'string' ? 0 : value);
+              }}
             />
           </Grid.Col>
           <Grid.Col span={{ sm: 4 }}>
@@ -170,6 +242,10 @@ function MatchModalForm({
               label={`${t('score_of_label')} ${team2Name}`}
               placeholder={`${t('score_of_label')} ${team2Name}`}
               {...form.getInputProps('stage_item_input2_score')}
+              onChange={(value) => {
+                setMainScoreEdited(true);
+                form.setFieldValue('stage_item_input2_score', typeof value === 'string' ? 0 : value);
+              }}
             />
           </Grid.Col>
           <Grid.Col span={{ sm: 4 }}>
@@ -180,6 +256,84 @@ function MatchModalForm({
             />
           </Grid.Col>
         </Grid>
+
+        {isSingleElimination && mainScoreTied && (
+          <Checkbox
+            mt="lg"
+            checked={noExtraTime}
+            label={t('no_extra_time_checkbox_label')}
+            onChange={(event) => {
+              setNoExtraTime(event.currentTarget.checked);
+            }}
+          />
+        )}
+
+        {showExtraTimeFields && (
+          <>
+            <Text size="sm" fw={700} mt="sm">
+              {t('extra_time_section_label')}
+            </Text>
+            <Grid align="flex-end" mt="sm">
+              <Grid.Col span={{ sm: 8 }}>
+                <NumberInput
+                  withAsterisk
+                  label={`${t('score_of_label')} ${team1Name}`}
+                  placeholder={`${t('score_of_label')} ${team1Name}`}
+                  {...form.getInputProps('stage_item_input1_score_after_extra_time')}
+                />
+              </Grid.Col>
+              <Grid.Col span={{ sm: 4 }}>
+                <NumberInput
+                  label={t('half_time_score_label')}
+                  placeholder={t('half_time_score_label')}
+                  {...form.getInputProps('stage_item_input1_score_extra_time_half')}
+                />
+              </Grid.Col>
+            </Grid>
+            <Grid align="flex-end" mt="sm">
+              <Grid.Col span={{ sm: 8 }}>
+                <NumberInput
+                  withAsterisk
+                  label={`${t('score_of_label')} ${team2Name}`}
+                  placeholder={`${t('score_of_label')} ${team2Name}`}
+                  {...form.getInputProps('stage_item_input2_score_after_extra_time')}
+                />
+              </Grid.Col>
+              <Grid.Col span={{ sm: 4 }}>
+                <NumberInput
+                  label={t('half_time_score_label')}
+                  placeholder={t('half_time_score_label')}
+                  {...form.getInputProps('stage_item_input2_score_extra_time_half')}
+                />
+              </Grid.Col>
+            </Grid>
+          </>
+        )}
+
+        {showPenaltyFields && (
+          <>
+            <Text size="sm" fw={700} mt="lg">
+              {t('penalties_section_label')}
+            </Text>
+            <Grid align="flex-end" mt="sm">
+              <Grid.Col span={{ sm: 6 }}>
+                <NumberInput
+                  label={`${t('score_of_label')} ${team1Name}`}
+                  placeholder={`${t('score_of_label')} ${team1Name}`}
+                  {...form.getInputProps('stage_item_input1_score_penalties')}
+                />
+              </Grid.Col>
+              <Grid.Col span={{ sm: 6 }}>
+                <NumberInput
+                  label={`${t('score_of_label')} ${team2Name}`}
+                  placeholder={`${t('score_of_label')} ${team2Name}`}
+                  {...form.getInputProps('stage_item_input2_score_penalties')}
+                />
+              </Grid.Col>
+            </Grid>
+          </>
+        )}
+
         <Divider mt="lg" />
 
         <Text size="sm" mt="lg">
