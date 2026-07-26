@@ -243,7 +243,7 @@ function ResultsForStageItem({
   stageItemsLookup: any;
   matchesLookup: any;
   openMatchModal: CallableFunction;
-  jumpTo?: { targetId: string; label: string } | null;
+  jumpTo: { targetId: string; label: string }[];
 }) {
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
 
@@ -282,7 +282,13 @@ function ResultsForStageItem({
       <Center>
         <Group justify="space-between" align="baseline" mb="sm" style={{ width: '48rem' }}>
           <Title order={3}>{stageItem.name}</Title>
-          {jumpTo != null && <Anchor href={`#${jumpTo.targetId}`}>{jumpTo.label}</Anchor>}
+          <Group gap="md">
+            {jumpTo.map((jump) => (
+              <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
+                {jump.label}
+              </Anchor>
+            ))}
+          </Group>
         </Group>
       </Center>
       {roundOptions.length > 0 && (
@@ -351,8 +357,6 @@ export default function ResultsPage() {
     .map((stageItem: any) => stageItem.id);
 
   const anchorId = (stageItemId: number) => `results-stage-item-${stageItemId}`;
-  const firstStageItemId = stageItemIds[0];
-  const lastStageItemId = stageItemIds[stageItemIds.length - 1];
 
   if (!responseIsValid(swrStagesResponse)) return null;
   if (!responseIsValid(swrCourtsResponse)) return null;
@@ -405,20 +409,16 @@ export default function ResultsPage() {
         </Center>
       ) : (
         stageItemIds.map((stageItemId: number, index: number) => {
-          let jumpTo = null;
-          if (stageItemIds.length > 1) {
-            if (stageItemId === firstStageItemId) {
-              jumpTo = {
-                targetId: anchorId(lastStageItemId),
-                label: `↓ ${stageItemsLookup[lastStageItemId].name}`,
+          const jumpTo = stageItemIds
+            .filter((otherId: number) => otherId !== stageItemId)
+            .map((otherId: number) => {
+              const otherIndex = stageItemIds.indexOf(otherId);
+              const arrow = otherIndex > index ? '↓' : '↑';
+              return {
+                targetId: anchorId(otherId),
+                label: `${arrow} ${stageItemsLookup[otherId].name}`,
               };
-            } else if (stageItemId === lastStageItemId) {
-              jumpTo = {
-                targetId: anchorId(firstStageItemId),
-                label: `↑ ${stageItemsLookup[firstStageItemId].name}`,
-              };
-            }
-          }
+            });
 
           return (
             <div
