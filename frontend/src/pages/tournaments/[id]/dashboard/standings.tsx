@@ -38,6 +38,7 @@ export function StandingsContent({
   const stageItemIds = Object.keys(stageItemTeamLookup)
     .filter((stageItemId) => stageItemsLookup[stageItemId] != null)
     .filter((stageItemId) => stageId == null || stageItemsLookup[stageItemId].stage_id === stageId)
+    .filter((stageItemId) => stageItemsLookup[stageItemId].type !== 'SINGLE_ELIMINATION')
     .sort((si1: any, si2: any) =>
       stageItemsLookup[si1].name > stageItemsLookup[si2].name ? 1 : -1
     );
@@ -53,24 +54,18 @@ export function StandingsContent({
   }
 
   const anchorId = (stageItemId: string) => `standings-stage-item-${stageItemId}`;
-  const firstStageItemId = stageItemIds[0];
-  const lastStageItemId = stageItemIds[stageItemIds.length - 1];
 
   const rows = stageItemIds.map((stageItemId, index) => {
-    let jumpTo = null;
-    if (stageItemIds.length > 1) {
-      if (stageItemId === firstStageItemId) {
-        jumpTo = {
-          targetId: anchorId(lastStageItemId),
-          label: `↓ ${stageItemsLookup[lastStageItemId].name}`,
+    const jumpTo = stageItemIds
+      .filter((otherId) => otherId !== stageItemId)
+      .map((otherId) => {
+        const otherIndex = stageItemIds.indexOf(otherId);
+        const arrow = otherIndex > index ? '↓' : '↑';
+        return {
+          targetId: anchorId(otherId),
+          label: `${arrow} ${stageItemsLookup[otherId].name}`,
         };
-      } else if (stageItemId === lastStageItemId) {
-        jumpTo = {
-          targetId: anchorId(firstStageItemId),
-          label: `↑ ${stageItemsLookup[firstStageItemId].name}`,
-        };
-      }
-    }
+      });
 
     return (
       <div

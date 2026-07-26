@@ -167,7 +167,7 @@ export function StandingsTableForStageItem({
   stageItemsLookup: any;
   maxTeamsToDisplay: number;
   tournamentId: number;
-  jumpTo?: { targetId: string; label: string } | null;
+  jumpTo: { targetId: string; label: string }[];
 }) {
   const { t, i18n } = useTranslation();
   const tableState = getTableState('rank', false);
@@ -397,7 +397,13 @@ export function StandingsTableForStageItem({
     <>
       <Group justify="space-between" align="baseline" mb="sm" style={{ maxWidth: '20rem' }}>
         <Title order={3}>{stageItem.name}</Title>
-        {jumpTo != null && <Anchor href={`#${jumpTo.targetId}`}>{jumpTo.label}</Anchor>}
+        <Group gap="md">
+          {jumpTo.map((jump) => (
+            <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
+              {jump.label}
+            </Anchor>
+          ))}
+        </Group>
       </Group>
       {roundOptions.length > 0 && (
         <Select
