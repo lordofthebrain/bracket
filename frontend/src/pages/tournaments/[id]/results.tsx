@@ -13,6 +13,7 @@ import {
   Title,
   UnstyledButton,
 } from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import { IconAlertCircle } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
@@ -61,6 +62,18 @@ function ScheduleRow({
     data.match.stage_item_input1_score_half_time === 0 &&
     data.match.stage_item_input2_score_half_time === 0;
 
+  const isSingleElimination = data.stageItem?.type === 'SINGLE_ELIMINATION';
+  const input1Won =
+    isSingleElimination &&
+    data.match.is_played &&
+    data.match.stage_item_input1_score > data.match.stage_item_input2_score;
+  const input2Won =
+    isSingleElimination &&
+    data.match.is_played &&
+    data.match.stage_item_input2_score > data.match.stage_item_input1_score;
+  const isDarkMode = useColorScheme() === 'dark';
+  const winnerNameStyle = isDarkMode ? { color: 'white' } : undefined;
+
   return (
     <UnstyledButton style={{ width: '48rem' }}>
       <Card
@@ -77,7 +90,7 @@ function ScheduleRow({
             <Grid.Col span="auto" pb="0rem">
               <Group gap="xs" wrap="nowrap">
                 <TeamLogo input={data.match.stage_item_input1} />
-                <Text fw={500}>
+                <Text fw={input1Won ? 700 : 500} style={input1Won ? winnerNameStyle : undefined}>
                   {formatMatchInput1(t, stageItemsLookup, matchesLookup, data.match)}
                 </Text>
               </Group>
@@ -108,7 +121,7 @@ function ScheduleRow({
             <Grid.Col span="auto" pb="0rem">
               <Group gap="xs" wrap="nowrap">
                 <TeamLogo input={data.match.stage_item_input2} />
-                <Text fw={500}>
+                <Text fw={input2Won ? 700 : 500} style={input2Won ? winnerNameStyle : undefined}>
                   {formatMatchInput2(t, stageItemsLookup, matchesLookup, data.match)}
                 </Text>
               </Group>
