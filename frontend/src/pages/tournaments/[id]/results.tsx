@@ -26,6 +26,7 @@ import {
   formatMatchInput2,
   getMatchResultDisplay,
   getMatchWinner,
+  getTeamLeagueLabel,
 } from '@components/utils/match';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
@@ -64,6 +65,12 @@ function ScheduleRow({
   const winner = getMatchWinner(data.match);
   const input1Won = isSingleElimination && data.match.is_played && winner === 1;
   const input2Won = isSingleElimination && data.match.is_played && winner === 2;
+  const leagueLabel = (input: any) =>
+    isSingleElimination
+      ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, data.stageItem.id)
+      : null;
+  const league1Label = leagueLabel(data.match.stage_item_input1);
+  const league2Label = leagueLabel(data.match.stage_item_input2);
   const isDarkMode = useColorScheme() === 'dark';
   const winnerNameStyle = isDarkMode ? { color: 'white' } : undefined;
 
@@ -86,11 +93,16 @@ function ScheduleRow({
         <Stack>
           <Grid>
             <Grid.Col span="auto" pb="0rem">
-              <Group gap="xs" wrap="nowrap">
+              <Group gap="xs" wrap="nowrap" align="center">
                 <TeamLogo input={data.match.stage_item_input1} />
                 <Text fw={input1Won ? 700 : 500} style={input1Won ? winnerNameStyle : undefined}>
                   {formatMatchInput1(t, stageItemsLookup, matchesLookup, data.match)}
                 </Text>
+                {league1Label != null && (
+                  <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
+                    ({league1Label})
+                  </div>
+                )}
               </Group>
             </Grid.Col>
             <Grid.Col span="content" pb="0rem">
@@ -129,11 +141,16 @@ function ScheduleRow({
           </Grid>
           <Grid mb="0rem">
             <Grid.Col span="auto" pb="0rem">
-              <Group gap="xs" wrap="nowrap">
+              <Group gap="xs" wrap="nowrap" align="center">
                 <TeamLogo input={data.match.stage_item_input2} />
                 <Text fw={input2Won ? 700 : 500} style={input2Won ? winnerNameStyle : undefined}>
                   {formatMatchInput2(t, stageItemsLookup, matchesLookup, data.match)}
                 </Text>
+                {league2Label != null && (
+                  <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
+                    ({league2Label})
+                  </div>
+                )}
               </Group>
             </Grid.Col>
             <Grid.Col span="content" pb="0rem">

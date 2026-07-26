@@ -175,6 +175,24 @@ export function getMatchResultDisplay(match: MatchWithDetails): MatchResultDispl
   };
 }
 
+// For a cup (single elimination) match, teams are often shared with a league (round robin)
+// stage item in the same tournament — look up that league's name to show next to the team.
+export function getTeamLeagueLabel(
+  teamId: number | null | undefined,
+  stageItemsLookup: any,
+  excludeStageItemId: number
+): string | null {
+  if (teamId == null) return null;
+  for (const key of Object.keys(stageItemsLookup)) {
+    const stageItem = stageItemsLookup[key];
+    if (stageItem == null || stageItem.id === excludeStageItemId) continue;
+    if (stageItem.type !== 'ROUND_ROBIN') continue;
+    const hasTeam = stageItem.inputs?.some((input: any) => input.team_id === teamId);
+    if (hasTeam) return stageItem.name;
+  }
+  return null;
+}
+
 export function formatMatchInput1(
   t: Translator,
   stageItemsLookup: any,
