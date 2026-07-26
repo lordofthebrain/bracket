@@ -134,6 +134,16 @@ class MatchRoundAssignmentsBody(BaseModelORM):
     assignments: list[MatchRoundAssignment]
 
 
+class MatchWinnerSourceAssignment(BaseModelORM):
+    match_id: MatchId
+    stage_item_input1_winner_from_match_id: MatchId | None = None
+    stage_item_input2_winner_from_match_id: MatchId | None = None
+
+
+class MatchWinnerSourceAssignmentsBody(BaseModelORM):
+    assignments: list[MatchWinnerSourceAssignment]
+
+
 class MatchFilter(BaseModel):
     elo_diff_threshold: int
     only_recommended: bool

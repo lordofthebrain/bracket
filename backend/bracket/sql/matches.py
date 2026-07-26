@@ -49,6 +49,28 @@ async def sql_swap_match_teams(match_id: MatchId) -> None:
     await database.execute(query=query, values={"match_id": match_id})
 
 
+async def sql_update_match_winner_sources(
+    match_id: MatchId,
+    stage_item_input1_winner_from_match_id: MatchId | None,
+    stage_item_input2_winner_from_match_id: MatchId | None,
+) -> None:
+    query = """
+        UPDATE matches
+        SET
+            stage_item_input1_winner_from_match_id = :stage_item_input1_winner_from_match_id,
+            stage_item_input2_winner_from_match_id = :stage_item_input2_winner_from_match_id
+        WHERE matches.id = :match_id
+        """
+    await database.execute(
+        query=query,
+        values={
+            "match_id": match_id,
+            "stage_item_input1_winner_from_match_id": stage_item_input1_winner_from_match_id,
+            "stage_item_input2_winner_from_match_id": stage_item_input2_winner_from_match_id,
+        },
+    )
+
+
 async def sql_delete_matches_for_stage_item_id(stage_item_id: StageItemId) -> None:
     query = """
         DELETE FROM matches

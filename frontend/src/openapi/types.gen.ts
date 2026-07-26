@@ -446,6 +446,34 @@ export type MatchRoundAssignmentsBody = {
 };
 
 /**
+ * MatchWinnerSourceAssignment
+ */
+export type MatchWinnerSourceAssignment = {
+  /**
+   * Match Id
+   */
+  match_id: number;
+  /**
+   * Stage Item Input1 Winner From Match Id
+   */
+  stage_item_input1_winner_from_match_id: number | null;
+  /**
+   * Stage Item Input2 Winner From Match Id
+   */
+  stage_item_input2_winner_from_match_id: number | null;
+};
+
+/**
+ * MatchWinnerSourceAssignmentsBody
+ */
+export type MatchWinnerSourceAssignmentsBody = {
+  /**
+   * Assignments
+   */
+  assignments: Array<MatchWinnerSourceAssignment>;
+};
+
+/**
  * MatchWithDetails
  *
  * MatchWithDetails has zero or one defined stage item inputs, but not both.
@@ -1022,6 +1050,10 @@ export type StageItemCreateBody = {
    * Round Name Pattern
    */
   round_name_pattern: string;
+  /**
+   * Round Names
+   */
+  round_names: Array<string | null> | null;
   /**
    * Stage Id
    */
@@ -3265,6 +3297,45 @@ export type ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassig
 
 export type ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponse =
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponses[keyof ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponses];
+
+export type ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostData =
+  {
+    body: MatchWinnerSourceAssignmentsBody;
+    path: {
+      /**
+       * Tournament Id
+       */
+      tournament_id: number;
+      /**
+       * Stage Item Id
+       */
+      stage_item_id: number;
+    };
+    query?: never;
+    url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_winner_sources';
+  };
+
+export type ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostErrors =
+  {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+  };
+
+export type ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostError =
+  ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostErrors[keyof ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostErrors];
+
+export type ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponses =
+  {
+    /**
+     * Successful Response
+     */
+    200: SuccessResponse;
+  };
+
+export type ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponse =
+  ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponses[keyof ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponses];
 
 export type StartNextRoundApiTournamentsTournamentIdStageItemsStageItemIdStartNextRoundPostData = {
   body: StageItemActivateNextBody;

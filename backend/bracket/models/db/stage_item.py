@@ -71,6 +71,7 @@ class StageItemCreateBody(BaseModelORM):
     ranking_id: RankingId | None = None
     double_round_robin: bool = False
     round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
+    round_names: list[str | None] | None = None
 
     _validate_round_name_pattern = field_validator("round_name_pattern")(
         _validate_round_name_pattern

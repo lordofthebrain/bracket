@@ -198,6 +198,20 @@ function getTeamCount(values: any) {
   );
 }
 
+function getEliminationRoundNames(t: Translator, teamCount: number): (string | null)[] {
+  const roundsCount = Math.round(Math.log2(teamCount));
+  const specialNameByRoundsFromFinal: Record<number, string> = {
+    0: t('elimination_round_name_final'),
+    1: t('elimination_round_name_semi_final'),
+    2: t('elimination_round_name_quarter_final'),
+    3: t('elimination_round_name_round_of_16'),
+  };
+  return Array.from({ length: roundsCount }, (_, roundIndex) => {
+    const roundsFromFinal = roundsCount - roundIndex - 1;
+    return specialNameByRoundsFromFinal[roundsFromFinal] ?? null;
+  });
+}
+
 interface FormValues {
   type: 'ROUND_ROBIN' | 'SWISS' | 'SINGLE_ELIMINATION';
   team_count_round_robin: number;
@@ -253,13 +267,17 @@ export function CreateStageItemModal({
       >
         <form
           onSubmit={form.onSubmit(async (values) => {
+            const teamCount = getTeamCount(values);
             await createStageItem(
               tournament.id,
               stage.id,
               values.type,
-              getTeamCount(values),
+              teamCount,
               values.double_round_robin,
-              values.round_name_pattern
+              values.round_name_pattern,
+              values.type === 'SINGLE_ELIMINATION'
+                ? getEliminationRoundNames(t, teamCount)
+                : undefined
             );
             await swrStagesResponse.mutate();
             await swrAvailableInputsResponse.mutate();

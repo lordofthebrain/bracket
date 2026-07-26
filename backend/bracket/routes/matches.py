@@ -12,7 +12,10 @@ from bracket.logic.planning.matches import (
 from bracket.logic.ranking.calculation import (
     recalculate_ranking_for_stage_item,
 )
-from bracket.logic.ranking.elimination import update_inputs_in_subsequent_elimination_rounds
+from bracket.logic.ranking.elimination import (
+    update_inputs_in_complete_elimination_stage_item,
+    update_inputs_in_subsequent_elimination_rounds,
+)
 from bracket.logic.scheduling.upcoming_matches import (
     get_draft_round_in_stage_item,
     get_upcoming_matches_for_swiss,
@@ -25,6 +28,7 @@ from bracket.models.db.match import (
     MatchFilter,
     MatchRescheduleBody,
     MatchRoundAssignmentsBody,
+    MatchWinnerSourceAssignmentsBody,
 )
 from bracket.models.db.stage_item import StageType
 from bracket.models.db.tournament import Tournament
@@ -39,6 +43,7 @@ from bracket.sql.matches import (
     sql_swap_match_teams,
     sql_update_match,
     sql_update_match_round,
+    sql_update_match_winner_sources,
 )
 from bracket.sql.rounds import get_round_by_id
 from bracket.sql.stage_items import get_stage_item
@@ -278,6 +283,102 @@ async def reassign_rounds(
         if assignment.swap_teams:
             await sql_swap_match_teams(assignment.match_id)
 
+    await recalculate_ranking_for_stage_item(tournament_id, stage_item)
+
+    return SuccessResponse()
+
+
+@router.post(
+    "/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_winner_sources",
+    response_model=SuccessResponse,
+)
+async def reassign_winner_sources(
+    tournament_id: TournamentId,
+    stage_item_id: StageItemId,
+    body: MatchWinnerSourceAssignmentsBody,
+    _: UserPublic = Depends(user_authenticated_for_tournament),
+    __: Tournament = Depends(disallow_archived_tournament),
+) -> SuccessResponse:
+    stage_item = await get_stage_item(tournament_id, stage_item_id)
+
+    if stage_item.type != StageType.SINGLE_ELIMINATION:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Winner sources can only be reassigned for single elimination stage items",
+        )
+
+    sorted_rounds = sorted(stage_item.rounds, key=lambda round_: round_.id)
+    round_index_by_match: dict[MatchId, int] = {}
+    matches_by_id: dict[MatchId, Match] = {}
+    for round_index, round_ in enumerate(sorted_rounds):
+        for match in round_.matches:
+            round_index_by_match[match.id] = round_index
+            matches_by_id[match.id] = match
+
+    new_sources: dict[MatchId, tuple[MatchId | None, MatchId | None]] = {
+        match_id: (match.stage_item_input1_winner_from_match_id, match.stage_item_input2_winner_from_match_id)
+        for match_id, match in matches_by_id.items()
+    }
+    for assignment in body.assignments:
+        if assignment.match_id not in round_index_by_match:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Match {assignment.match_id} doesn't belong to this stage item",
+            )
+
+        current_match = matches_by_id[assignment.match_id]
+        previous_round_index = round_index_by_match[assignment.match_id] - 1
+        if previous_round_index < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The first round has no winner sources to reassign",
+            )
+        previous_round_match_ids = {match.id for match in sorted_rounds[previous_round_index].matches}
+
+        for source_match_id in (
+            assignment.stage_item_input1_winner_from_match_id,
+            assignment.stage_item_input2_winner_from_match_id,
+        ):
+            if (
+                source_match_id is not None
+                and current_match.stage_item_input1_winner_from_match_id is not None
+                and current_match.stage_item_input2_winner_from_match_id is not None
+                and source_match_id not in previous_round_match_ids
+            ):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Match {source_match_id} isn't in the round preceding match "
+                    f"{assignment.match_id}",
+                )
+
+        new_sources[assignment.match_id] = (
+            assignment.stage_item_input1_winner_from_match_id,
+            assignment.stage_item_input2_winner_from_match_id,
+        )
+
+    sources_per_round: dict[int, dict[MatchId, MatchId]] = {}
+    for match_id, (source1, source2) in new_sources.items():
+        round_index = round_index_by_match[match_id]
+        round_sources = sources_per_round.setdefault(round_index, {})
+        for source_match_id in (source1, source2):
+            if source_match_id is None:
+                continue
+            existing_match_id = round_sources.get(source_match_id)
+            if existing_match_id is not None and existing_match_id != match_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Match {source_match_id}'s winner can only advance to one match",
+                )
+            round_sources[source_match_id] = match_id
+
+    for assignment in body.assignments:
+        await sql_update_match_winner_sources(
+            assignment.match_id,
+            assignment.stage_item_input1_winner_from_match_id,
+            assignment.stage_item_input2_winner_from_match_id,
+        )
+
+    await update_inputs_in_complete_elimination_stage_item(stage_item)
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)
 
     return SuccessResponse()

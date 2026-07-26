@@ -26,7 +26,9 @@ from tests.integration_tests.mocks import MOCK_NOW
 
 
 async def create_rounds_for_new_stage_item(
-    tournament_id: TournamentId, stage_item: StageItem
+    tournament_id: TournamentId,
+    stage_item: StageItem,
+    round_names: list[str | None] | None = None,
 ) -> None:
     rounds_count: int
     match stage_item.type:
@@ -41,19 +43,31 @@ async def create_rounds_for_new_stage_item(
         case other:
             raise NotImplementedError(f"No round creation implementation for {other}")
 
-    for _ in range(rounds_count):
+    names_match_rounds_count = round_names is not None and len(round_names) == rounds_count
+    valid_round_names = round_names if names_match_rounds_count else []
+
+    for round_index in range(rounds_count):
+        provided_name = valid_round_names[round_index] if valid_round_names else None
+        if provided_name is not None:
+            name = provided_name
+        else:
+            name = await get_next_round_name(tournament_id, stage_item.id)
         await sql_create_round(
             RoundInsertable(
                 created=MOCK_NOW,
                 is_draft=False,
                 stage_item_id=stage_item.id,
-                name=await get_next_round_name(tournament_id, stage_item.id),
+                name=name,
             ),
         )
 
 
-async def build_matches_for_stage_item(stage_item: StageItem, tournament_id: TournamentId) -> None:
-    await create_rounds_for_new_stage_item(tournament_id, stage_item)
+async def build_matches_for_stage_item(
+    stage_item: StageItem,
+    tournament_id: TournamentId,
+    round_names: list[str | None] | None = None,
+) -> None:
+    await create_rounds_for_new_stage_item(tournament_id, stage_item, round_names)
     stage_item_with_rounds = await get_stage_item(tournament_id, stage_item.id)
 
     match stage_item.type:

@@ -822,6 +822,59 @@
         "title": "MatchRoundAssignmentsBody",
         "type": "object"
       },
+      "MatchWinnerSourceAssignment": {
+        "properties": {
+          "match_id": {
+            "title": "Match Id",
+            "type": "integer"
+          },
+          "stage_item_input1_winner_from_match_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input1 Winner From Match Id"
+          },
+          "stage_item_input2_winner_from_match_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Item Input2 Winner From Match Id"
+          }
+        },
+        "required": [
+          "match_id",
+          "stage_item_input1_winner_from_match_id",
+          "stage_item_input2_winner_from_match_id"
+        ],
+        "title": "MatchWinnerSourceAssignment",
+        "type": "object"
+      },
+      "MatchWinnerSourceAssignmentsBody": {
+        "properties": {
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/MatchWinnerSourceAssignment"
+            },
+            "title": "Assignments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assignments"
+        ],
+        "title": "MatchWinnerSourceAssignmentsBody",
+        "type": "object"
+      },
       "MatchWithDetails": {
         "description": "MatchWithDetails has zero or one defined stage item inputs, but not both.",
         "properties": {
@@ -1927,6 +1980,27 @@
             "title": "Round Name Pattern",
             "type": "string"
           },
+          "round_names": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Names"
+          },
           "stage_id": {
             "title": "Stage Id",
             "type": "integer"
@@ -1948,7 +2022,8 @@
           "team_count",
           "ranking_id",
           "double_round_robin",
-          "round_name_pattern"
+          "round_name_pattern",
+          "round_names"
         ],
         "title": "StageItemCreateBody",
         "type": "object"
@@ -5580,6 +5655,72 @@
           }
         ],
         "summary": "Reassign Rounds",
+        "tags": [
+          "Matches"
+        ]
+      }
+    },
+    "/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_winner_sources": {
+      "post": {
+        "operationId": "reassign_winner_sources_api_tournaments__tournament_id__stage_items__stage_item_id__reassign_winner_sources_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tournament_id",
+            "required": true,
+            "schema": {
+              "title": "Tournament Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "stage_item_id",
+            "required": true,
+            "schema": {
+              "title": "Stage Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchWinnerSourceAssignmentsBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Reassign Winner Sources",
         "tags": [
           "Matches"
         ]

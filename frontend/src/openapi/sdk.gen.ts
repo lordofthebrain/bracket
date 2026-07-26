@@ -134,6 +134,9 @@ import type {
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostData,
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostErrors,
   ReassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassignRoundsPostResponses,
+  ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostData,
+  ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostErrors,
+  ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponses,
   RegisterDemoUserApiUsersRegisterDemoPostData,
   RegisterDemoUserApiUsersRegisterDemoPostErrors,
   RegisterDemoUserApiUsersRegisterDemoPostResponses,
@@ -1087,6 +1090,31 @@ export const reassignRoundsApiTournamentsTournamentIdStageItemsStageItemIdReassi
       ...options.headers,
     },
   });
+
+/**
+ * Reassign Winner Sources
+ */
+export const reassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPost =
+  <ThrowOnError extends boolean = false>(
+    options: Options<
+      ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostData,
+      ThrowOnError
+    >
+  ) =>
+    (options.client ?? client).post<
+      ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostResponses,
+      ReassignWinnerSourcesApiTournamentsTournamentIdStageItemsStageItemIdReassignWinnerSourcesPostErrors,
+      ThrowOnError
+    >({
+      responseType: 'json',
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/tournaments/{tournament_id}/stage_items/{stage_item_id}/reassign_winner_sources',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
 
 /**
  * Start Next Round

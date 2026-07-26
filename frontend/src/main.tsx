@@ -33,6 +33,7 @@ import DashboardNotFoundPage from './pages/tournaments/[id]/dashboard/dashboard_
 import CourtsPresentPage from './pages/tournaments/[id]/dashboard/present/courts';
 import StandingsPresentPage from './pages/tournaments/[id]/dashboard/present/standings';
 import DashboardStandingsPage from './pages/tournaments/[id]/dashboard/standings';
+import EliminationStageItemPage from './pages/tournaments/[id]/stages/elimination/[stage_item_id]';
 import PlayersPage from './pages/tournaments/[id]/players';
 import RankingsPage from './pages/tournaments/[id]/rankings';
 import ResultsPage from './pages/tournaments/[id]/results';
@@ -121,6 +122,10 @@ createRoot(document.getElementById('root')!).render(
                   <Route path="stages">
                     <Route index element={<StagesPage />} />
                     <Route path="swiss/:stage_item_id" element={<SwissTournamentPage />} />
+                    <Route
+                      path="elimination/:stage_item_id"
+                      element={<EliminationStageItemPage />}
+                    />
                   </Route>
                   <Route path="dashboard">
                     <Route index element={<DashboardSchedulePage />} />

@@ -330,6 +330,18 @@ function StageItemRow({
                 </ActionIcon>
               </Tooltip>
             ) : null}
+            {stageItem.type === 'SINGLE_ELIMINATION' ? (
+              <Tooltip label={t('manage_rounds_button')}>
+                <ActionIcon
+                  variant="transparent"
+                  color="gray"
+                  component={PreloadLink}
+                  href={`/tournaments/${tournament.id}/stages/elimination/${stageItem.id}`}
+                >
+                  <BiSolidWrench size="1.25rem" />
+                </ActionIcon>
+              </Tooltip>
+            ) : null}
             <Tooltip label={t('edit_stage_item_label')}>
               <ActionIcon
                 variant="transparent"

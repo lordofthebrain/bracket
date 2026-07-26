@@ -6,7 +6,8 @@ export async function createStageItem(
   type: string,
   team_count: number,
   double_round_robin: boolean = false,
-  round_name_pattern: string = 'Round {02d}'
+  round_name_pattern: string = 'Round {02d}',
+  round_names?: (string | null)[]
 ) {
   return createAxios()
     .post(`tournaments/${tournament_id}/stage_items`, {
@@ -15,6 +16,7 @@ export async function createStageItem(
       team_count,
       double_round_robin,
       round_name_pattern,
+      round_names,
     })
     .catch((response: any) => handleRequestError(response));
 }

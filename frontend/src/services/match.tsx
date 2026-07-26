@@ -63,3 +63,21 @@ export async function reassignRounds(
     })
     .catch((response: any) => handleRequestError(response));
 }
+
+export interface MatchWinnerSourceAssignment {
+  match_id: number;
+  stage_item_input1_winner_from_match_id: number | null;
+  stage_item_input2_winner_from_match_id: number | null;
+}
+
+export async function reassignWinnerSources(
+  tournament_id: number,
+  stage_item_id: number,
+  assignments: MatchWinnerSourceAssignment[]
+) {
+  return createAxios()
+    .post(`tournaments/${tournament_id}/stage_items/${stage_item_id}/reassign_winner_sources`, {
+      assignments,
+    })
+    .catch((response: any) => handleRequestError(response));
+}
