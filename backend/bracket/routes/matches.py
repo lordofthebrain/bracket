@@ -175,14 +175,31 @@ async def update_match_by_id(
     match: Match = Depends(match_dependency),
 ) -> SuccessResponse:
     await check_foreign_keys_belong_to_tournament(match_body, tournament_id)
-    match_body = match_body.with_irrelevant_extra_time_fields_cleared()
+
+    round_ = await get_round_by_id(tournament_id, match.round_id)
+    stage_item = await get_stage_item(tournament_id, round_.stage_item_id)
+
+    if stage_item.type == StageType.SINGLE_ELIMINATION:
+        match_body = match_body.with_irrelevant_extra_time_fields_cleared()
+    else:
+        # Extra time/penalties only apply to single elimination matches.
+        match_body = match_body.model_copy(
+            update={
+                "stage_item_input1_score_extra_time_half": None,
+                "stage_item_input2_score_extra_time_half": None,
+                "stage_item_input1_score_after_extra_time": None,
+                "stage_item_input2_score_after_extra_time": None,
+                "stage_item_input1_score_penalties": None,
+                "stage_item_input2_score_penalties": None,
+            }
+        )
+
     tournament = await sql_get_tournament(tournament_id)
 
     if match_body.round_id != match.round_id:
-        old_round = await get_round_by_id(tournament_id, match.round_id)
         new_round = await get_round_by_id(tournament_id, match_body.round_id)
 
-        if new_round.stage_item_id != old_round.stage_item_id:
+        if new_round.stage_item_id != round_.stage_item_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Can't move a match to a round of a different stage item",
@@ -200,8 +217,6 @@ async def update_match_by_id(
 
     await sql_update_match(match_id, match_body, tournament)
 
-    round_ = await get_round_by_id(tournament_id, match.round_id)
-    stage_item = await get_stage_item(tournament_id, round_.stage_item_id)
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)
 
     if (
