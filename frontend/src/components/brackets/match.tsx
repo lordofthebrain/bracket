@@ -81,8 +81,6 @@ export default function Match({
   const [opened, setOpened] = useState(false);
 
   const result = getMatchResultDisplay(match);
-  const checkpointsText = (teamIndex: 0 | 1) =>
-    result.checkpoints.map((checkpoint) => checkpoint[teamIndex]).join(', ');
 
   const bracket = (
     <>
@@ -100,9 +98,13 @@ export default function Match({
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
               <Text component="span">{result.headline[0]}</Text>
-              <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                {result.checkpoints.length > 0 ? `(${checkpointsText(0)})` : ''}
-              </Text>
+              <Group gap={4} wrap="nowrap" justify="flex-end" style={{ minWidth: '1rem' }}>
+                {result.checkpoints.map((checkpoint, index) => (
+                  <Text component="span" size="sm" c="dimmed" key={index}>
+                    ({checkpoint[0]})
+                  </Text>
+                ))}
+              </Group>
             </Group>
           </Grid.Col>
         </Grid>
@@ -113,9 +115,13 @@ export default function Match({
           <Grid.Col span={2}>
             <Group gap={4} wrap="nowrap" justify="flex-end">
               <Text component="span">{result.headline[1]}</Text>
-              <Text component="span" size="sm" c="dimmed" style={{ minWidth: '1rem' }}>
-                {result.checkpoints.length > 0 ? `(${checkpointsText(1)})` : ''}
-              </Text>
+              <Group gap={4} wrap="nowrap" justify="flex-end" style={{ minWidth: '1rem' }}>
+                {result.checkpoints.map((checkpoint, index) => (
+                  <Text component="span" size="sm" c="dimmed" key={index}>
+                    ({checkpoint[1]})
+                  </Text>
+                ))}
+              </Group>
             </Group>
           </Grid.Col>
         </Grid>
