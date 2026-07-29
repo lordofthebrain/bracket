@@ -1,5 +1,4 @@
 import { Button, Container, Grid, Group, SegmentedControl, Stack, Title } from '@mantine/core';
-import { IconExternalLink } from '@tabler/icons-react';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { useTranslation } from 'react-i18next';
 import { LuNavigation } from 'react-icons/lu';
@@ -181,23 +180,6 @@ export default function SwissTournamentPage() {
                 { label: t('match_filter_option_current'), value: 'present-only' },
               ]}
             />
-            {tournamentDataFull?.dashboard_endpoint && (
-              <Button
-                className={classes.fullWithMobile}
-                color="blue"
-                size="sm"
-                variant="outline"
-                leftSection={<IconExternalLink size={24} />}
-                onClick={() => {
-                  window.open(
-                    `/tournaments/${tournamentDataFull.dashboard_endpoint}/dashboard`,
-                    '_ blank'
-                  );
-                }}
-              >
-                {t('view_dashboard_button')}
-              </Button>
-            )}
             {stageItem != null && (
               <BulkRoundAssignmentModal
                 tournamentData={tournamentDataFull}
