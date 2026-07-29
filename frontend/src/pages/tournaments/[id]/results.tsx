@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
+import { StageFilterSelect, useStageFilter } from '@components/select/stage_filter_select';
 import {
   formatMatchInput1,
   formatMatchInput2,
@@ -30,7 +31,7 @@ import {
 } from '@components/utils/match';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
-import { MatchWithDetails, StageWithStageItems } from '@openapi';
+import { MatchWithDetails } from '@openapi';
 import TournamentLayout from '@pages/tournaments/_tournament_layout';
 import { getBaseApiUrl, getCourts, getStages } from '@services/adapter';
 import { getMatchLookup, getStageItemLookup } from '@services/lookups';
@@ -309,27 +310,31 @@ function ResultsForStageItem({
   return (
     <div>
       <Center>
-        <Group justify="space-between" align="baseline" mb="sm" style={{ width: '48rem' }}>
-          <Title order={3}>{stageItem.name}</Title>
-          <Group gap="md">
-            {jumpTo.map((jump) => (
-              <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
-                {jump.label}
-              </Anchor>
-            ))}
+        <div style={{ width: '48rem' }}>
+          <Group justify="space-between" align="baseline" mb="sm" style={{ maxWidth: '20rem' }}>
+            <Title order={3}>{stageItem.name}</Title>
+            <Group gap="md">
+              {jumpTo.map((jump) => (
+                <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
+                  {jump.label}
+                </Anchor>
+              ))}
+            </Group>
           </Group>
-        </Group>
+        </div>
       </Center>
       {roundOptions.length > 0 && (
         <Center>
-          <Select
-            label={t('round_filter_label')}
-            data={roundOptions}
-            value={roundFilter}
-            onChange={setRoundFilter}
-            allowDeselect={false}
-            style={{ width: '48rem' }}
-          />
+          <div style={{ width: '48rem' }}>
+            <Select
+              label={t('round_filter_label')}
+              data={roundOptions}
+              value={roundFilter}
+              onChange={setRoundFilter}
+              allowDeselect={false}
+              style={{ maxWidth: '20rem' }}
+            />
+          </div>
         </Center>
       )}
       <Center mt="1rem">
@@ -358,27 +363,17 @@ function ResultsForStageItem({
 export default function ResultsPage() {
   const [modalOpened, modalSetOpened] = useState(false);
   const [match, setMatch] = useState<MatchWithDetails | null>(null);
-  const [stageFilter, setStageFilter] = useState<string | null>(null);
 
   const { t } = useTranslation();
   const { tournamentData } = getTournamentIdFromRouter();
   const swrStagesResponse = getStages(tournamentData.id);
   const swrCourtsResponse = getCourts(tournamentData.id);
+  const { stageFilter, setStageFilter, stageOptions } = useStageFilter(swrStagesResponse);
 
   const stageItemsLookup: any = responseIsValid(swrStagesResponse)
     ? getStageItemLookup(swrStagesResponse)
     : [];
   const matchesLookup = responseIsValid(swrStagesResponse) ? getMatchLookup(swrStagesResponse) : [];
-
-  const stages: StageWithStageItems[] = swrStagesResponse.data?.data ?? [];
-  const stageOptions = stages.map((stage) => ({ value: `${stage.id}`, label: stage.name }));
-
-  useEffect(() => {
-    if (stageFilter != null || stages.length < 1) return;
-    const activeStage = stages.find((stage) => stage.is_active);
-    setStageFilter(`${activeStage?.id ?? stages[stages.length - 1].id}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stages.map((stage) => stage.id).join(',')]);
 
   const stageItemIds = Object.values(stageItemsLookup)
     .filter((stageItem: any) => stageFilter == null || `${stageItem.stage_id}` === stageFilter)
@@ -416,18 +411,15 @@ export default function ResultsPage() {
       <Center>
         <Title style={{ width: '48rem' }}>{t('results_title')}</Title>
       </Center>
-      {stageOptions.length > 1 && (
-        <Center mt="1rem">
-          <Select
-            label={t('stage_filter_label')}
-            data={stageOptions}
-            value={stageFilter}
-            onChange={setStageFilter}
-            allowDeselect={false}
-            style={{ width: '48rem' }}
+      <Center>
+        <div style={{ width: '48rem' }}>
+          <StageFilterSelect
+            stageFilter={stageFilter}
+            setStageFilter={setStageFilter}
+            stageOptions={stageOptions}
           />
-        </Center>
-      )}
+        </div>
+      </Center>
       {stageItemIds.length < 1 ? (
         <Center mt="1rem">
           <NoContent
