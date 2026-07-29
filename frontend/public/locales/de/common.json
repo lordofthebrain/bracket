@@ -236,6 +236,8 @@
     "team_filter_label": "Team",
     "team_filter_placeholder": "Alle Teams",
     "round_filter_label": "Spieltag",
+    "previous_round_button": "Vorheriger Spieltag",
+    "next_round_button": "Nächster Spieltag",
     "bulk_round_assignment_title": "Matches den Runden zuordnen",
     "bulk_round_assignment_return_leg_notice": "Es werden nur die Hinrunden-Spieltage angezeigt. Verschiebungen und Heim/Auswärts-Tausch werden automatisch auf die passende Rückrunden-Paarung übertragen.",
     "validate_and_save_button": "Validieren & Speichern",

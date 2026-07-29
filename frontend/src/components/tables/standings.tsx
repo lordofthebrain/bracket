@@ -1,9 +1,10 @@
-import { Anchor, Badge, Group, Image, Select, Table, Text, Title } from '@mantine/core';
+import { Anchor, Badge, Group, Image, Table, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PlayerScore } from '@components/info/player_score';
 import { EmptyTableInfo } from '@components/no_content/empty_table_info';
+import { RoundFilterSelect } from '@components/select/round_filter_select';
 import { formatStageItemInput } from '@components/utils/stage_item_input';
 import { MatchWithDetails, RankingZone, StageItemInputFinal, StageItemWithRounds } from '@openapi';
 import { getBaseApiUrl, getRankings } from '@services/adapter';
@@ -417,17 +418,12 @@ export function StandingsTableForStageItem({
           ))}
         </Group>
       </Group>
-      {roundOptions.length > 0 && (
-        <Select
-          label={t('round_filter_label')}
-          data={roundOptions}
-          value={roundFilter}
-          onChange={setRoundFilter}
-          allowDeselect={false}
-          mb="md"
-          style={{ maxWidth: '20rem' }}
-        />
-      )}
+      <RoundFilterSelect
+        options={roundOptions}
+        value={roundFilter}
+        onChange={setRoundFilter}
+        style={{ maxWidth: '20rem', marginBottom: 'var(--mantine-spacing-md)' }}
+      />
       {rows.length < 1 ? (
         <EmptyTableInfo entity_name={t('teams_title')} />
       ) : (

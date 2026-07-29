@@ -7,7 +7,6 @@ import {
   Group,
   Image,
   Loader,
-  Select,
   Stack,
   Text,
   Title,
@@ -21,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
+import { RoundFilterSelect } from '@components/select/round_filter_select';
 import { StageFilterSelect, useStageFilter } from '@components/select/stage_filter_select';
 import {
   formatMatchInput1,
@@ -326,12 +326,10 @@ function ResultsForStageItem({
       {roundOptions.length > 0 && (
         <Center>
           <div style={{ width: '48rem' }}>
-            <Select
-              label={t('round_filter_label')}
-              data={roundOptions}
+            <RoundFilterSelect
+              options={roundOptions}
               value={roundFilter}
               onChange={setRoundFilter}
-              allowDeselect={false}
               style={{ maxWidth: '20rem' }}
             />
           </div>
