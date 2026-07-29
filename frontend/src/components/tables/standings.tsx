@@ -285,9 +285,12 @@ export function StandingsTableForStageItem({
       i18n.language.startsWith('de') &&
       team_with_input.team_id != null &&
       cupWinnerTeamIds?.has(team_with_input.team_id) === true;
-    const markers = [seasonMarker, isCupWinner ? t('cup_winner_marker') : null].filter(
-      (marker) => marker != null
-    );
+    const cupWinnerMarker = isCupWinner ? t('cup_winner_marker') : null;
+    const markers = (
+      seasonMarker === t('champion_marker')
+        ? [seasonMarker, cupWinnerMarker]
+        : [cupWinnerMarker, seasonMarker]
+    ).filter((marker) => marker != null);
 
     return (
       <Table.Tr
