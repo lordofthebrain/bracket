@@ -266,6 +266,7 @@
     "champion_marker": "M",
     "promoted_marker": "N",
     "cup_winner_marker": "P",
+    "relegation_marker": "A",
     "stage_item_title": "Stage Element",
     "stage_singular_title": "Phase",
     "stage_spotlight_description": "Layout des Turniers ändern",

@@ -13,7 +13,12 @@ import { responseIsValid, setTitle } from '@components/utils/util';
 import { StagesWithStageItemsResponse } from '@openapi';
 import { getStagesLive } from '@services/adapter';
 import { getTournamentResponseByEndpointName } from '@services/dashboard';
-import { getCupWinnerTeamIds, getStageItemLookup, getStageItemTeamsLookup } from '@services/lookups';
+import {
+  getCupWinnerTeamIdsByStage,
+  getPreviousStageId,
+  getStageItemLookup,
+  getStageItemTeamsLookup,
+} from '@services/lookups';
 
 export function StandingsContent({
   swrStagesResponse,
@@ -54,7 +59,7 @@ export function StandingsContent({
   }
 
   const anchorId = (stageItemId: string) => `standings-stage-item-${stageItemId}`;
-  const cupWinnerTeamIds = getCupWinnerTeamIds(swrStagesResponse);
+  const cupWinnerTeamIdsByStage = getCupWinnerTeamIdsByStage(swrStagesResponse);
 
   const rows = stageItemIds.map((stageItemId, index) => {
     const jumpTo = stageItemIds
@@ -67,6 +72,13 @@ export function StandingsContent({
           label: `${arrow} ${stageItemsLookup[otherId].name}`,
         };
       });
+
+    const previousStageId = getPreviousStageId(
+      stageItemsLookup,
+      stageItemsLookup[stageItemId].stage_id
+    );
+    const cupWinnerTeamIds =
+      previousStageId != null ? cupWinnerTeamIdsByStage.get(previousStageId) : undefined;
 
     return (
       <div

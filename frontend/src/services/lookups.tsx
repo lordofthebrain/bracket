@@ -36,6 +36,14 @@ export function getStageItemLookup(swrStagesResponse: SWRResponse) {
   return Object.fromEntries(result);
 }
 
+// Finds the stage id of the season right before currentStageId (assumes ascending stage ids = chronological order).
+export function getPreviousStageId(stageItemsLookup: any, currentStageId: number): number | null {
+  const stageIds = (Object.values(stageItemsLookup) as any[])
+    .map((stageItem) => stageItem.stage_id)
+    .filter((id) => id != null && id < currentStageId);
+  return stageIds.length > 0 ? Math.max(...stageIds) : null;
+}
+
 export function getStageItemList(swrStagesResponse: SWRResponse) {
   let result: any[] = [];
 
@@ -93,11 +101,14 @@ export function getMatchLookup(swrStagesResponse: SWRResponse) {
   return Object.fromEntries(result);
 }
 
-export function getCupWinnerTeamIds(swrStagesResponse: SWRResponse): Set<number> {
-  const winnerTeamIds = new Set<number>();
-  if (swrStagesResponse?.data == null) return winnerTeamIds;
+// Keyed by stage (season) id, so a cup win in one season doesn't mark the
+// team as cup winner in a different season's standings table.
+export function getCupWinnerTeamIdsByStage(swrStagesResponse: SWRResponse): Map<number, Set<number>> {
+  const winnerTeamIdsByStage = new Map<number, Set<number>>();
+  if (swrStagesResponse?.data == null) return winnerTeamIdsByStage;
 
-  swrStagesResponse.data.data.forEach((stage: StageWithStageItems) =>
+  swrStagesResponse.data.data.forEach((stage: StageWithStageItems) => {
+    const winnerTeamIds = new Set<number>();
     stage.stage_items
       .filter((stageItem) => stageItem.type === 'SINGLE_ELIMINATION')
       .forEach((stageItem) => {
@@ -116,10 +127,11 @@ export function getCupWinnerTeamIds(swrStagesResponse: SWRResponse): Set<number>
         if (winnerInput != null && 'team_id' in winnerInput && winnerInput.team_id != null) {
           winnerTeamIds.add(winnerInput.team_id);
         }
-      })
-  );
+      });
+    winnerTeamIdsByStage.set(stage.id, winnerTeamIds);
+  });
 
-  return winnerTeamIds;
+  return winnerTeamIdsByStage;
 }
 
 export function stringToColour(input: string) {

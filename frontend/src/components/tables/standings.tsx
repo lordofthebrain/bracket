@@ -6,8 +6,15 @@ import { PlayerScore } from '@components/info/player_score';
 import { EmptyTableInfo } from '@components/no_content/empty_table_info';
 import { RoundFilterSelect } from '@components/select/round_filter_select';
 import { formatStageItemInput } from '@components/utils/stage_item_input';
-import { MatchWithDetails, RankingZone, StageItemInputFinal, StageItemWithRounds } from '@openapi';
+import {
+  MatchWithDetails,
+  Ranking,
+  RankingZone,
+  StageItemInputFinal,
+  StageItemWithRounds,
+} from '@openapi';
 import { getBaseApiUrl, getRankings } from '@services/adapter';
+import { getPreviousStageId } from '@services/lookups';
 import { ThSortable, getTableState, sortTableEntries } from './table';
 import TableLayoutLarge from './table_large';
 
@@ -37,6 +44,7 @@ function getSeasonMarker(
   input: StageItemInputFinal,
   stageItem: StageItemWithRounds,
   stageItemsLookup: any,
+  rankings: Ranking[],
   t: (key: string) => string,
   language: string
 ): string | null {
@@ -44,7 +52,18 @@ function getSeasonMarker(
   if (!language.startsWith('de')) return null;
 
   const sourceStageItemId = input.winner_from_stage_item_id;
-  if (sourceStageItemId == null) return null;
+  if (sourceStageItemId == null) {
+    // Newcomer only if the team wasn't in the immediately preceding season.
+    const previousStageId = getPreviousStageId(stageItemsLookup, (stageItem as any).stage_id);
+    if (previousStageId == null) return null;
+
+    const hasPlayedInPreviousStage = (Object.values(stageItemsLookup) as any[]).some(
+      (otherStageItem) =>
+        otherStageItem.stage_id === previousStageId &&
+        otherStageItem.inputs?.some((otherInput: any) => otherInput.team_id === input.team_id)
+    );
+    return hasPlayedInPreviousStage ? null : t('promoted_marker');
+  }
 
   const sourceStageItem = stageItemsLookup[sourceStageItemId];
   if (sourceStageItem == null) return null;
@@ -52,7 +71,24 @@ function getSeasonMarker(
   if (sourceStageItem.name === stageItem.name) {
     return input.winner_position === 1 ? t('champion_marker') : null;
   }
-  return t('promoted_marker');
+
+  // Cross-league move: whether it's a promotion or relegation depends on where
+  // the team finished in the *previous* stage item's own standings zones.
+  const winnerPosition = input.winner_position;
+  const sourceTeamCount = sourceStageItem.inputs?.length ?? 0;
+  if (winnerPosition == null || sourceTeamCount < 1) return null;
+
+  const sourceRanking = rankings.find((r) => r.id === sourceStageItem.ranking_id);
+  if (sourceRanking == null) return null;
+
+  const sourceZone = getZoneForIndex(
+    sourceRanking.standings_zones,
+    winnerPosition - 1,
+    sourceTeamCount
+  );
+  if (sourceZone?.direction === 'top') return t('promoted_marker');
+  if (sourceZone?.direction === 'bottom') return t('relegation_marker');
+  return null;
 }
 
 function StandingsZonesLegend({ zones }: { zones: RankingZone[] }) {
@@ -279,6 +315,7 @@ export function StandingsTableForStageItem({
       team_with_input,
       stageItem,
       stageItemsLookup,
+      swrRankingsResponse.data?.data ?? [],
       t,
       i18n.language
     );
