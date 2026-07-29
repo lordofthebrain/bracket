@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Center,
+  Group,
   Loader,
   Modal,
   NativeSelect,
@@ -262,10 +263,12 @@ export default function BulkRoundAssignmentModal({
         size="50rem"
         transitionProps={{ onEntered: () => setLoading(false) }}
       >
-        {modalBody}
-        <Button fullWidth mt="lg" color="green" onClick={handleSave} disabled={loading}>
-          {t('validate_and_save_button')}
-        </Button>
+        <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>{modalBody}</div>
+        <Group justify="flex-end" mt="lg">
+          <Button color="green" onClick={handleSave} disabled={loading}>
+            {t('validate_and_save_button')}
+          </Button>
+        </Group>
       </Modal>
       <Button variant="outline" onClick={openModal}>
         {t('bulk_round_assignment_button')}
