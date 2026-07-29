@@ -117,7 +117,7 @@ async def update_stage_item(
 
     query = """
         UPDATE stage_items
-        SET name = :name, round_name_pattern = :round_name_pattern
+        SET name = :name, round_name_pattern = :round_name_pattern, ranking_id = :ranking_id
         WHERE stage_items.id = :stage_item_id
     """
     await database.execute(
@@ -126,6 +126,7 @@ async def update_stage_item(
             "stage_item_id": stage_item_id,
             "name": stage_item_body.name,
             "round_name_pattern": stage_item_body.round_name_pattern,
+            "ranking_id": stage_item_body.ranking_id,
         },
     )
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)

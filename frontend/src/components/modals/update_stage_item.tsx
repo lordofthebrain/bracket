@@ -27,7 +27,9 @@ export function UpdateStageItemModal({
   const form = useForm({
     initialValues: {
       name: stageItem.name,
-      ranking_id: rankings.filter((ranking) => ranking.position === 0)[0].id.toString(),
+      ranking_id: (
+        stageItem.ranking_id ?? rankings.filter((ranking) => ranking.position === 0)[0].id
+      ).toString(),
       round_name_pattern: stageItem.round_name_pattern,
     },
     validate: {
