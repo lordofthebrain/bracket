@@ -34,7 +34,7 @@ import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/ut
 import { MatchWithDetails } from '@openapi';
 import TournamentLayout from '@pages/tournaments/_tournament_layout';
 import { getBaseApiUrl, getCourts, getStages } from '@services/adapter';
-import { getMatchLookup, getStageItemLookup } from '@services/lookups';
+import { getMatchesByStageItemId, getMatchLookup, getStageItemLookup } from '@services/lookups';
 
 function TeamLogo({ input }: { input: any }) {
   if (input == null || !('team' in input) || input.team.logo_path == null) return null;
@@ -264,6 +264,7 @@ function ResultsForStageItem({
   t,
   stageItem,
   stageItemsLookup,
+  stageItemMatches,
   matchesLookup,
   openMatchModal,
   jumpTo,
@@ -271,6 +272,7 @@ function ResultsForStageItem({
   t: Translator;
   stageItem: any;
   stageItemsLookup: any;
+  stageItemMatches: any[];
   matchesLookup: any;
   openMatchModal: CallableFunction;
   jumpTo: { targetId: string; label: string }[];
@@ -278,11 +280,9 @@ function ResultsForStageItem({
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
 
   const roundOptionsMap = new Map<number, string>();
-  Object.values(matchesLookup)
-    .filter((data: any) => data.stageItem.id === stageItem.id)
-    .forEach((data: any) => {
-      roundOptionsMap.set(data.round.id, data.round.name);
-    });
+  stageItemMatches.forEach((data: any) => {
+    roundOptionsMap.set(data.round.id, data.round.name);
+  });
   const sortedRoundIds = Array.from(roundOptionsMap.keys()).sort((id1, id2) => id1 - id2);
   const roundOptions = sortedRoundIds.map((id) => ({
     value: `${id}`,
@@ -298,10 +298,7 @@ function ResultsForStageItem({
     }
 
     const unplayedRoundId = sortedRoundIds.find((id) =>
-      Object.values(matchesLookup).some(
-        (data: any) =>
-          data.stageItem.id === stageItem.id && data.round.id === id && !data.match.is_played
-      )
+      stageItemMatches.some((data: any) => data.round.id === id && !data.match.is_played)
     );
     setRoundFilter(`${unplayedRoundId ?? sortedRoundIds[sortedRoundIds.length - 1]}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -372,6 +369,9 @@ export default function ResultsPage() {
     ? getStageItemLookup(swrStagesResponse)
     : [];
   const matchesLookup = responseIsValid(swrStagesResponse) ? getMatchLookup(swrStagesResponse) : [];
+  const matchesByStageItemId = responseIsValid(swrStagesResponse)
+    ? getMatchesByStageItemId(swrStagesResponse)
+    : {};
 
   const stageItemIds = Object.values(stageItemsLookup)
     .filter((stageItem: any) => stageFilter == null || `${stageItem.stage_id}` === stageFilter)
@@ -453,6 +453,7 @@ export default function ResultsPage() {
                 t={t}
                 stageItem={stageItemsLookup[stageItemId]}
                 stageItemsLookup={stageItemsLookup}
+                stageItemMatches={matchesByStageItemId[stageItemId] || []}
                 matchesLookup={matchesLookup}
                 openMatchModal={openMatchModal}
                 jumpTo={jumpTo}
