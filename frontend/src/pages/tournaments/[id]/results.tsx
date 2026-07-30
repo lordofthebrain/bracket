@@ -189,19 +189,20 @@ function Schedule({
   stageItemsLookup,
   openMatchModal,
   matchesLookup,
+  stageItemMatches,
   roundFilter,
 }: {
   t: Translator;
   stageItemsLookup: any;
   openMatchModal: CallableFunction;
   matchesLookup: any;
+  stageItemMatches: any[];
   roundFilter: string | null;
 }) {
-  const matches: any[] = Object.values(matchesLookup);
   const sortedMatches =
     roundFilter == null
       ? []
-      : matches
+      : stageItemMatches
           .filter((m1: any) => m1.match.start_time != null)
           .filter((m1: any) => `${m1.round.id}` === roundFilter)
           .sort((m1: any, m2: any) => m1.round.id - m2.round.id);
@@ -345,6 +346,7 @@ function ResultsForStageItem({
           <Schedule
             t={t}
             matchesLookup={matchesLookup}
+            stageItemMatches={stageItemMatches}
             stageItemsLookup={stageItemsLookup}
             openMatchModal={openMatchModal}
             roundFilter={roundFilter}
