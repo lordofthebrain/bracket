@@ -116,8 +116,6 @@
     "empty_password_validation": "Le mot de passe ne peut pas être vide",
     "empty_slot": "Emplacement libre",
     "example_label": "Exemple :",
-    "filter_stage_item_label": "Filtrer par élément d'étape",
-    "filter_stage_item_placeholder": "Aucun filtre",
     "forgot_password_button": "Mot de passe oublié ?",
     "go_to_courts_page": "Aller à la page des terrains",
     "handle_swiss_system": "Gérer le système suisse",

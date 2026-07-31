@@ -116,8 +116,6 @@
     "empty_password_validation": "Ο κωδικός πρόσβασης δεν μπορεί να είναι κενός",
     "empty_slot": "Empty slot",
     "example_label": "Example:",
-    "filter_stage_item_label": "Φιλτράρισμα στη σκηνή",
-    "filter_stage_item_placeholder": "Χωρίς φίλτρο",
     "forgot_password_button": "Ξεχάσατε τον κωδικό?",
     "go_to_courts_page": "Go to courts page",
     "handle_swiss_system": "Χειρισμός Ελβετικού Συστήματος",

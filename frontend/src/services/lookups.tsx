@@ -76,33 +76,6 @@ export function getPreviousStageId(stageItemsLookup: any, currentStageId: number
   return stageIds.length > 0 ? Math.max(...stageIds) : null;
 }
 
-export const getStageItemList = memoizeByResponseData<any>(
-  (data) => {
-    let result: any[] = [];
-    data.data.map((stage: StageWithStageItems) =>
-      stage.stage_items.forEach((stage_item) => {
-        result = result.concat([[stage_item]]);
-      })
-    );
-    return result;
-  },
-  () => []
-);
-
-export const getStageItemTeamIdsLookup = memoizeByResponseData<any>(
-  (data) => {
-    let result: any[] = [];
-    data.data.map((stage: StageWithStageItems) =>
-      stage.stage_items.forEach((stageItem) => {
-        const teamIds = stageItem.inputs.map((input) => input.team_id);
-        result = result.concat([[stageItem.id, teamIds]]);
-      })
-    );
-    return Object.fromEntries(result);
-  },
-  () => ({})
-);
-
 export const getStageItemTeamsLookup = memoizeByResponseData<any>(
   (data) => {
     let result: any[] = [];

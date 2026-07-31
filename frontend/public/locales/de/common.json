@@ -120,8 +120,6 @@
     "empty_password_validation": "Passwort darf nicht leer sein",
     "empty_slot": "Leerer Slot",
     "example_label": "Beispiel:",
-    "filter_stage_item_label": "Nach Stufenelement filtern",
-    "filter_stage_item_placeholder": "Kein Filter",
     "forgot_password_button": "Passwort vergessen?",
     "go_to_courts_page": "Gehe zur Platz-Seite",
     "manage_rounds_button": "Runden verwalten",
