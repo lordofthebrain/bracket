@@ -148,10 +148,11 @@ export function getTeams(tournament_id: number | undefined): SWRResponse<TeamsWi
 
 export function getTeamsPaginated(
   tournament_id: number,
-  pagination: Pagination
+  pagination: Pagination,
+  name?: string
 ): SWRResponse<TeamsWithPlayersResponse> {
   return useSWR(
-    `tournaments/${tournament_id}/teams?limit=${pagination.limit}&offset=${pagination.offset}&sort_by=${pagination.sort_by}&sort_direction=${pagination.sort_direction}`,
+    `tournaments/${tournament_id}/teams?limit=${pagination.limit}&offset=${pagination.offset}&sort_by=${pagination.sort_by}&sort_direction=${pagination.sort_direction}${name ? `&name=${encodeURIComponent(name)}` : ''}`,
     fetcher
   );
 }

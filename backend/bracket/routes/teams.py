@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import aiofiles
 import aiofiles.os
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, Query, UploadFile
 from heliclockter import datetime_utc
 
 from bracket.config import config
@@ -81,12 +81,13 @@ async def update_team_members(
 async def get_teams(
     tournament_id: TournamentId,
     pagination: PaginationTeams = Depends(),
+    name: str | None = Query(default=None),
     _: UserPublic = Depends(user_authenticated_or_public_dashboard),
 ) -> TeamsWithPlayersResponse:
     return TeamsWithPlayersResponse(
         data=PaginatedTeams(
-            teams=await get_teams_with_members(tournament_id, pagination=pagination),
-            count=await get_team_count(tournament_id),
+            teams=await get_teams_with_members(tournament_id, pagination=pagination, name=name),
+            count=await get_team_count(tournament_id, name=name),
         )
     )
 

@@ -1,4 +1,6 @@
-import { Grid, Title } from '@mantine/core';
+import { Grid, TextInput, Title } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TeamCreateModal from '@components/modals/team_create_modal';
@@ -13,7 +15,19 @@ export default function TeamsPage() {
   const tableState = getTableState('name');
   const { t } = useTranslation();
   const { tournamentData } = getTournamentIdFromRouter();
-  const swrTeamsResponse = getTeamsPaginated(tournamentData.id, tableStateToPagination(tableState));
+  const [name, setName] = useState('');
+  const [debouncedName] = useDebouncedValue(name, 200);
+
+  useEffect(() => {
+    tableState.setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedName]);
+
+  const swrTeamsResponse = getTeamsPaginated(
+    tournamentData.id,
+    tableStateToPagination(tableState),
+    debouncedName
+  );
 
   const teams: FullTeamWithPlayers[] =
     swrTeamsResponse.data != null ? swrTeamsResponse.data.data.teams : [];
@@ -26,7 +40,21 @@ export default function TeamsPage() {
           <Title>{capitalize(t('teams_title'))}</Title>
         </Grid.Col>
         <Grid.Col span="content">
-          <TeamCreateModal swrTeamsResponse={swrTeamsResponse} tournament_id={tournamentData.id} />
+          <Grid align="flex-end">
+            <Grid.Col span="auto">
+              <TextInput
+                placeholder={t('search_placeholder')}
+                value={name}
+                onChange={(event) => setName(event.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span="auto">
+              <TeamCreateModal
+                swrTeamsResponse={swrTeamsResponse}
+                tournament_id={tournamentData.id}
+              />
+            </Grid.Col>
+          </Grid>
         </Grid.Col>
       </Grid>
       <TeamsTable

@@ -34,10 +34,12 @@ async def get_teams_with_members(
     *,
     only_active_teams: bool = False,
     team_id: TeamId | None = None,
+    name: str | None = None,
     pagination: PaginationTeams | None = None,
 ) -> list[FullTeamWithPlayers]:
     active_team_filter = "AND teams.active IS TRUE" if only_active_teams else ""
     team_id_filter = "AND teams.id = :team_id" if team_id is not None else ""
+    name_filter = "AND teams.name ILIKE :name" if name else ""
     limit_filter = "LIMIT :limit" if pagination is not None and pagination.limit is not None else ""
     offset_filter = (
         "OFFSET :offset" if pagination is not None and pagination.offset is not None else ""
@@ -57,6 +59,7 @@ async def get_teams_with_members(
         WHERE teams.tournament_id = :tournament_id
         {active_team_filter}
         {team_id_filter}
+        {name_filter}
         GROUP BY teams.id
         ORDER BY {sort}
         {limit_filter}
@@ -66,6 +69,7 @@ async def get_teams_with_members(
         {
             "tournament_id": tournament_id,
             "team_id": team_id,
+            "name": f"%{name}%" if name else None,
             "limit": pagination.limit if pagination is not None else None,
             "offset": pagination.offset if pagination is not None else None,
         }
@@ -78,15 +82,20 @@ async def get_team_count(
     tournament_id: TournamentId,
     *,
     only_active_teams: bool = False,
+    name: str | None = None,
 ) -> int:
     active_team_filter = "AND teams.active IS TRUE" if only_active_teams else ""
+    name_filter = "AND teams.name ILIKE :name" if name else ""
     query = f"""
         SELECT count(*)
         FROM teams
         WHERE teams.tournament_id = :tournament_id
         {active_team_filter}
+        {name_filter}
         """
-    values = dict_without_none({"tournament_id": tournament_id})
+    values = dict_without_none(
+        {"tournament_id": tournament_id, "name": f"%{name}%" if name else None}
+    )
     return cast("int", await database.fetch_val(query=query, values=values))
 
 
