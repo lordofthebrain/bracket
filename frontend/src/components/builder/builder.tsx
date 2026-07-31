@@ -89,11 +89,13 @@ function StageItemInputComboBox({
   });
 
   const options = availableInputs
-    // Teams may be reused across stage items but not twice within the same one; tentative "winner of X" placeholders keep the tournament-wide check.
+    // Teams may be reused across stage items but not twice within the same one (own slot's current team excepted); tentative "winner of X" placeholders keep the tournament-wide check.
     .filter((option: StageItemInputChoice) =>
       option.winner_from_stage_item_id != null
         ? !option.already_taken
-        : option.team_id == null || !teamIdsUsedInStageItem.has(option.team_id)
+        : option.team_id == null ||
+          option.team_id === stageItemInput.team_id ||
+          !teamIdsUsedInStageItem.has(option.team_id)
     )
     .filter((item) => (item.label || 'None').toLowerCase().includes(search.toLowerCase().trim()))
     .map((option: StageItemInputChoice, i: number) => (
@@ -169,8 +171,8 @@ function StageItemInputComboBox({
   );
 }
 
-export function getAvailableInputs(
-  swrAvailableInputsResponse: SWRResponse<StageItemInputOptionsResponse>,
+function computeAvailableInputs(
+  data: StageItemInputOptionsResponse,
   teamsMap: any,
   stageItemMap: any
 ) {
@@ -201,15 +203,33 @@ export function getAvailableInputs(
       already_taken: option.already_taken,
     };
   };
-  return swrAvailableInputsResponse.data != undefined
-    ? Object.keys(swrAvailableInputsResponse.data?.data).reduce((result: any, stage_id: string) => {
-        const option = assert_not_none(swrAvailableInputsResponse.data?.data[stage_id]);
-        result[stage_id] = option
-          .map((opt: StageItemInputOption) => getComboBoxOptionForStageItemInput(opt))
-          .filter((o: StageItemInputOption | null) => o != null);
-        return result;
-      }, {})
-    : {};
+  return Object.keys(data.data).reduce((result: any, stage_id: string) => {
+    const option = assert_not_none(data.data[stage_id]);
+    result[stage_id] = option
+      .map((opt: StageItemInputOption) => getComboBoxOptionForStageItemInput(opt))
+      .filter((o: StageItemInputOption | null) => o != null);
+    return result;
+  }, {});
+}
+
+// Keyed by the SWR response's `data` reference so every StageColumn (one per
+// stage) shares a single computed pass instead of each one recomputing every
+// other stage's options too (O(stages^2) before this cache existed).
+const availableInputsCache = new WeakMap<object, any>();
+export function getAvailableInputs(
+  swrAvailableInputsResponse: SWRResponse<StageItemInputOptionsResponse>,
+  teamsMap: any,
+  stageItemMap: any
+) {
+  const data = swrAvailableInputsResponse.data;
+  if (data == null) return {};
+
+  const cached = availableInputsCache.get(data);
+  if (cached !== undefined) return cached;
+
+  const result = computeAvailableInputs(data, teamsMap, stageItemMap);
+  availableInputsCache.set(data, result);
+  return result;
 }
 
 function StageItemInputSection({
@@ -272,6 +292,10 @@ function StageItemRow({
   const [opened, setOpened] = useState(false);
   const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
 
+  const teamIdsUsedInStageItem = new Set(
+    stageItem.inputs.filter((input) => input.team_id != null).map((input) => input.team_id as number)
+  );
+
   const inputs = stageItem.inputs
     .sort((i1, i2) => (i1.slot > i2.slot ? 1 : -1))
     .map((input, i) => {
@@ -281,12 +305,6 @@ function StageItemRow({
       } else if (input.team_id != null) {
         currentOptionValue = `${input.team_id}`;
       }
-
-      const teamIdsUsedInStageItem = new Set(
-        stageItem.inputs
-          .filter((other) => other.id !== input.id && other.team_id != null)
-          .map((other) => other.team_id as number)
-      );
 
       return (
         <StageItemInputSection
