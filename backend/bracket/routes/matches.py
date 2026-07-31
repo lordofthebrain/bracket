@@ -217,6 +217,7 @@ async def update_match_by_id(
 
     await sql_update_match(match_id, match_body, tournament)
 
+    stage_item = await get_stage_item(tournament_id, round_.stage_item_id)
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)
 
     if (
@@ -299,6 +300,7 @@ async def reassign_rounds(
         if assignment.swap_teams:
             await sql_swap_match_teams(assignment.match_id)
 
+    stage_item = await get_stage_item(tournament_id, stage_item_id)
     await recalculate_ranking_for_stage_item(tournament_id, stage_item)
 
     return SuccessResponse()
