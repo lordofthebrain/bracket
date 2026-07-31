@@ -50,6 +50,7 @@ stages = Table(
     Column("created", DateTimeTZ, nullable=False, server_default=func.now()),
     Column("tournament_id", BigInteger, ForeignKey("tournaments.id"), index=True, nullable=False),
     Column("is_active", Boolean, nullable=False, server_default="false"),
+    Column("is_season", Boolean, nullable=False, server_default="true"),
 )
 
 stage_items = Table(

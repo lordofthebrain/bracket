@@ -104,13 +104,13 @@ async def update_stage(
     values = {"tournament_id": tournament_id, "stage_id": stage_id}
     query = """
         UPDATE stages
-        SET name = :name
+        SET name = :name, is_season = :is_season
         WHERE stages.id = :stage_id
         AND stages.tournament_id = :tournament_id
     """
     await database.execute(
         query=query,
-        values={**values, "name": stage_body.name},
+        values={**values, "name": stage_body.name, "is_season": stage_body.is_season},
     )
     return SuccessResponse()
 

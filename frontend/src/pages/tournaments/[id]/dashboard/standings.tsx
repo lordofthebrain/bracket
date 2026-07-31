@@ -18,6 +18,7 @@ import {
   getPreviousStageId,
   getStageItemLookup,
   getStageItemTeamsLookup,
+  getStagesLookup,
 } from '@services/lookups';
 
 export function StandingsContent({
@@ -36,6 +37,7 @@ export function StandingsContent({
   const { t } = useTranslation();
 
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
+  const stagesLookup = getStagesLookup(swrStagesResponse);
   const stageItemTeamLookup = responseIsValid(swrStagesResponse)
     ? getStageItemTeamsLookup(swrStagesResponse)
     : {};
@@ -75,7 +77,8 @@ export function StandingsContent({
 
     const previousStageId = getPreviousStageId(
       stageItemsLookup,
-      stageItemsLookup[stageItemId].stage_id
+      stageItemsLookup[stageItemId].stage_id,
+      stagesLookup
     );
     const cupWinnerTeamIds =
       previousStageId != null ? cupWinnerTeamIdsByStage.get(previousStageId) : undefined;
@@ -90,6 +93,7 @@ export function StandingsContent({
           teams_with_inputs={stageItemTeamLookup[stageItemId]}
           stageItem={stageItemsLookup[stageItemId]}
           stageItemsLookup={stageItemsLookup}
+          stagesLookup={stagesLookup}
           fontSizeInPixels={fontSizeInPixels}
           maxTeamsToDisplay={maxTeamsToDisplay}
           tournamentId={tournamentId}

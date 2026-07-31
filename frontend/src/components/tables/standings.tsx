@@ -44,6 +44,7 @@ function getSeasonMarker(
   input: StageItemInputFinal,
   stageItem: StageItemWithRounds,
   stageItemsLookup: any,
+  stagesLookup: any,
   rankings: Ranking[],
   t: (key: string) => string,
   language: string
@@ -54,7 +55,11 @@ function getSeasonMarker(
   const sourceStageItemId = input.winner_from_stage_item_id;
   if (sourceStageItemId == null) {
     // Newcomer only if the team wasn't in the immediately preceding season.
-    const previousStageId = getPreviousStageId(stageItemsLookup, (stageItem as any).stage_id);
+    const previousStageId = getPreviousStageId(
+      stageItemsLookup,
+      (stageItem as any).stage_id,
+      stagesLookup
+    );
     if (previousStageId == null) return null;
 
     const hasPlayedInPreviousStage = (Object.values(stageItemsLookup) as any[]).some(
@@ -194,6 +199,7 @@ export function StandingsTableForStageItem({
   stageItem,
   fontSizeInPixels,
   stageItemsLookup,
+  stagesLookup,
   maxTeamsToDisplay,
   tournamentId,
   jumpTo,
@@ -203,6 +209,7 @@ export function StandingsTableForStageItem({
   stageItem: StageItemWithRounds;
   fontSizeInPixels: number;
   stageItemsLookup: any;
+  stagesLookup: any;
   maxTeamsToDisplay: number;
   tournamentId: number;
   jumpTo: { targetId: string; label: string }[];
@@ -315,6 +322,7 @@ export function StandingsTableForStageItem({
       team_with_input,
       stageItem,
       stageItemsLookup,
+      stagesLookup,
       swrRankingsResponse.data?.data ?? [],
       t,
       i18n.language

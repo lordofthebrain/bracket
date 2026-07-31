@@ -1,4 +1,4 @@
-import { Button, Modal, TextInput } from '@mantine/core';
+import { Button, Checkbox, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
@@ -21,7 +21,7 @@ export function UpdateStageModal({
 }) {
   const { t } = useTranslation();
   const form = useForm({
-    initialValues: { name: stage.name },
+    initialValues: { name: stage.name, is_season: (stage as any).is_season ?? true },
     validate: {},
   });
 
@@ -29,7 +29,7 @@ export function UpdateStageModal({
     <Modal opened={opened} onClose={() => setOpened(false)} title={t('edit_stage_label')}>
       <form
         onSubmit={form.onSubmit(async (values) => {
-          await updateStage(tournament.id, stage.id, values.name);
+          await updateStage(tournament.id, stage.id, values.name, values.is_season);
           await swrStagesResponse.mutate();
           setOpened(false);
         })}
@@ -41,6 +41,11 @@ export function UpdateStageModal({
           my="lg"
           type="text"
           {...form.getInputProps('name')}
+        />
+        <Checkbox
+          mb="lg"
+          label={t('is_season_checkbox_label')}
+          {...form.getInputProps('is_season', { type: 'checkbox' })}
         />
         <Button fullWidth style={{ marginTop: 16 }} color="green" type="submit">
           {t('save_button')}

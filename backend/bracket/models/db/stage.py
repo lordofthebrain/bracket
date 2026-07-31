@@ -11,6 +11,7 @@ class StageInsertable(BaseModelORM):
     name: str
     created: datetime_utc
     is_active: bool
+    is_season: bool = True
 
 
 class Stage(StageInsertable):
@@ -19,6 +20,7 @@ class Stage(StageInsertable):
 
 class StageUpdateBody(BaseModelORM):
     name: str
+    is_season: bool = True
 
 
 class StageActivateBody(BaseModelORM):

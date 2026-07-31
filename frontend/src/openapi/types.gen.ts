@@ -1521,6 +1521,10 @@ export type StageType = 'ROUND_ROBIN' | 'SINGLE_ELIMINATION' | 'SWISS';
  */
 export type StageUpdateBody = {
   /**
+   * Is Season
+   */
+  is_season: boolean;
+  /**
    * Name
    */
   name: string;
@@ -1542,6 +1546,10 @@ export type StageWithStageItems = {
    * Is Active
    */
   is_active: boolean;
+  /**
+   * Is Season
+   */
+  is_season: boolean;
   /**
    * Name
    */
@@ -3722,6 +3730,10 @@ export type GetTeamsApiTournamentsTournamentIdTeamsGetData = {
     tournament_id: number;
   };
   query?: {
+    /**
+     * Name
+     */
+    name?: string | null;
     /**
      * Limit
      *

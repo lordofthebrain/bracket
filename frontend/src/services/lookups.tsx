@@ -68,11 +68,21 @@ export const getStageItemLookup = memoizeByResponseData<any>(
   () => ({})
 );
 
-// Finds the stage id of the season right before currentStageId (assumes ascending stage ids = chronological order).
-export function getPreviousStageId(stageItemsLookup: any, currentStageId: number): number | null {
+export const getStagesLookup = memoizeByResponseData<any>(
+  (data) => Object.fromEntries(data.data.map((stage: StageWithStageItems) => [stage.id, stage])),
+  () => ({})
+);
+
+// Finds the stage id of the season right before currentStageId, skipping is_season=false stages.
+export function getPreviousStageId(
+  stageItemsLookup: any,
+  currentStageId: number,
+  stagesLookup: any
+): number | null {
   const stageIds = (Object.values(stageItemsLookup) as any[])
     .map((stageItem) => stageItem.stage_id)
-    .filter((id) => id != null && id < currentStageId);
+    .filter((id) => id != null && id < currentStageId)
+    .filter((id) => stagesLookup[id]?.is_season !== false);
   return stageIds.length > 0 ? Math.max(...stageIds) : null;
 }
 
