@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import DeleteButton from '@components/buttons/delete';
-import PlayerList from '@components/info/player_list';
 import TeamUpdateModal from '@components/modals/team_update_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
 import { DateTime } from '@components/utils/datetime';
@@ -38,9 +37,6 @@ function TeamRow({
         )}
       </Table.Td>
       <Table.Td>{team.name}</Table.Td>
-      <Table.Td>
-        <PlayerList team={team} />
-      </Table.Td>
       <Table.Td>
         <DateTime datetime={team.created} />
       </Table.Td>
@@ -126,7 +122,6 @@ export default function TeamsTable({
             <ThSortable state={tableState} field="name">
               {t('name_table_header')}
             </ThSortable>
-            <ThNotSortable>{t('members_table_header')}</ThNotSortable>
             <ThSortable state={tableState} field="created">
               {t('created')}
             </ThSortable>
