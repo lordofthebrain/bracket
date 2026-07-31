@@ -68,7 +68,7 @@ function ScheduleRow({
   const input2Won = isSingleElimination && data.match.is_played && winner === 2;
   const leagueLabel = (input: any) =>
     isSingleElimination
-      ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, data.stageItem.id)
+      ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, data.stageItem.stage_id)
       : null;
   const league1Label = leagueLabel(data.match.stage_item_input1);
   const league2Label = leagueLabel(data.match.stage_item_input2);
