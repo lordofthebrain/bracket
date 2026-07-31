@@ -100,7 +100,11 @@ def determine_team_ranking_for_stage_item(
     ranking: Ranking,
 ) -> list[tuple[StageItemInputId, TeamStatistics]]:
     team_ranking = determine_ranking_for_stage_item(stage_item, ranking)
-    return sorted(team_ranking.items(), key=lambda x: x[1].points, reverse=True)
+    return sorted(
+        team_ranking.items(),
+        key=lambda x: (x[1].points, x[1].goals_for - x[1].goals_against, x[1].goals_for),
+        reverse=True,
+    )
 
 
 async def recalculate_ranking_for_stage_item(
