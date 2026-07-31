@@ -7,7 +7,7 @@ import { SWRResponse } from 'swr';
 import { DashboardFooter } from '@components/dashboard/footer';
 import { DoubleHeader, getTournamentHeadTitle } from '@components/dashboard/layout';
 import { NoContent } from '@components/no_content/empty_table_info';
-import { StandingsTableForStageItem } from '@components/tables/standings';
+import { StandingsTableForStageItem, getJumpToLinks } from '@components/tables/standings';
 import { TableSkeletonTwoColumns } from '@components/utils/skeletons';
 import { responseIsValid, setTitle } from '@components/utils/util';
 import { StagesWithStageItemsResponse } from '@openapi';
@@ -64,16 +64,12 @@ export function StandingsContent({
   const cupWinnerTeamIdsByStage = getCupWinnerTeamIdsByStage(swrStagesResponse);
 
   const rows = stageItemIds.map((stageItemId, index) => {
-    const jumpTo = stageItemIds
-      .filter((otherId) => otherId !== stageItemId)
-      .map((otherId) => {
-        const otherIndex = stageItemIds.indexOf(otherId);
-        const arrow = otherIndex > index ? '↓' : '↑';
-        return {
-          targetId: anchorId(otherId),
-          label: `${arrow} ${stageItemsLookup[otherId].name}`,
-        };
-      });
+    const jumpTo = getJumpToLinks(
+      stageItemIds,
+      index,
+      anchorId,
+      (otherId) => stageItemsLookup[otherId].name
+    );
 
     const previousStageId = getPreviousStageId(
       stageItemsLookup,

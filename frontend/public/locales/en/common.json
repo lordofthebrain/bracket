@@ -29,6 +29,7 @@
     "adjust_start_times_checkbox_label": "Adjust start time of matches in this round to the current time",
     "all_matches_radio_label": "All matches",
     "all_matches_scheduled_description": "Matches have been scheduled on all courts in this round. Add a new round or add a new court for more matches.",
+    "all_time_standings_tab_label": "All-time table",
     "archive_tournament_button": "Archive Tournament",
     "archived_header_label": "This tournament is archived. It is now read-only.",
     "archived_label": "Archived",

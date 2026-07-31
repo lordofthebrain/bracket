@@ -15,7 +15,7 @@ import {
 } from '@openapi';
 import { getBaseApiUrl, getRankings } from '@services/adapter';
 import { getPreviousStageId } from '@services/lookups';
-import { ThSortable, getTableState, sortTableEntries } from './table';
+import { TableState, ThSortable, getTableState, sortTableEntries } from './table';
 import TableLayoutLarge from './table_large';
 
 export function getZoneColorCssVar(color: string): string {
@@ -110,7 +110,7 @@ function StandingsZonesLegend({ zones }: { zones: RankingZone[] }) {
   );
 }
 
-function TeamLogo({ logoPath }: { logoPath: string | null | undefined }) {
+export function TeamLogo({ logoPath }: { logoPath: string | null | undefined }) {
   if (logoPath == null) return null;
   return (
     <Image
@@ -192,6 +192,202 @@ function computeStatsUpToRound(
     });
 
   return stats;
+}
+
+export interface JumpToLink {
+  targetId: string;
+  label: string;
+}
+
+// Builds "jump to the other table(s)" links with an up/down arrow depending on whether the
+// target sits above or below the current item, e.g. for a row of standings tables on one page.
+export function getJumpToLinks<T>(
+  items: T[],
+  currentIndex: number,
+  getAnchorId: (item: T) => string,
+  getLabel: (item: T) => string
+): JumpToLink[] {
+  return items
+    .map((item, index) => ({ item, index }))
+    .filter(({ index }) => index !== currentIndex)
+    .map(({ item, index }) => ({
+      targetId: getAnchorId(item),
+      label: `${index > currentIndex ? '↓' : '↑'} ${getLabel(item)}`,
+    }));
+}
+
+export function TableTitleWithJumpLinks({
+  title,
+  jumpTo,
+  compact = false,
+}: {
+  title: string;
+  jumpTo: JumpToLink[];
+  compact?: boolean;
+}) {
+  return (
+    <Group
+      justify={compact ? 'flex-start' : 'space-between'}
+      align="baseline"
+      mb="sm"
+      style={compact ? undefined : { maxWidth: '20rem' }}
+    >
+      <Title order={3}>{title}</Title>
+      <Group gap="md">
+        {jumpTo.map((jump) => (
+          <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
+            {jump.label}
+          </Anchor>
+        ))}
+      </Group>
+    </Group>
+  );
+}
+
+export interface TeamStatsRow {
+  key: number;
+  rankLabel: string;
+  name: string;
+  logoPath: string | null | undefined;
+  markers?: string[];
+  zoneColor?: string | null;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  games_played: number;
+  points: string | number;
+}
+
+export function TeamStatsTable({
+  rows,
+  stageItemType,
+  tableState,
+  minPoints,
+  maxPoints,
+  fontSizeInPixels,
+}: {
+  rows: TeamStatsRow[];
+  stageItemType: string;
+  tableState: TableState;
+  minPoints?: number;
+  maxPoints?: number;
+  fontSizeInPixels?: number;
+}) {
+  const { t } = useTranslation();
+  const isSwiss = stageItemType === 'SWISS';
+
+  return (
+    <TableLayoutLarge display_mode="presentation">
+      <Table.Thead>
+        <Table.Tr>
+          <ThSortable width="2rem" state={tableState} field="rank">
+            #
+          </ThSortable>
+          <ThSortable state={tableState} field="name">
+            {t('team_title')}
+          </ThSortable>
+          {isSwiss ? (
+            <>
+              <ThSortable visibleFrom="sm" state={tableState} field="points">
+                {t('elo_score')}
+              </ThSortable>
+              <ThSortable state={tableState} field="elo_score">
+                {t('elo_score')}
+              </ThSortable>
+            </>
+          ) : (
+            <>
+              <ThSortable align="right" width="3rem" state={tableState} field="games_played">
+                {t('games_played_header')}
+              </ThSortable>
+              <ThSortable align="right" width="3rem" state={tableState} field="wins">
+                {t('wins_header')}
+              </ThSortable>
+              <ThSortable align="right" width="3rem" state={tableState} field="draws">
+                {t('draws_header')}
+              </ThSortable>
+              <ThSortable align="right" width="3rem" state={tableState} field="losses">
+                {t('losses_header')}
+              </ThSortable>
+              <ThSortable align="right" width="5rem" state={tableState} field="goals_for">
+                {t('goals_header')}
+              </ThSortable>
+              <ThSortable align="right" width="3rem" state={tableState} field="goal_difference">
+                {t('goal_difference_header')}
+              </ThSortable>
+              <ThSortable align="right" width="3rem" state={tableState} field="points">
+                {t('points_table_header')}
+              </ThSortable>
+            </>
+          )}
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {rows.map((row) => (
+          <Table.Tr
+            key={row.key}
+            style={
+              row.zoneColor != null
+                ? { borderLeft: `4px solid ${getZoneColorCssVar(row.zoneColor)}` }
+                : undefined
+            }
+          >
+            <Table.Td style={{ width: '2rem' }}>{row.rankLabel}</Table.Td>
+            <Table.Td style={{ width: '20rem' }}>
+              <Group gap="xs" wrap="nowrap">
+                <TeamLogo logoPath={row.logoPath} />
+                <Text truncate="end" lineClamp={1} inherit>
+                  {row.name}
+                  {row.markers != null && row.markers.length > 0
+                    ? ` (${row.markers.join(', ')})`
+                    : ''}
+                </Text>
+              </Group>
+            </Table.Td>
+            {isSwiss ? (
+              <>
+                <Table.Td visibleFrom="sm" style={{ minWidth: '8rem' }}>
+                  <Text truncate="end" lineClamp={1} inherit>
+                    {row.points}
+                  </Text>
+                </Table.Td>
+                <Table.Td style={{ minWidth: '10rem' }}>
+                  <PlayerScore
+                    score={parseFloat(`${row.points}`)}
+                    min_score={minPoints ?? 0}
+                    max_score={maxPoints ?? 0}
+                    decimals={0}
+                    fontSizeInPixels={fontSizeInPixels ?? 16}
+                  />
+                </Table.Td>
+              </>
+            ) : (
+              <>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
+                  {row.wins + row.draws + row.losses}
+                </Table.Td>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>{row.wins}</Table.Td>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>{row.draws}</Table.Td>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>{row.losses}</Table.Td>
+                <Table.Td style={{ width: '5rem', textAlign: 'right' }}>
+                  {row.goals_for}:{row.goals_against}
+                </Table.Td>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
+                  {row.goals_for - row.goals_against}
+                </Table.Td>
+                <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
+                  <b>{row.points}</b>
+                </Table.Td>
+              </>
+            )}
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </TableLayoutLarge>
+  );
 }
 
 export function StandingsTableForStageItem({
@@ -305,7 +501,7 @@ export function StandingsTableForStageItem({
       : sortTableEntries(p1, p2, tableState)
   );
 
-  const rows = sortedTeams.slice(0, maxTeamsToDisplay).map((team_with_input, index) => {
+  const rows: TeamStatsRow[] = sortedTeams.slice(0, maxTeamsToDisplay).map((team_with_input, index) => {
     const previous = index > 0 ? sortedTeams[index - 1] : null;
     const isTiedWithPrevious =
       tableState.sortField === 'rank' &&
@@ -336,133 +532,29 @@ export function StandingsTableForStageItem({
       seasonMarker === t('champion_marker')
         ? [seasonMarker, cupWinnerMarker]
         : [cupWinnerMarker, seasonMarker]
-    ).filter((marker) => marker != null);
+    ).filter((marker): marker is string => marker != null);
 
-    return (
-      <Table.Tr
-        key={team_with_input.id}
-        style={
-          zone != null ? { borderLeft: `4px solid ${getZoneColorCssVar(zone.color)}` } : undefined
-        }
-      >
-        <Table.Td style={{ width: '2rem' }}>{isTiedWithPrevious ? '' : index + 1}</Table.Td>
-        <Table.Td style={{ width: '20rem' }}>
-          <Group gap="xs" wrap="nowrap">
-            <TeamLogo logoPath={team_with_input.team?.logo_path} />
-            <Text truncate="end" lineClamp={1} inherit>
-              {formatStageItemInput(team_with_input, stageItemsLookup)}
-              {markers.length > 0 ? ` (${markers.join(', ')})` : ''}
-            </Text>
-          </Group>
-        </Table.Td>
-        {stageItem.type === 'SWISS' ? (
-          <>
-            <Table.Td visibleFrom="sm" style={{ minWidth: '8rem' }}>
-              <Text truncate="end" lineClamp={1} inherit>
-                {team_with_input.points}
-              </Text>
-            </Table.Td>
-            <Table.Td style={{ minWidth: '10rem' }}>
-              <PlayerScore
-                score={parseFloat(team_with_input.points)}
-                min_score={minPoints}
-                max_score={maxPoints}
-                decimals={0}
-                fontSizeInPixels={fontSizeInPixels}
-              />
-            </Table.Td>
-          </>
-        ) : (
-          <>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              {team_with_input.wins + team_with_input.draws + team_with_input.losses}
-            </Table.Td>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              {team_with_input.wins}
-            </Table.Td>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              {team_with_input.draws}
-            </Table.Td>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              {team_with_input.losses}
-            </Table.Td>
-            <Table.Td style={{ width: '5rem', textAlign: 'right' }}>
-              {team_with_input.goals_for}:{team_with_input.goals_against}
-            </Table.Td>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              {team_with_input.goals_for - team_with_input.goals_against}
-            </Table.Td>
-            <Table.Td style={{ width: '3rem', textAlign: 'right' }}>
-              <b>{team_with_input.points}</b>
-            </Table.Td>
-          </>
-        )}
-      </Table.Tr>
-    );
+    return {
+      key: team_with_input.id,
+      rankLabel: isTiedWithPrevious ? '' : `${index + 1}`,
+      name: formatStageItemInput(team_with_input, stageItemsLookup) ?? '',
+      logoPath: team_with_input.team?.logo_path,
+      markers,
+      zoneColor: zone?.color,
+      wins: team_with_input.wins,
+      draws: team_with_input.draws,
+      losses: team_with_input.losses,
+      goals_for: team_with_input.goals_for,
+      goals_against: team_with_input.goals_against,
+      goal_difference: team_with_input.goal_difference,
+      games_played: team_with_input.games_played,
+      points: team_with_input.points,
+    };
   });
-
-  const table = (
-    <TableLayoutLarge display_mode="presentation">
-      <Table.Thead>
-        <Table.Tr>
-          <ThSortable width="2rem" state={tableState} field="rank">
-            #
-          </ThSortable>
-          <ThSortable state={tableState} field="name">
-            {t('team_title')}
-          </ThSortable>
-          {stageItem.type === 'SWISS' ? (
-            <>
-              <ThSortable visibleFrom="sm" state={tableState} field="points">
-                {t('elo_score')}
-              </ThSortable>
-              <ThSortable state={tableState} field="elo_score">
-                {t('elo_score')}
-              </ThSortable>
-            </>
-          ) : (
-            <>
-              <ThSortable align="right" width="3rem" state={tableState} field="games_played">
-                {t('games_played_header')}
-              </ThSortable>
-              <ThSortable align="right" width="3rem" state={tableState} field="wins">
-                {t('wins_header')}
-              </ThSortable>
-              <ThSortable align="right" width="3rem" state={tableState} field="draws">
-                {t('draws_header')}
-              </ThSortable>
-              <ThSortable align="right" width="3rem" state={tableState} field="losses">
-                {t('losses_header')}
-              </ThSortable>
-              <ThSortable align="right" width="5rem" state={tableState} field="goals_for">
-                {t('goals_header')}
-              </ThSortable>
-              <ThSortable align="right" width="3rem" state={tableState} field="goal_difference">
-                {t('goal_difference_header')}
-              </ThSortable>
-              <ThSortable align="right" width="3rem" state={tableState} field="points">
-                {t('points_table_header')}
-              </ThSortable>
-            </>
-          )}
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>{rows}</Table.Tbody>
-    </TableLayoutLarge>
-  );
 
   return (
     <>
-      <Group justify="space-between" align="baseline" mb="sm" style={{ maxWidth: '20rem' }}>
-        <Title order={3}>{stageItem.name}</Title>
-        <Group gap="md">
-          {jumpTo.map((jump) => (
-            <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
-              {jump.label}
-            </Anchor>
-          ))}
-        </Group>
-      </Group>
+      <TableTitleWithJumpLinks title={stageItem.name} jumpTo={jumpTo} />
       <RoundFilterSelect
         options={roundOptions}
         value={roundFilter}
@@ -474,7 +566,14 @@ export function StandingsTableForStageItem({
       ) : (
         <>
           <StandingsZonesLegend zones={ranking?.standings_zones ?? []} />
-          {table}
+          <TeamStatsTable
+            rows={rows}
+            stageItemType={stageItem.type}
+            tableState={tableState}
+            minPoints={minPoints}
+            maxPoints={maxPoints}
+            fontSizeInPixels={fontSizeInPixels}
+          />
         </>
       )}
     </>
