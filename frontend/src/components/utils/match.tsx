@@ -192,6 +192,23 @@ export function getTeamLeagueLabel(
   return null;
 }
 
+// "Winner of match X - Y" labels resolve recursively through the bracket, and each
+// unresolved match spawns two further recursive calls into its own predecessor match
+// (once for input1, once for input2) - without caching this doubles per round of
+// depth. Keyed by the matchesLookup object reference (itself WeakMap-memoized on the
+// SWR response's data), so a cache self-evicts once that data snapshot is gone.
+const matchInput1Cache = new WeakMap<object, Map<number, string>>();
+const matchInput2Cache = new WeakMap<object, Map<number, string>>();
+
+function getOrCreateCache(cacheStore: WeakMap<object, Map<number, string>>, matchesLookup: any) {
+  let cache = cacheStore.get(matchesLookup);
+  if (cache == null) {
+    cache = new Map();
+    cacheStore.set(matchesLookup, cache);
+  }
+  return cache;
+}
+
 export function formatMatchInput1(
   t: Translator,
   stageItemsLookup: any,
@@ -204,10 +221,17 @@ export function formatMatchInput1(
   if (match.stage_item_input1_winner_from_match_id == null) {
     return t('empty_slot');
   }
+
+  const cache = getOrCreateCache(matchInput1Cache, matchesLookup);
+  const cached = cache.get(match.id);
+  if (cached !== undefined) return cached;
+
   const winner = matchesLookup[match.stage_item_input1_winner_from_match_id].match;
   const match_1 = formatMatchInput1(t, stageItemsLookup, matchesLookup, winner);
   const match_2 = formatMatchInput2(t, stageItemsLookup, matchesLookup, winner);
-  return `Winner of match ${match_1} - ${match_2}`;
+  const result = `Winner of match ${match_1} - ${match_2}`;
+  cache.set(match.id, result);
+  return result;
 }
 
 export function formatMatchInput2(
@@ -222,8 +246,15 @@ export function formatMatchInput2(
   if (match.stage_item_input2_winner_from_match_id == null) {
     return t('empty_slot');
   }
+
+  const cache = getOrCreateCache(matchInput2Cache, matchesLookup);
+  const cached = cache.get(match.id);
+  if (cached !== undefined) return cached;
+
   const winner = matchesLookup[match.stage_item_input2_winner_from_match_id].match;
   const match_1 = formatMatchInput1(t, stageItemsLookup, matchesLookup, winner);
   const match_2 = formatMatchInput2(t, stageItemsLookup, matchesLookup, winner);
-  return `Winner of match ${match_1} - ${match_2}`;
+  const result = `Winner of match ${match_1} - ${match_2}`;
+  cache.set(match.id, result);
+  return result;
 }
