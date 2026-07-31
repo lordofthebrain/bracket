@@ -1,4 +1,4 @@
-import { Grid, TextInput, Title } from '@mantine/core';
+import { Badge, Grid, Group, TextInput, Title } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,12 @@ export default function TeamsPage() {
     <TournamentLayout tournament_id={tournamentData.id}>
       <Grid justify="space-between" mb="1rem">
         <Grid.Col span="auto">
-          <Title>{capitalize(t('teams_title'))}</Title>
+          <Group gap="xs" align="center">
+            <Title>{capitalize(t('teams_title'))}</Title>
+            <Badge variant="default" size="lg">
+              {teamCount}
+            </Badge>
+          </Group>
         </Grid.Col>
         <Grid.Col span="content">
           <Grid align="flex-end">
