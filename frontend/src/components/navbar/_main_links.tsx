@@ -101,11 +101,6 @@ export function TournamentLinks({ tournament_id }: any) {
       link: `${tm_prefix}/stages`,
     },
     {
-      icon: IconUser,
-      label: capitalize(t('players_title')),
-      link: `${tm_prefix}/players`,
-    },
-    {
       icon: IconUsers,
       label: capitalize(t('teams_title')),
       link: `${tm_prefix}/teams`,
