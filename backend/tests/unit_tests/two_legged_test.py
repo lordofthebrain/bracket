@@ -88,6 +88,44 @@ def test_get_aggregate_winner_fully_undecided_returns_none() -> None:
     assert leg1.get_aggregate_winner(leg2, away_goals_rule=False) is None
 
 
+def test_get_aggregate_winner_extra_time_combines_leg1_score_not_leg2_alone() -> None:
+    # leg1 1:0, leg2 0:1 (aggregate 1:1, tied), extra time leg2 1:1 (leg2 input1/input2 tied on
+    # their own, but combined with leg1's 1:0 the aggregate is actually 2:1, no penalties needed).
+    leg1 = _make_match(-1, 1, 0)
+    leg2 = _make_match(
+        -2,
+        1,
+        0,
+        is_return_leg=True,
+        input1_score_after_extra_time=1,
+        input2_score_after_extra_time=1,
+    )
+
+    winner = leg1.get_aggregate_winner(leg2, away_goals_rule=False)
+    assert winner == leg1.stage_item_input1
+
+
+def test_get_aggregate_winner_tied_after_extra_time_falls_back_to_away_goals() -> None:
+    # 1:1 in both legs (aggregate 2:2, tied even after away goals), then 2:2 after extra
+    # time in leg2 (aggregate still 3:3) — leg1.input1's extra-time away goal (leg2.input2
+    # going from 1 to 2) should decide it before penalties are even considered.
+    leg1 = _make_match(-1, 1, 1)
+    leg2 = _make_match(
+        -2,
+        1,
+        1,
+        is_return_leg=True,
+        input1_score_after_extra_time=2,
+        input2_score_after_extra_time=2,
+    )
+
+    without_rule = leg1.get_aggregate_winner(leg2, away_goals_rule=False)
+    assert without_rule is None
+
+    with_rule = leg1.get_aggregate_winner(leg2, away_goals_rule=True)
+    assert with_rule == leg1.stage_item_input1
+
+
 def test_with_irrelevant_extra_time_fields_cleared_two_legged_first_leg_always_cleared() -> None:
     body = MatchBody(
         round_id=RoundId(-1),
@@ -163,3 +201,27 @@ def test_with_irrelevant_extra_time_fields_cleared_two_legged_second_leg_decided
     )
     assert cleared.stage_item_input1_score_after_extra_time is None
     assert cleared.stage_item_input2_score_after_extra_time is None
+
+
+def test_with_irrelevant_extra_time_fields_cleared_two_legged_penalties_cleared_when_decided_after_extra_time() -> (
+    None
+):
+    # leg1 1:0, leg2 0:1 (aggregate 1:1, tied) — same numbers as the aggregate-winner regression
+    # test above — but this time the client also submits (stale/default) 0:0 penalties, which
+    # must be cleared since the 2:1 aggregate after extra time is already decided.
+    sibling = _make_match(-1, 1, 0)  # first leg
+    body = MatchBody(
+        round_id=RoundId(-1),
+        stage_item_input1_score=1,
+        stage_item_input2_score=0,
+        stage_item_input1_score_after_extra_time=1,
+        stage_item_input2_score_after_extra_time=1,
+        stage_item_input1_score_penalties=0,
+        stage_item_input2_score_penalties=0,
+    )
+
+    cleared = body.with_irrelevant_extra_time_fields_cleared_two_legged(
+        is_return_leg=True, sibling=sibling, away_goals_rule=False
+    )
+    assert cleared.stage_item_input1_score_penalties is None
+    assert cleared.stage_item_input2_score_penalties is None

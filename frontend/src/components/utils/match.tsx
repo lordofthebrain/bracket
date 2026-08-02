@@ -195,6 +195,24 @@ export function isTwoLeggedAggregateUndecided(
   return true;
 }
 
+// Same as isTwoLeggedAggregateUndecided, but combining the cumulative after-extra-time score.
+export function isTwoLeggedAggregateAfterExtraTimeUndecided(
+  firstLeg: MatchWithDetails,
+  secondLegInput1ScoreAfterExtraTime: number,
+  secondLegInput2ScoreAfterExtraTime: number,
+  awayGoalsRule: boolean
+): boolean {
+  const aggregate1 = firstLeg.stage_item_input2_score + secondLegInput1ScoreAfterExtraTime;
+  const aggregate2 = firstLeg.stage_item_input1_score + secondLegInput2ScoreAfterExtraTime;
+  if (aggregate1 !== aggregate2) return false;
+
+  if (awayGoalsRule && firstLeg.stage_item_input2_score !== secondLegInput2ScoreAfterExtraTime) {
+    return false;
+  }
+
+  return true;
+}
+
 // Mirrors the backend's `Match.get_aggregate_winner`: `leg1` holds the canonical input1/input2
 // ordering, `leg2` has them swapped. Returns which of leg1's inputs won, like `getMatchWinner`.
 export function getTieAggregateWinner(
@@ -215,6 +233,25 @@ export function getTieAggregateWinner(
   }
 
   if (
+    leg2.stage_item_input1_score_after_extra_time != null &&
+    leg2.stage_item_input2_score_after_extra_time != null
+  ) {
+    // Cumulative leg2 score combined with leg1's normal-time score, not compared on its own.
+    const aggregate1AfterExtraTime = leg1.stage_item_input1_score + leg2.stage_item_input2_score_after_extra_time;
+    const aggregate2AfterExtraTime = leg1.stage_item_input2_score + leg2.stage_item_input1_score_after_extra_time;
+    if (aggregate1AfterExtraTime > aggregate2AfterExtraTime) return 1;
+    if (aggregate1AfterExtraTime < aggregate2AfterExtraTime) return 2;
+
+    if (awayGoalsRule) {
+      // Away goals accrued through extra time, not just the first 90 minutes.
+      const awayGoals1AfterExtraTime = leg2.stage_item_input2_score_after_extra_time;
+      const awayGoals2AfterExtraTime = leg1.stage_item_input2_score;
+      if (awayGoals1AfterExtraTime > awayGoals2AfterExtraTime) return 1;
+      if (awayGoals1AfterExtraTime < awayGoals2AfterExtraTime) return 2;
+    }
+  }
+
+  if (
     leg2.stage_item_input1_score_penalties != null &&
     leg2.stage_item_input2_score_penalties != null
   ) {
@@ -223,45 +260,10 @@ export function getTieAggregateWinner(
     return null;
   }
 
-  if (
-    leg2.stage_item_input1_score_after_extra_time != null &&
-    leg2.stage_item_input2_score_after_extra_time != null
-  ) {
-    if (leg2.stage_item_input1_score_after_extra_time > leg2.stage_item_input2_score_after_extra_time)
-      return 2;
-    if (leg2.stage_item_input1_score_after_extra_time < leg2.stage_item_input2_score_after_extra_time)
-      return 1;
-    return null;
-  }
-
-  if (
-    leg1.stage_item_input1_score_penalties != null &&
-    leg1.stage_item_input2_score_penalties != null
-  ) {
-    if (leg1.stage_item_input1_score_penalties > leg1.stage_item_input2_score_penalties) return 1;
-    if (leg1.stage_item_input1_score_penalties < leg1.stage_item_input2_score_penalties) return 2;
-    return null;
-  }
-
-  if (
-    leg1.stage_item_input1_score_after_extra_time != null &&
-    leg1.stage_item_input2_score_after_extra_time != null
-  ) {
-    if (leg1.stage_item_input1_score_after_extra_time > leg1.stage_item_input2_score_after_extra_time)
-      return 1;
-    if (leg1.stage_item_input1_score_after_extra_time < leg1.stage_item_input2_score_after_extra_time)
-      return 2;
-    return null;
-  }
-
   return null;
 }
 
-// Mirrors getTieAggregateWinner's priority order (leg2 penalties > leg2 extra time > leg1
-// penalties > leg1 extra time > plain aggregate) to render the "Gesamt" line consistently with
-// who's actually marked as the winner. A penalty shootout replaces the aggregate entirely — it
-// isn't added on top of the leg scores — while extra time score is cumulative (includes normal
-// time), so it's combined with the other leg's normal-time score like the plain aggregate is.
+// Mirrors getTieAggregateWinner's priority order so the displayed aggregate matches the winner.
 export function getTieAggregateScoreDisplay(
   leg1: MatchWithDetails,
   leg2: MatchWithDetails

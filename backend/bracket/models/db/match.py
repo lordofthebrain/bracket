@@ -113,6 +113,31 @@ class Match(MatchInsertable):
                 return self.stage_item_input2
 
         if (
+            return_leg.stage_item_input1_score_after_extra_time is not None
+            and return_leg.stage_item_input2_score_after_extra_time is not None
+        ):
+            # Cumulative return_leg score combined with self's normal-time score, not compared alone.
+            aggregate1_et = (
+                self.stage_item_input1_score + return_leg.stage_item_input2_score_after_extra_time
+            )
+            aggregate2_et = (
+                self.stage_item_input2_score + return_leg.stage_item_input1_score_after_extra_time
+            )
+            if aggregate1_et > aggregate2_et:
+                return self.stage_item_input1
+            if aggregate1_et < aggregate2_et:
+                return self.stage_item_input2
+
+            if away_goals_rule:
+                # Away goals accrued through extra time, not just the first 90 minutes.
+                away_goals1_et = return_leg.stage_item_input2_score_after_extra_time
+                away_goals2_et = self.stage_item_input2_score
+                if away_goals1_et > away_goals2_et:
+                    return self.stage_item_input1
+                if away_goals1_et < away_goals2_et:
+                    return self.stage_item_input2
+
+        if (
             return_leg.stage_item_input1_score_penalties is not None
             and return_leg.stage_item_input2_score_penalties is not None
         ):
@@ -126,48 +151,6 @@ class Match(MatchInsertable):
                 < return_leg.stage_item_input2_score_penalties
             ):
                 return self.stage_item_input1
-            return None
-
-        if (
-            return_leg.stage_item_input1_score_after_extra_time is not None
-            and return_leg.stage_item_input2_score_after_extra_time is not None
-        ):
-            if (
-                return_leg.stage_item_input1_score_after_extra_time
-                > return_leg.stage_item_input2_score_after_extra_time
-            ):
-                return self.stage_item_input2
-            if (
-                return_leg.stage_item_input1_score_after_extra_time
-                < return_leg.stage_item_input2_score_after_extra_time
-            ):
-                return self.stage_item_input1
-            return None
-
-        if (
-            self.stage_item_input1_score_penalties is not None
-            and self.stage_item_input2_score_penalties is not None
-        ):
-            if self.stage_item_input1_score_penalties > self.stage_item_input2_score_penalties:
-                return self.stage_item_input1
-            if self.stage_item_input1_score_penalties < self.stage_item_input2_score_penalties:
-                return self.stage_item_input2
-            return None
-
-        if (
-            self.stage_item_input1_score_after_extra_time is not None
-            and self.stage_item_input2_score_after_extra_time is not None
-        ):
-            if (
-                self.stage_item_input1_score_after_extra_time
-                > self.stage_item_input2_score_after_extra_time
-            ):
-                return self.stage_item_input1
-            if (
-                self.stage_item_input1_score_after_extra_time
-                < self.stage_item_input2_score_after_extra_time
-            ):
-                return self.stage_item_input2
             return None
 
         return None
@@ -224,10 +207,14 @@ class MatchBody(BaseModelORM):
     custom_duration_minutes: int | None = None
     custom_margin_minutes: int | None = None
 
-    def _with_extra_time_penalty_consistency_cleared(self) -> "MatchBody":
+    def _with_extra_time_penalty_consistency_cleared(
+        self, extra_time_tied_override: bool | None = None
+    ) -> "MatchBody":
         """
         Given that extra time is relevant, clears the extra-time-half score when there's no
         extra-time score yet, and clears penalties once extra time already produced a winner.
+        `extra_time_tied_override` lets the two-legged caller supply the tie-on-aggregate result
+        instead of the (wrong, for a return leg) self-only comparison below.
         """
         has_extra_time = (
             self.stage_item_input1_score_after_extra_time is not None
@@ -238,10 +225,13 @@ class MatchBody(BaseModelORM):
             updates["stage_item_input1_score_extra_time_half"] = None
             updates["stage_item_input2_score_extra_time_half"] = None
 
-        extra_time_tied = has_extra_time and (
-            self.stage_item_input1_score_after_extra_time
-            == self.stage_item_input2_score_after_extra_time
-        )
+        if extra_time_tied_override is not None:
+            extra_time_tied = has_extra_time and extra_time_tied_override
+        else:
+            extra_time_tied = has_extra_time and (
+                self.stage_item_input1_score_after_extra_time
+                == self.stage_item_input2_score_after_extra_time
+            )
         if has_extra_time and not extra_time_tied:
             updates["stage_item_input1_score_penalties"] = None
             updates["stage_item_input2_score_penalties"] = None
@@ -299,7 +289,24 @@ class MatchBody(BaseModelORM):
         if away_goals_rule and sibling.stage_item_input2_score != self.stage_item_input2_score:
             return all_cleared
 
-        return self._with_extra_time_penalty_consistency_cleared()
+        extra_time_tied: bool | None = None
+        if (
+            self.stage_item_input1_score_after_extra_time is not None
+            and self.stage_item_input2_score_after_extra_time is not None
+        ):
+            aggregate1_et = (
+                sibling.stage_item_input2_score + self.stage_item_input1_score_after_extra_time
+            )
+            aggregate2_et = (
+                sibling.stage_item_input1_score + self.stage_item_input2_score_after_extra_time
+            )
+            extra_time_tied = aggregate1_et == aggregate2_et
+            if extra_time_tied and away_goals_rule:
+                extra_time_tied = (
+                    sibling.stage_item_input2_score == self.stage_item_input2_score_after_extra_time
+                )
+
+        return self._with_extra_time_penalty_consistency_cleared(extra_time_tied)
 
 
 class MatchCreateBodyFrontend(BaseModelORM):

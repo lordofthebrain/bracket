@@ -18,6 +18,7 @@ import DeleteButton from '@components/buttons/delete';
 import {
   formatMatchInput1,
   formatMatchInput2,
+  isTwoLeggedAggregateAfterExtraTimeUndecided,
   isTwoLeggedAggregateUndecided,
 } from '@components/utils/match';
 import { TournamentMinimal } from '@components/utils/tournament';
@@ -160,8 +161,15 @@ function MatchModalForm({
   const afterExtraTimeTied =
     form.values.stage_item_input1_score_after_extra_time != null &&
     form.values.stage_item_input2_score_after_extra_time != null &&
-    form.values.stage_item_input1_score_after_extra_time ===
-      form.values.stage_item_input2_score_after_extra_time;
+    (isSecondLegOfTwoLeggedTie && firstLeg != null
+      ? isTwoLeggedAggregateAfterExtraTimeUndecided(
+          firstLeg,
+          form.values.stage_item_input1_score_after_extra_time,
+          form.values.stage_item_input2_score_after_extra_time,
+          stageItem?.away_goals_rule ?? false
+        )
+      : form.values.stage_item_input1_score_after_extra_time ===
+        form.values.stage_item_input2_score_after_extra_time);
   const showPenaltyFields =
     isSingleElimination &&
     !isFirstLegOfTwoLeggedTie &&
