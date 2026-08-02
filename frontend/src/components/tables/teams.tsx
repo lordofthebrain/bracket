@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Center, Group, Modal, Pagination, Table } from '@mantine/core';
+import { Alert, Badge, Button, Center, Group, Image, Modal, Pagination, Table } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +12,20 @@ import RequestErrorAlert from '@components/utils/error_alert';
 import { TableSkeletonSingleColumn } from '@components/utils/skeletons';
 import { TournamentMinimal } from '@components/utils/tournament';
 import { FullTeamWithPlayers, TeamsWithPlayersResponse } from '@openapi';
+import { getBaseApiUrl } from '@services/adapter';
 import { deleteTeam } from '@services/team';
 import TableLayout, { TableState, ThNotSortable, ThSortable, sortTableEntries } from './table';
+
+function TeamLogo({ logoPath }: { logoPath: string | null }) {
+  if (logoPath == null) return null;
+  return (
+    <Image
+      src={`${getBaseApiUrl()}/static/team-logos/${logoPath}`}
+      alt=""
+      style={{ width: 30, height: 30, objectFit: 'contain', flexShrink: 0 }}
+    />
+  );
+}
 
 function TeamRow({
   tournamentData,
@@ -36,7 +48,12 @@ function TeamRow({
           <Badge color="red">{t('inactive')}</Badge>
         )}
       </Table.Td>
-      <Table.Td>{team.name}</Table.Td>
+      <Table.Td>
+        <Group gap="xs" wrap="nowrap">
+          <TeamLogo logoPath={team.logo_path} />
+          {team.name}
+        </Group>
+      </Table.Td>
       <Table.Td>
         <DateTime datetime={team.created} />
       </Table.Td>
