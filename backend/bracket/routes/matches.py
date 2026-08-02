@@ -180,7 +180,23 @@ async def update_match_by_id(
     stage_item = await get_stage_item(tournament_id, round_.stage_item_id)
 
     if stage_item.type == StageType.SINGLE_ELIMINATION:
-        match_body = match_body.with_irrelevant_extra_time_fields_cleared()
+        sibling = next(
+            (
+                round_match
+                for round_ in stage_item.rounds
+                for round_match in round_.matches
+                if round_match.id == match.return_leg_match_id
+            ),
+            None,
+        )
+        if stage_item.two_legged and sibling is not None:
+            match_body = match_body.with_irrelevant_extra_time_fields_cleared_two_legged(
+                is_return_leg=match.is_return_leg,
+                sibling=sibling,
+                away_goals_rule=stage_item.away_goals_rule,
+            )
+        else:
+            match_body = match_body.with_irrelevant_extra_time_fields_cleared()
     else:
         # Extra time/penalties only apply to single elimination matches.
         match_body = match_body.model_copy(

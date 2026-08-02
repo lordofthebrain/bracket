@@ -14,7 +14,7 @@ import {
 } from '@mantine/core';
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { IconAlertCircle, IconCalendarPlus, IconDots, IconTrash } from '@tabler/icons-react';
-import { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -39,7 +39,7 @@ import {
 } from '@services/lookups';
 import { rescheduleMatch, scheduleMatches } from '@services/match';
 
-function ScheduleRow({
+const ScheduleRow = React.memo(function ScheduleRow({
   index,
   match,
   openMatchModal,
@@ -102,9 +102,9 @@ function ScheduleRow({
       )}
     </Draggable>
   );
-}
+});
 
-function ScheduleColumn({
+const ScheduleColumn = React.memo(function ScheduleColumn({
   tournamentId,
   court,
   matches,
@@ -184,7 +184,7 @@ function ScheduleColumn({
       )}
     </Droppable>
   );
-}
+});
 
 function Schedule({
   t,
@@ -267,13 +267,13 @@ export default function SchedulePage() {
       ? getScheduleData(swrCourtsResponse, matchesByCourtId)
       : [];
 
-  if (!responseIsValid(swrStagesResponse)) return null;
-  if (!responseIsValid(swrCourtsResponse)) return null;
-
-  function openMatchModal(matchToOpen: MatchWithDetails) {
+  const openMatchModal = useCallback((matchToOpen: MatchWithDetails) => {
     setMatch(matchToOpen);
     modalSetOpened(true);
-  }
+  }, []);
+
+  if (!responseIsValid(swrStagesResponse)) return null;
+  if (!responseIsValid(swrCourtsResponse)) return null;
 
   return (
     <TournamentLayout tournament_id={tournamentData.id}>

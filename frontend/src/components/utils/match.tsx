@@ -69,7 +69,8 @@ export function getMatchWinner(match: MatchWithDetails): 1 | 2 | null {
 }
 
 export interface MatchResultDisplay {
-  prefix: 'n.V.' | 'n.E.' | null;
+  // Translation key for the short result-type label, translated by the caller (has `t` in scope).
+  prefix: 'after_extra_time_short' | 'after_penalties_short' | null;
   headline: [number, number];
   checkpoints: [number, number][];
 }
@@ -129,7 +130,7 @@ export function getMatchResultDisplay(match: MatchWithDetails): MatchResultDispl
       ]);
     }
     return {
-      prefix: 'n.E.',
+      prefix: 'after_penalties_short',
       headline: [
         match.stage_item_input1_score_penalties as number,
         match.stage_item_input2_score_penalties as number,
@@ -153,7 +154,7 @@ export function getMatchResultDisplay(match: MatchWithDetails): MatchResultDispl
       ]);
     }
     return {
-      prefix: 'n.V.',
+      prefix: 'after_extra_time_short',
       headline: [
         match.stage_item_input1_score_after_extra_time as number,
         match.stage_item_input2_score_after_extra_time as number,
@@ -173,6 +174,136 @@ export function getMatchResultDisplay(match: MatchWithDetails): MatchResultDispl
     headline: [match.stage_item_input1_score, match.stage_item_input2_score],
     checkpoints: dedupeConsecutiveCheckpoints(checkpoints),
   };
+}
+
+// Whether a two-legged tie is still undecided after aggregate score (and, if enabled, away
+// goals) given the first leg's already-played result and the second leg's own scores — the
+// latter passed separately since the second leg's modal calls this with in-progress form values
+// that haven't been saved yet. Mirrors the backend's `with_irrelevant_extra_time_fields_cleared_two_legged`.
+export function isTwoLeggedAggregateUndecided(
+  firstLeg: MatchWithDetails,
+  secondLegInput1Score: number,
+  secondLegInput2Score: number,
+  awayGoalsRule: boolean
+): boolean {
+  const aggregate1 = firstLeg.stage_item_input2_score + secondLegInput1Score;
+  const aggregate2 = firstLeg.stage_item_input1_score + secondLegInput2Score;
+  if (aggregate1 !== aggregate2) return false;
+
+  if (awayGoalsRule && firstLeg.stage_item_input2_score !== secondLegInput2Score) return false;
+
+  return true;
+}
+
+// Mirrors the backend's `Match.get_aggregate_winner`: `leg1` holds the canonical input1/input2
+// ordering, `leg2` has them swapped. Returns which of leg1's inputs won, like `getMatchWinner`.
+export function getTieAggregateWinner(
+  leg1: MatchWithDetails,
+  leg2: MatchWithDetails,
+  awayGoalsRule: boolean
+): 1 | 2 | null {
+  const aggregate1 = leg1.stage_item_input1_score + leg2.stage_item_input2_score;
+  const aggregate2 = leg1.stage_item_input2_score + leg2.stage_item_input1_score;
+  if (aggregate1 > aggregate2) return 1;
+  if (aggregate1 < aggregate2) return 2;
+
+  if (awayGoalsRule) {
+    const awayGoals1 = leg2.stage_item_input2_score;
+    const awayGoals2 = leg1.stage_item_input2_score;
+    if (awayGoals1 > awayGoals2) return 1;
+    if (awayGoals1 < awayGoals2) return 2;
+  }
+
+  if (
+    leg2.stage_item_input1_score_penalties != null &&
+    leg2.stage_item_input2_score_penalties != null
+  ) {
+    if (leg2.stage_item_input1_score_penalties > leg2.stage_item_input2_score_penalties) return 2;
+    if (leg2.stage_item_input1_score_penalties < leg2.stage_item_input2_score_penalties) return 1;
+    return null;
+  }
+
+  if (
+    leg2.stage_item_input1_score_after_extra_time != null &&
+    leg2.stage_item_input2_score_after_extra_time != null
+  ) {
+    if (leg2.stage_item_input1_score_after_extra_time > leg2.stage_item_input2_score_after_extra_time)
+      return 2;
+    if (leg2.stage_item_input1_score_after_extra_time < leg2.stage_item_input2_score_after_extra_time)
+      return 1;
+    return null;
+  }
+
+  if (
+    leg1.stage_item_input1_score_penalties != null &&
+    leg1.stage_item_input2_score_penalties != null
+  ) {
+    if (leg1.stage_item_input1_score_penalties > leg1.stage_item_input2_score_penalties) return 1;
+    if (leg1.stage_item_input1_score_penalties < leg1.stage_item_input2_score_penalties) return 2;
+    return null;
+  }
+
+  if (
+    leg1.stage_item_input1_score_after_extra_time != null &&
+    leg1.stage_item_input2_score_after_extra_time != null
+  ) {
+    if (leg1.stage_item_input1_score_after_extra_time > leg1.stage_item_input2_score_after_extra_time)
+      return 1;
+    if (leg1.stage_item_input1_score_after_extra_time < leg1.stage_item_input2_score_after_extra_time)
+      return 2;
+    return null;
+  }
+
+  return null;
+}
+
+// Mirrors getTieAggregateWinner's priority order (leg2 penalties > leg2 extra time > leg1
+// penalties > leg1 extra time > plain aggregate) to render the "Gesamt" line consistently with
+// who's actually marked as the winner. A penalty shootout replaces the aggregate entirely — it
+// isn't added on top of the leg scores — while extra time score is cumulative (includes normal
+// time), so it's combined with the other leg's normal-time score like the plain aggregate is.
+export function getTieAggregateScoreDisplay(
+  leg1: MatchWithDetails,
+  leg2: MatchWithDetails
+): [number, number] {
+  if (
+    leg2.stage_item_input1_score_penalties != null &&
+    leg2.stage_item_input2_score_penalties != null
+  ) {
+    return [leg2.stage_item_input1_score_penalties, leg2.stage_item_input2_score_penalties];
+  }
+
+  if (
+    leg2.stage_item_input1_score_after_extra_time != null &&
+    leg2.stage_item_input2_score_after_extra_time != null
+  ) {
+    return [
+      leg1.stage_item_input1_score + leg2.stage_item_input2_score_after_extra_time,
+      leg1.stage_item_input2_score + leg2.stage_item_input1_score_after_extra_time,
+    ];
+  }
+
+  if (
+    leg1.stage_item_input1_score_penalties != null &&
+    leg1.stage_item_input2_score_penalties != null
+  ) {
+    return [leg1.stage_item_input1_score_penalties, leg1.stage_item_input2_score_penalties];
+  }
+
+  if (
+    leg1.stage_item_input1_score_after_extra_time != null &&
+    leg1.stage_item_input2_score_after_extra_time != null
+  ) {
+    return [
+      leg1.stage_item_input1_score_after_extra_time + leg2.stage_item_input2_score,
+      leg1.stage_item_input2_score_after_extra_time + leg2.stage_item_input1_score,
+    ];
+  }
+
+  return [
+    leg1.stage_item_input1_score + leg2.stage_item_input2_score,
+    leg1.stage_item_input2_score + leg2.stage_item_input1_score,
+  ];
 }
 
 // Looks up the name of the round robin (league) stage item in the same season as the cup that contains this team.

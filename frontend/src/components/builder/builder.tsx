@@ -15,11 +15,10 @@ import {
   useCombobox,
   useMantineTheme,
 } from '@mantine/core';
-import { useColorScheme } from '@mantine/hooks';
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { BiCheck } from '@react-icons/all-files/bi/BiCheck';
 import { IconAlertCircle, IconPencil, IconTrash } from '@tabler/icons-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiSolidWrench } from 'react-icons/bi';
 import { SWRResponse } from 'swr';
@@ -51,7 +50,7 @@ import { deleteStage } from '@services/stage';
 import { deleteStageItem } from '@services/stage_item';
 import { updateStageItemInput } from '@services/stage_item_input';
 
-function StageItemInputComboBox({
+const StageItemInputComboBox = React.memo(function StageItemInputComboBox({
   tournament,
   stageItemInput,
   current_key,
@@ -108,7 +107,7 @@ function StageItemInputComboBox({
     ));
 
   const theme = useMantineTheme();
-  const dropdownBorderColor = useColorScheme() === 'dark' ? '#444' : '#ccc';
+  const dropdownBorderColor = 'light-dark(#ccc, #444)';
 
   return (
     <Combobox
@@ -169,7 +168,7 @@ function StageItemInputComboBox({
       </Combobox.Dropdown>
     </Combobox>
   );
-}
+});
 
 function computeAvailableInputs(
   data: StageItemInputOptionsResponse,
@@ -232,7 +231,7 @@ export function getAvailableInputs(
   return result;
 }
 
-function StageItemInputSection({
+const StageItemInputSection = React.memo(function StageItemInputSection({
   tournament,
   stageItemInput,
   currentOptionValue,
@@ -269,9 +268,9 @@ function StageItemInputSection({
       />
     </Card.Section>
   );
-}
+});
 
-function StageItemRow({
+const StageItemRow = React.memo(function StageItemRow({
   tournament,
   stageItem,
   swrStagesResponse,
@@ -411,9 +410,9 @@ function StageItemRow({
       </Modal>
     </Card>
   );
-}
+});
 
-function StageColumn({
+const StageColumn = React.memo(function StageColumn({
   tournament,
   stage,
   swrStagesResponse,
@@ -438,16 +437,18 @@ function StageColumn({
     return null;
   }
 
-  const availableInputs =
-    getAvailableInputs(swrAvailableInputsResponse, teamsMap, stageItemsLookup)[stage.id] || [];
-  availableInputs.push({
-    value: 'null',
-    label: null,
-    team_id: null,
-    winner_from_stage_item_id: null,
-    winner_position: null,
-    already_taken: false,
-  });
+  const availableInputs = [
+    ...(getAvailableInputs(swrAvailableInputsResponse, teamsMap, stageItemsLookup)[stage.id] ||
+      []),
+    {
+      value: 'null',
+      label: null,
+      team_id: null,
+      winner_from_stage_item_id: null,
+      winner_position: null,
+      already_taken: false,
+    },
+  ];
 
   const rows = stage.stage_items
     .sort((i1: StageItemWithRounds, i2: StageItemWithRounds) => (i1.id > i2.id ? 1 : -1))
@@ -537,7 +538,7 @@ function StageColumn({
       />
     </Stack>
   );
-}
+});
 
 export default function Builder({
   tournament,

@@ -15,7 +15,11 @@ import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import DeleteButton from '@components/buttons/delete';
-import { formatMatchInput1, formatMatchInput2 } from '@components/utils/match';
+import {
+  formatMatchInput1,
+  formatMatchInput2,
+  isTwoLeggedAggregateUndecided,
+} from '@components/utils/match';
 import { TournamentMinimal } from '@components/utils/tournament';
 import { MatchWithDetails, RoundWithMatches, StagesWithStageItemsResponse } from '@openapi';
 import { getMatchLookup, getStageItemLookup } from '@services/lookups';
@@ -55,6 +59,7 @@ function MatchModalForm({
   swrUpcomingMatchesResponse,
   setOpened,
   round,
+  onSaved,
 }: {
   tournamentData: TournamentMinimal;
   match: MatchWithDetails | null;
@@ -62,6 +67,7 @@ function MatchModalForm({
   swrUpcomingMatchesResponse: SWRResponse | null;
   setOpened: any;
   round: RoundWithMatches | null;
+  onSaved?: () => void;
 }) {
   if (match == null) {
     return null;
@@ -129,10 +135,28 @@ function MatchModalForm({
   const team1Name = formatMatchInput1(t, stageItemsLookup, matchesLookup, match);
   const team2Name = formatMatchInput2(t, stageItemsLookup, matchesLookup, match);
 
-  const isSingleElimination = matchesLookup[match.id]?.stageItem?.type === 'SINGLE_ELIMINATION';
+  const stageItem = matchesLookup[match.id]?.stageItem;
+  const isSingleElimination = stageItem?.type === 'SINGLE_ELIMINATION';
+  // Extra time/penalties never apply to a two-legged tie's first leg (scored like a normal
+  // league match); the second leg's fields depend on the aggregate score, not its own.
+  const isFirstLegOfTwoLeggedTie =
+    isSingleElimination && match.return_leg_match_id != null && !match.is_return_leg;
+  const isSecondLegOfTwoLeggedTie = isSingleElimination && match.is_return_leg === true;
+  const firstLeg = isSecondLegOfTwoLeggedTie
+    ? matchesLookup[match.return_leg_match_id ?? -1]?.match
+    : null;
+
   const mainScoreTied =
-    form.values.stage_item_input1_score === form.values.stage_item_input2_score;
-  const showExtraTimeFields = isSingleElimination && mainScoreTied && !noExtraTime;
+    isSecondLegOfTwoLeggedTie && firstLeg != null
+      ? isTwoLeggedAggregateUndecided(
+          firstLeg,
+          form.values.stage_item_input1_score,
+          form.values.stage_item_input2_score,
+          stageItem?.away_goals_rule ?? false
+        )
+      : form.values.stage_item_input1_score === form.values.stage_item_input2_score;
+  const showExtraTimeFields =
+    isSingleElimination && !isFirstLegOfTwoLeggedTie && mainScoreTied && !noExtraTime;
   const afterExtraTimeTied =
     form.values.stage_item_input1_score_after_extra_time != null &&
     form.values.stage_item_input2_score_after_extra_time != null &&
@@ -140,6 +164,7 @@ function MatchModalForm({
       form.values.stage_item_input2_score_after_extra_time;
   const showPenaltyFields =
     isSingleElimination &&
+    !isFirstLegOfTwoLeggedTie &&
     ((mainScoreTied && noExtraTime) || (showExtraTimeFields && afterExtraTimeTied));
 
   useEffect(() => {
@@ -201,7 +226,11 @@ function MatchModalForm({
           await updateMatch(tournamentData.id, match.id, updatedMatch);
           await swrStagesResponse.mutate();
           if (swrUpcomingMatchesResponse != null) await swrUpcomingMatchesResponse.mutate();
-          setOpened(false);
+          if (onSaved != null) {
+            onSaved();
+          } else {
+            setOpened(false);
+          }
         })}
       >
         {roundOptions != null && (
@@ -257,7 +286,7 @@ function MatchModalForm({
           </Grid.Col>
         </Grid>
 
-        {isSingleElimination && mainScoreTied && (
+        {isSingleElimination && !isFirstLegOfTwoLeggedTie && mainScoreTied && (
           <Checkbox
             mt="lg"
             checked={noExtraTime}
@@ -412,6 +441,7 @@ export default function MatchModal({
   opened,
   setOpened,
   round,
+  onSaved,
 }: {
   tournamentData: TournamentMinimal;
   match: MatchWithDetails | null;
@@ -420,12 +450,30 @@ export default function MatchModal({
   opened: boolean;
   setOpened: any;
   round: RoundWithMatches | null;
+  onSaved?: () => void;
 }) {
   const { t } = useTranslation();
 
+  const matchTypeLabel =
+    match == null
+      ? t('match_label')
+      : match.is_return_leg
+        ? t('return_leg_label')
+        : match.return_leg_match_id != null
+          ? t('first_leg_label')
+          : t('match_label');
+
   return (
     <>
-      <Modal opened={opened} onClose={() => setOpened(false)} title={t('edit_match_modal_title')}>
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title={
+          <Text fw={800} size="xl">
+            {t('edit_match_modal_title', { type: matchTypeLabel })}
+          </Text>
+        }
+      >
         <MatchModalForm
           swrStagesResponse={swrStagesResponse}
           swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
@@ -433,6 +481,7 @@ export default function MatchModal({
           match={match}
           setOpened={setOpened}
           round={round}
+          onSaved={onSaved}
         />
       </Modal>
     </>

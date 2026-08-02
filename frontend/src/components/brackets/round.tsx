@@ -7,6 +7,7 @@ import { isMatchHappening, isMatchInTheFutureOrPresent } from '@components/utils
 import { TournamentMinimal } from '@components/utils/tournament';
 import { MatchWithDetails, RoundWithMatches, StagesWithStageItemsResponse } from '@openapi';
 import Match from './match';
+import TieCard from './tie_card';
 
 export default function RoundComponent({
   tournamentData,
@@ -23,7 +24,11 @@ export default function RoundComponent({
   readOnly: boolean;
   displaySettings: BracketDisplaySettings;
 }) {
+  // Return legs are rendered together with their first leg inside a `TieCard`, not as their
+  // own card, so they're excluded from the plain match list here.
+  const matchesById = new Map(round.matches.map((match) => [match.id, match]));
   const matches = round.matches
+    .filter((match: MatchWithDetails) => !match.is_return_leg)
     .sort((m1, m2) =>
       (m1.court ? m1.court.name : 'y') > (m2.court ? m2.court.name : 'z') ? 1 : -1
     )
@@ -33,19 +38,37 @@ export default function RoundComponent({
         (displaySettings.matchVisibility === 'future-only' && isMatchInTheFutureOrPresent(match)) ||
         (displaySettings.matchVisibility === 'present-only' && isMatchHappening(match))
     )
-    .map((match) => (
-      <Match
-        key={match.id}
-        tournamentData={tournamentData}
-        swrStagesResponse={swrStagesResponse}
-        swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
-        match={match}
-        readOnly={readOnly}
-        round={round}
-        showCourtAndTime={false}
-        highlightWinner={false}
-      />
-    ));
+    .map((match) => {
+      const returnLeg =
+        match.return_leg_match_id != null ? matchesById.get(match.return_leg_match_id) : null;
+      if (returnLeg != null) {
+        return (
+          <TieCard
+            key={match.id}
+            tournamentData={tournamentData}
+            swrStagesResponse={swrStagesResponse}
+            swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
+            leg1={match}
+            leg2={returnLeg}
+            readOnly={readOnly}
+            round={round}
+          />
+        );
+      }
+      return (
+        <Match
+          key={match.id}
+          tournamentData={tournamentData}
+          swrStagesResponse={swrStagesResponse}
+          swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
+          match={match}
+          readOnly={readOnly}
+          round={round}
+          showCourtAndTime={false}
+          highlightWinner={false}
+        />
+      );
+    });
   const active_round_style = round.is_draft
     ? {
         borderStyle: 'dashed',

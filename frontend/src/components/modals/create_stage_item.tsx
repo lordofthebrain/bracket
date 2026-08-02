@@ -178,6 +178,38 @@ function DoubleRoundRobinCheckbox({ form }: { form: UseFormReturnType<any> }) {
   );
 }
 
+function TwoLeggedCheckboxes({ form }: { form: UseFormReturnType<any> }) {
+  const { t } = useTranslation();
+  if (form.values.type !== 'SINGLE_ELIMINATION') {
+    return null;
+  }
+  return (
+    <>
+      <Checkbox
+        mt="1rem"
+        label={t('two_legged_checkbox_label')}
+        {...form.getInputProps('two_legged', { type: 'checkbox' })}
+      />
+      {form.values.two_legged && (
+        <>
+          <Checkbox
+            mt="0.5rem"
+            ml="1.5rem"
+            label={t('two_legged_final_checkbox_label')}
+            {...form.getInputProps('two_legged_final', { type: 'checkbox' })}
+          />
+          <Checkbox
+            mt="0.5rem"
+            ml="1.5rem"
+            label={t('away_goals_rule_checkbox_label')}
+            {...form.getInputProps('away_goals_rule', { type: 'checkbox' })}
+          />
+        </>
+      )}
+    </>
+  );
+}
+
 function RoundNamePatternInput({ form }: { form: UseFormReturnType<any> }) {
   const { t } = useTranslation();
   return (
@@ -217,6 +249,9 @@ interface FormValues {
   team_count_round_robin: number;
   team_count_elimination: number;
   double_round_robin: boolean;
+  two_legged: boolean;
+  two_legged_final: boolean;
+  away_goals_rule: boolean;
   round_name_pattern: string;
 }
 export function CreateStageItemModal({
@@ -239,6 +274,9 @@ export function CreateStageItemModal({
       team_count_round_robin: 4,
       team_count_elimination: 2,
       double_round_robin: false,
+      two_legged: false,
+      two_legged_final: false,
+      away_goals_rule: false,
       round_name_pattern: 'Round {02d}',
     },
     validate: {
@@ -277,7 +315,10 @@ export function CreateStageItemModal({
               values.round_name_pattern,
               values.type === 'SINGLE_ELIMINATION'
                 ? getEliminationRoundNames(t, teamCount)
-                : undefined
+                : undefined,
+              values.two_legged,
+              values.two_legged_final,
+              values.away_goals_rule
             );
             await swrStagesResponse.mutate();
             await swrAvailableInputsResponse.mutate();
@@ -295,6 +336,7 @@ export function CreateStageItemModal({
           <TeamCountInput form={form} />
           <RoundNamePatternInput form={form} />
           <DoubleRoundRobinCheckbox form={form} />
+          <TwoLeggedCheckboxes form={form} />
 
           <Button fullWidth mt="1.5rem" color="green" type="submit">
             {t('create_stage_item_button')}

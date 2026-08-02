@@ -151,6 +151,8 @@ matches = Table(
     Column("stage_item_input2_score_penalties", Integer, nullable=True),
     Column("is_played", Boolean, nullable=False, server_default="false"),
     Column("position_in_schedule", Integer, nullable=True),
+    Column("is_return_leg", Boolean, nullable=False, server_default="false"),
+    Column("return_leg_match_id", BigInteger, ForeignKey("matches.id"), nullable=True),
 )
 
 teams = Table(

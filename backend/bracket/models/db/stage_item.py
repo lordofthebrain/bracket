@@ -38,6 +38,9 @@ class StageItemInsertable(BaseModelORM):
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
     double_round_robin: bool = False
+    two_legged: bool = False
+    two_legged_final: bool = False
+    away_goals_rule: bool = False
     round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
 
     _validate_round_name_pattern = field_validator("round_name_pattern")(
@@ -70,6 +73,9 @@ class StageItemCreateBody(BaseModelORM):
     team_count: int = Field(ge=2, le=64)
     ranking_id: RankingId | None = None
     double_round_robin: bool = False
+    two_legged: bool = False
+    two_legged_final: bool = False
+    away_goals_rule: bool = False
     round_name_pattern: str = DEFAULT_ROUND_NAME_PATTERN
     round_names: list[str | None] | None = None
 

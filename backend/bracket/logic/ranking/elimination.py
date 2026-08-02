@@ -10,6 +10,36 @@ from bracket.utils.id_types import (
 )
 
 
+def resolve_tie_winner(
+    match: Match, matches_by_id: dict[MatchId, Match], away_goals_rule: bool
+) -> StageItemInput | None:
+    """
+    `match` is always a first-leg match — only first-leg ids are ever referenced via
+    `stage_item_input_winner_from_match_id`. Falls back to the plain single-match winner
+    when there's no linked return leg.
+    """
+    if match.return_leg_match_id is None:
+        return match.get_winner()
+
+    return_leg = matches_by_id.get(match.return_leg_match_id)
+    if return_leg is None or not match.is_played or not return_leg.is_played:
+        # Aggregate score is only meaningful once both legs have actually been played —
+        # an unplayed leg's default 0 score would otherwise look like a real result.
+        return None
+
+    return match.get_aggregate_winner(return_leg, away_goals_rule)
+
+
+def _expand_with_return_legs(match_ids: set[MatchId], round_matches: list[Match]) -> set[MatchId]:
+    matches_by_id = {match.id: match for match in round_matches}
+    expanded = set(match_ids)
+    for match_id in match_ids:
+        match = matches_by_id.get(match_id)
+        if match is not None and match.return_leg_match_id is not None:
+            expanded.add(match.return_leg_match_id)
+    return expanded
+
+
 def get_inputs_to_update_in_subsequent_elimination_rounds(
     current_round_id: RoundId,
     stage_item: StageItemWithRounds,
@@ -22,10 +52,17 @@ def get_inputs_to_update_in_subsequent_elimination_rounds(
     rounds, because of the tree-like structure of elimination stage items.
     """
     current_round = next(round_ for round_ in stage_item.rounds if round_.id == current_round_id)
+    # A two-legged tie's aggregate winner depends on both legs, so saving either one must pull
+    # its sibling leg into `affected_matches` too, even if only one of the two was just edited.
+    effective_match_ids = (
+        _expand_with_return_legs(match_ids, current_round.matches)
+        if match_ids is not None
+        else None
+    )
     affected_matches: dict[MatchId, Match] = {
         match.id: match
         for match in current_round.matches
-        if match_ids is None or match.id in match_ids
+        if effective_match_ids is None or match.id in effective_match_ids
     }
     subsequent_rounds = [round_ for round_ in stage_item.rounds if round_.id > current_round.id]
     subsequent_rounds.sort(key=lambda round_: round_.id)
@@ -48,14 +85,18 @@ def get_inputs_to_update_in_subsequent_elimination_rounds(
                 subsequent_match.stage_item_input1_winner_from_match_id
             )
         ):
-            updated_inputs[0] = affected_match1.get_winner()
+            updated_inputs[0] = resolve_tie_winner(
+                affected_match1, affected_matches, stage_item.away_goals_rule
+            )
 
         if subsequent_match.stage_item_input2_winner_from_match_id is not None and (
             affected_match2 := affected_matches.get(
                 subsequent_match.stage_item_input2_winner_from_match_id
             )
         ):
-            updated_inputs[1] = affected_match2.get_winner()
+            updated_inputs[1] = resolve_tie_winner(
+                affected_match2, affected_matches, stage_item.away_goals_rule
+            )
 
         if original_inputs != updated_inputs:
             input_ids = [input_.id if input_ else None for input_ in updated_inputs]

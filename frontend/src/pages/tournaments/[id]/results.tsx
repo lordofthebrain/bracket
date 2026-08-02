@@ -3,7 +3,7 @@ import {
   Anchor,
   Card,
   Center,
-  Grid,
+  Divider,
   Group,
   Image,
   Loader,
@@ -15,7 +15,7 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import { IconAlertCircle } from '@tabler/icons-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
@@ -28,6 +28,8 @@ import {
   getMatchResultDisplay,
   getMatchWinner,
   getTeamLeagueLabel,
+  getTieAggregateScoreDisplay,
+  getTieAggregateWinner,
 } from '@components/utils/match';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
@@ -47,32 +49,35 @@ function TeamLogo({ input }: { input: any }) {
   );
 }
 
-function ScheduleRow({
-  data,
-  openMatchModal,
+function LegRow({
+  match,
   stageItemsLookup,
   matchesLookup,
+  isSingleElimination,
+  stageId,
+  winner,
+  isDarkMode,
+  onClick,
 }: {
-  data: any;
-  openMatchModal: any;
+  match: any;
   stageItemsLookup: any;
   matchesLookup: any;
+  isSingleElimination: boolean;
+  stageId: number;
+  winner: 1 | 2 | null;
+  isDarkMode: boolean;
+  onClick: () => void;
 }) {
   const { t } = useTranslation();
   const scoreColor = '#656565';
 
-  const isSingleElimination = data.stageItem?.type === 'SINGLE_ELIMINATION';
-  const result = getMatchResultDisplay(data.match);
-  const winner = getMatchWinner(data.match);
-  const input1Won = isSingleElimination && data.match.is_played && winner === 1;
-  const input2Won = isSingleElimination && data.match.is_played && winner === 2;
+  const result = getMatchResultDisplay(match);
+  const input1Won = isSingleElimination && match.is_played && winner === 1;
+  const input2Won = isSingleElimination && match.is_played && winner === 2;
   const leagueLabel = (input: any) =>
-    isSingleElimination
-      ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, data.stageItem.stage_id)
-      : null;
-  const league1Label = leagueLabel(data.match.stage_item_input1);
-  const league2Label = leagueLabel(data.match.stage_item_input2);
-  const isDarkMode = useColorScheme() === 'dark';
+    isSingleElimination ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, stageId) : null;
+  const league1Label = leagueLabel(match.stage_item_input1);
+  const league2Label = leagueLabel(match.stage_item_input2);
   const winnerNameStyle = isDarkMode ? { color: 'white' } : undefined;
 
   const checkpointStyle = {
@@ -81,108 +86,165 @@ function ScheduleRow({
   };
 
   return (
-    <UnstyledButton style={{ width: '48rem' }}>
-      <Card
-        shadow="sm"
-        radius="md"
-        withBorder
-        mt="md"
-        onClick={() => {
-          openMatchModal(data.match);
-        }}
-      >
-        <Stack>
-          <Grid>
-            <Grid.Col span="auto" pb="0rem">
-              <Group gap="xs" wrap="nowrap" align="center">
-                <TeamLogo input={data.match.stage_item_input1} />
-                <Text fw={input1Won ? 700 : 500} style={input1Won ? winnerNameStyle : undefined}>
-                  {formatMatchInput1(t, stageItemsLookup, matchesLookup, data.match)}
-                </Text>
-                {league1Label != null && (
-                  <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
-                    ({league1Label})
-                  </div>
-                )}
-              </Group>
-            </Grid.Col>
-            <Grid.Col span="content" pb="0rem">
-              <Group gap="xs" wrap="nowrap">
-                {result.prefix != null && (
-                  <Text
-                    size="sm"
-                    c="dimmed"
-                    fw={700}
-                    style={{ position: 'relative', top: '0.9rem' }}
-                  >
-                    {result.prefix}
-                  </Text>
-                )}
-                <div
-                  style={{
-                    backgroundColor: scoreColor,
-                    borderRadius: '0.5rem',
-                    paddingLeft: '1rem',
-                    paddingRight: '1rem',
-                    color: 'white',
-                    fontWeight: 800,
-                  }}
-                >
-                  {result.headline[0]}
+    <UnstyledButton style={{ width: '100%', display: 'block' }} onClick={onClick}>
+      <Stack gap={4}>
+        <Group justify="space-between" wrap="nowrap" align="center">
+          <Group gap="xs" wrap="nowrap" align="center" style={{ flex: 1, minWidth: 0 }}>
+            <TeamLogo input={match.stage_item_input1} />
+            <Text fw={input1Won ? 700 : 500} style={input1Won ? winnerNameStyle : undefined}>
+              {formatMatchInput1(t, stageItemsLookup, matchesLookup, match)}
+            </Text>
+            {league1Label != null && (
+              <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
+                ({league1Label})
+              </div>
+            )}
+          </Group>
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+            {result.prefix != null && (
+              <Text size="sm" c="dimmed" fw={700} style={{ position: 'relative', top: '0.9rem' }}>
+                {t(result.prefix)}
+              </Text>
+            )}
+            <div
+              style={{
+                backgroundColor: scoreColor,
+                borderRadius: '0.5rem',
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+                color: 'white',
+                fontWeight: 800,
+              }}
+            >
+              {result.headline[0]}
+            </div>
+            <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
+              {result.checkpoints.map((checkpoint, index) => (
+                <div key={index} style={checkpointStyle}>
+                  ({checkpoint[0]})
                 </div>
-                <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
-                  {result.checkpoints.map((checkpoint, index) => (
-                    <div key={index} style={checkpointStyle}>
-                      ({checkpoint[0]})
-                    </div>
-                  ))}
-                </Group>
-              </Group>
-            </Grid.Col>
-          </Grid>
-          <Grid mb="0rem">
-            <Grid.Col span="auto" pb="0rem">
-              <Group gap="xs" wrap="nowrap" align="center">
-                <TeamLogo input={data.match.stage_item_input2} />
-                <Text fw={input2Won ? 700 : 500} style={input2Won ? winnerNameStyle : undefined}>
-                  {formatMatchInput2(t, stageItemsLookup, matchesLookup, data.match)}
-                </Text>
-                {league2Label != null && (
-                  <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
-                    ({league2Label})
-                  </div>
-                )}
-              </Group>
-            </Grid.Col>
-            <Grid.Col span="content" pb="0rem">
-              <Group gap="xs" wrap="nowrap">
-                <div
-                  style={{
-                    backgroundColor: scoreColor,
-                    borderRadius: '0.5rem',
-                    paddingLeft: '1rem',
-                    paddingRight: '1rem',
-                    color: 'white',
-                    fontWeight: 800,
-                  }}
-                >
-                  {result.headline[1]}
+              ))}
+            </Group>
+          </Group>
+        </Group>
+        <Group justify="space-between" wrap="nowrap" align="center">
+          <Group gap="xs" wrap="nowrap" align="center" style={{ flex: 1, minWidth: 0 }}>
+            <TeamLogo input={match.stage_item_input2} />
+            <Text fw={input2Won ? 700 : 500} style={input2Won ? winnerNameStyle : undefined}>
+              {formatMatchInput2(t, stageItemsLookup, matchesLookup, match)}
+            </Text>
+            {league2Label != null && (
+              <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
+                ({league2Label})
+              </div>
+            )}
+          </Group>
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+            <div
+              style={{
+                backgroundColor: scoreColor,
+                borderRadius: '0.5rem',
+                paddingLeft: '1rem',
+                paddingRight: '1rem',
+                color: 'white',
+                fontWeight: 800,
+              }}
+            >
+              {result.headline[1]}
+            </div>
+            <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
+              {result.checkpoints.map((checkpoint, index) => (
+                <div key={index} style={checkpointStyle}>
+                  ({checkpoint[1]})
                 </div>
-                <Group gap="xs" wrap="nowrap" justify="flex-end" style={{ minWidth: '1.5rem' }}>
-                  {result.checkpoints.map((checkpoint, index) => (
-                    <div key={index} style={checkpointStyle}>
-                      ({checkpoint[1]})
-                    </div>
-                  ))}
-                </Group>
-              </Group>
-            </Grid.Col>
-          </Grid>
-        </Stack>
-      </Card>
+              ))}
+            </Group>
+          </Group>
+        </Group>
+      </Stack>
     </UnstyledButton>
   );
 }
+
+const ScheduleRow = React.memo(function ScheduleRow({
+  data,
+  returnLegData,
+  openMatchModal,
+  stageItemsLookup,
+  matchesLookup,
+  isDarkMode,
+}: {
+  data: any;
+  returnLegData?: any;
+  openMatchModal: any;
+  stageItemsLookup: any;
+  matchesLookup: any;
+  isDarkMode: boolean;
+}) {
+  const { t } = useTranslation();
+  const isSingleElimination = data.stageItem?.type === 'SINGLE_ELIMINATION';
+  const awayGoalsRule = data.stageItem?.away_goals_rule ?? false;
+
+  const bothLegsPlayed = returnLegData != null && data.match.is_played && returnLegData.match.is_played;
+  const aggregateWinner = bothLegsPlayed
+    ? getTieAggregateWinner(data.match, returnLegData.match, awayGoalsRule)
+    : null;
+  const aggregateScore =
+    returnLegData != null ? getTieAggregateScoreDisplay(data.match, returnLegData.match) : null;
+  const winner1 = returnLegData != null ? aggregateWinner : getMatchWinner(data.match);
+  const winner2 =
+    returnLegData != null
+      ? aggregateWinner === 1
+        ? 2
+        : aggregateWinner === 2
+          ? 1
+          : aggregateWinner
+      : null;
+
+  const returnLegOnClick =
+    returnLegData != null
+      ? () => openMatchModal(data.match.is_played ? returnLegData.match : data.match)
+      : undefined;
+
+  return (
+    <Card shadow="sm" radius="md" withBorder mt="md" p={0} style={{ width: '48rem' }}>
+      <div style={{ padding: 'var(--mantine-spacing-md)' }}>
+        <LegRow
+          match={data.match}
+          stageItemsLookup={stageItemsLookup}
+          matchesLookup={matchesLookup}
+          isSingleElimination={isSingleElimination}
+          stageId={data.stageItem.stage_id}
+          winner={winner1}
+          isDarkMode={isDarkMode}
+          onClick={() => openMatchModal(data.match)}
+        />
+      </div>
+      {returnLegData != null && (
+        <>
+          <Divider mx="md" />
+          <div style={{ padding: 'var(--mantine-spacing-md)' }}>
+            <LegRow
+              match={returnLegData.match}
+              stageItemsLookup={stageItemsLookup}
+              matchesLookup={matchesLookup}
+              isSingleElimination={isSingleElimination}
+              stageId={data.stageItem.stage_id}
+              winner={winner2}
+              isDarkMode={isDarkMode}
+              onClick={returnLegOnClick as () => void}
+            />
+          </div>
+          <Text size="xs" c="dimmed" ta="center" pb="xs">
+            {t('aggregate_score_label')}: {aggregateScore![0]}
+            {' : '}
+            {aggregateScore![1]}
+          </Text>
+        </>
+      )}
+    </Card>
+  );
+});
 
 function Schedule({
   t,
@@ -191,6 +253,7 @@ function Schedule({
   matchesLookup,
   stageItemMatches,
   roundFilter,
+  isDarkMode,
 }: {
   t: Translator;
   stageItemsLookup: any;
@@ -198,14 +261,24 @@ function Schedule({
   matchesLookup: any;
   stageItemMatches: any[];
   roundFilter: string | null;
+  isDarkMode: boolean;
 }) {
-  const sortedMatches =
-    roundFilter == null
-      ? []
-      : stageItemMatches
-          .filter((m1: any) => m1.match.start_time != null)
-          .filter((m1: any) => `${m1.round.id}` === roundFilter)
-          .sort((m1: any, m2: any) => m1.round.id - m2.round.id);
+  const matchDataById = useMemo(
+    () => new Map(stageItemMatches.map((data: any) => [data.match.id, data])),
+    [stageItemMatches]
+  );
+
+  const sortedMatches = useMemo(
+    () =>
+      roundFilter == null
+        ? []
+        : stageItemMatches
+            .filter((m1: any) => m1.match.start_time != null)
+            .filter((m1: any) => `${m1.round.id}` === roundFilter)
+            .filter((m1: any) => !m1.match.is_return_leg)
+            .sort((m1: any, m2: any) => m1.round.id - m2.round.id),
+    [stageItemMatches, roundFilter]
+  );
 
   const rows: React.JSX.Element[] = [];
   let lastRoundId: number | null = null;
@@ -218,13 +291,19 @@ function Schedule({
       );
       lastRoundId = data.round.id;
     }
+    const returnLegData =
+      data.match.return_leg_match_id != null
+        ? matchDataById.get(data.match.return_leg_match_id)
+        : null;
     rows.push(
       <ScheduleRow
         key={data.match.id}
         data={data}
+        returnLegData={returnLegData}
         openMatchModal={openMatchModal}
         stageItemsLookup={stageItemsLookup}
         matchesLookup={matchesLookup}
+        isDarkMode={isDarkMode}
       />
     );
   });
@@ -269,6 +348,7 @@ function ResultsForStageItem({
   matchesLookup,
   openMatchModal,
   jumpTo,
+  isDarkMode,
 }: {
   t: Translator;
   stageItem: any;
@@ -277,18 +357,21 @@ function ResultsForStageItem({
   matchesLookup: any;
   openMatchModal: CallableFunction;
   jumpTo: { targetId: string; label: string }[];
+  isDarkMode: boolean;
 }) {
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
 
-  const roundOptionsMap = new Map<number, string>();
-  stageItemMatches.forEach((data: any) => {
-    roundOptionsMap.set(data.round.id, data.round.name);
-  });
-  const sortedRoundIds = Array.from(roundOptionsMap.keys()).sort((id1, id2) => id1 - id2);
-  const roundOptions = sortedRoundIds.map((id) => ({
-    value: `${id}`,
-    label: roundOptionsMap.get(id) as string,
-  }));
+  const { sortedRoundIds, roundOptions } = useMemo(() => {
+    const roundOptionsMap = new Map<number, string>();
+    stageItemMatches.forEach((data: any) => {
+      roundOptionsMap.set(data.round.id, data.round.name);
+    });
+    const ids = Array.from(roundOptionsMap.keys()).sort((id1, id2) => id1 - id2);
+    return {
+      sortedRoundIds: ids,
+      roundOptions: ids.map((id) => ({ value: `${id}`, label: roundOptionsMap.get(id) as string })),
+    };
+  }, [stageItemMatches]);
 
   useEffect(() => {
     if (
@@ -350,6 +433,7 @@ function ResultsForStageItem({
             stageItemsLookup={stageItemsLookup}
             openMatchModal={openMatchModal}
             roundFilter={roundFilter}
+            isDarkMode={isDarkMode}
           />
         )}
       </Center>
@@ -360,6 +444,7 @@ function ResultsForStageItem({
 export default function ResultsPage() {
   const [modalOpened, modalSetOpened] = useState(false);
   const [match, setMatch] = useState<MatchWithDetails | null>(null);
+  const isDarkMode = useColorScheme() === 'dark';
 
   const { t } = useTranslation();
   const { tournamentData } = getTournamentIdFromRouter();
@@ -382,13 +467,13 @@ export default function ResultsPage() {
 
   const anchorId = (stageItemId: number) => `results-stage-item-${stageItemId}`;
 
-  if (!responseIsValid(swrStagesResponse)) return null;
-  if (!responseIsValid(swrCourtsResponse)) return null;
-
-  function openMatchModal(matchToOpen: MatchWithDetails) {
+  const openMatchModal = useCallback((matchToOpen: MatchWithDetails) => {
     setMatch(matchToOpen);
     modalSetOpened(true);
-  }
+  }, []);
+
+  if (!responseIsValid(swrStagesResponse)) return null;
+  if (!responseIsValid(swrCourtsResponse)) return null;
 
   function modalSetOpenedAndUpdateMatch(opened: boolean) {
     if (!opened) {
@@ -459,6 +544,7 @@ export default function ResultsPage() {
                 matchesLookup={matchesLookup}
                 openMatchModal={openMatchModal}
                 jumpTo={jumpTo}
+                isDarkMode={isDarkMode}
               />
             </div>
           );

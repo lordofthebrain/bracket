@@ -17,11 +17,11 @@ async def sql_create_stage_item(
     query = """
             INSERT INTO stage_items (
                 type, stage_id, name, team_count, ranking_id, double_round_robin,
-                round_name_pattern
+                two_legged, two_legged_final, away_goals_rule, round_name_pattern
             )
             VALUES (
                 :stage_item_type, :stage_id, :name, :team_count, :ranking_id, :double_round_robin,
-                :round_name_pattern
+                :two_legged, :two_legged_final, :away_goals_rule, :round_name_pattern
             )
             RETURNING *
             """
@@ -36,6 +36,9 @@ async def sql_create_stage_item(
             if stage_item.ranking_id
             else (await get_default_rankings_in_tournament(tournament_id)).id,
             "double_round_robin": stage_item.double_round_robin,
+            "two_legged": stage_item.two_legged,
+            "two_legged_final": stage_item.two_legged_final,
+            "away_goals_rule": stage_item.away_goals_rule,
             "round_name_pattern": stage_item.round_name_pattern,
         },
     )

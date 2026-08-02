@@ -49,6 +49,18 @@ async def sql_swap_match_teams(match_id: MatchId) -> None:
     await database.execute(query=query, values={"match_id": match_id})
 
 
+async def sql_set_return_leg_match_id(match_id: MatchId, return_leg_match_id: MatchId) -> None:
+    query = """
+        UPDATE matches
+        SET return_leg_match_id = :return_leg_match_id
+        WHERE matches.id = :match_id
+        """
+    await database.execute(
+        query=query,
+        values={"match_id": match_id, "return_leg_match_id": return_leg_match_id},
+    )
+
+
 async def sql_update_match_winner_sources(
     match_id: MatchId,
     stage_item_input1_winner_from_match_id: MatchId | None,
@@ -101,6 +113,8 @@ async def sql_create_match(match: MatchCreateBody) -> Match:
             stage_item_input2_score,
             stage_item_input1_conflict,
             stage_item_input2_conflict,
+            is_return_leg,
+            return_leg_match_id,
             created
         )
         VALUES (
@@ -118,6 +132,8 @@ async def sql_create_match(match: MatchCreateBody) -> Match:
             0,
             false,
             false,
+            :is_return_leg,
+            :return_leg_match_id,
             NOW()
         )
         RETURNING *

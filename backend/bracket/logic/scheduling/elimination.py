@@ -4,7 +4,7 @@ from starlette import status
 from bracket.models.db.match import Match, MatchCreateBody
 from bracket.models.db.tournament import Tournament
 from bracket.models.db.util import RoundWithMatches, StageItemWithRounds
-from bracket.sql.matches import sql_create_match
+from bracket.sql.matches import sql_create_match, sql_set_return_leg_match_id
 from bracket.sql.rounds import get_rounds_for_stage_item
 from bracket.sql.tournaments import sql_get_tournament
 from bracket.utils.id_types import TournamentId
@@ -64,6 +64,43 @@ def determine_matches_subsequent_round(
     return suggestions
 
 
+def _round_is_two_legged(stage_item: StageItemWithRounds, is_final_round: bool) -> bool:
+    if not stage_item.two_legged:
+        return False
+    return stage_item.two_legged_final if is_final_round else True
+
+
+def _build_return_leg_body(primary: Match, tournament: Tournament) -> MatchCreateBody:
+    return MatchCreateBody(
+        round_id=primary.round_id,
+        court_id=None,
+        stage_item_input1_id=primary.stage_item_input2_id,
+        stage_item_input2_id=primary.stage_item_input1_id,
+        stage_item_input1_winner_from_match_id=primary.stage_item_input2_winner_from_match_id,
+        stage_item_input2_winner_from_match_id=primary.stage_item_input1_winner_from_match_id,
+        duration_minutes=tournament.duration_minutes,
+        margin_minutes=tournament.margin_minutes,
+        custom_duration_minutes=None,
+        custom_margin_minutes=None,
+        is_return_leg=True,
+        return_leg_match_id=primary.id,
+    )
+
+
+async def _create_round_matches(
+    primary_bodies: list[MatchCreateBody], two_legged: bool, tournament: Tournament
+) -> list[Match]:
+    primary_matches: list[Match] = []
+    for body in primary_bodies:
+        primary = await sql_create_match(body)
+        primary_matches.append(primary)
+        if two_legged:
+            return_leg = await sql_create_match(_build_return_leg_body(primary, tournament))
+            await sql_set_return_leg_match_id(primary.id, return_leg.id)
+
+    return primary_matches
+
+
 async def build_single_elimination_stage_item(
     tournament_id: TournamentId, stage_item: StageItemWithRounds
 ) -> None:
@@ -73,16 +110,18 @@ async def build_single_elimination_stage_item(
     assert len(rounds) > 0
     first_round = rounds[0]
 
-    prev_matches = [
-        await sql_create_match(match)
-        for match in determine_matches_first_round(first_round, stage_item, tournament)
-    ]
+    prev_matches = await _create_round_matches(
+        determine_matches_first_round(first_round, stage_item, tournament),
+        _round_is_two_legged(stage_item, is_final_round=first_round is rounds[-1]),
+        tournament,
+    )
 
     for round_ in rounds[1:]:
-        prev_matches = [
-            await sql_create_match(match)
-            for match in determine_matches_subsequent_round(prev_matches, round_, tournament)
-        ]
+        prev_matches = await _create_round_matches(
+            determine_matches_subsequent_round(prev_matches, round_, tournament),
+            _round_is_two_legged(stage_item, is_final_round=round_ is rounds[-1]),
+            tournament,
+        )
 
 
 def get_number_of_rounds_to_create_single_elimination(team_count: int) -> int:

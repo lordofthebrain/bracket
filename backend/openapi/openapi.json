@@ -414,6 +414,11 @@
             "title": "Is Played",
             "type": "boolean"
           },
+          "is_return_leg": {
+            "default": false,
+            "title": "Is Return Leg",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -428,6 +433,17 @@
               }
             ],
             "title": "Position In Schedule"
+          },
+          "return_leg_match_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Leg Match Id"
           },
           "round_id": {
             "title": "Round Id",
@@ -651,6 +667,8 @@
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
+          "is_return_leg",
+          "return_leg_match_id",
           "stage_item_input1_id",
           "stage_item_input2_id",
           "stage_item_input1_winner_from_match_id",
@@ -1083,6 +1101,11 @@
             "title": "Is Played",
             "type": "boolean"
           },
+          "is_return_leg": {
+            "default": false,
+            "title": "Is Return Leg",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -1097,6 +1120,17 @@
               }
             ],
             "title": "Position In Schedule"
+          },
+          "return_leg_match_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Leg Match Id"
           },
           "round_id": {
             "title": "Round Id",
@@ -1320,6 +1354,8 @@
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
+          "is_return_leg",
+          "return_leg_match_id",
           "stage_item_input1_id",
           "stage_item_input2_id",
           "stage_item_input1_winner_from_match_id",
@@ -1395,6 +1431,11 @@
             "title": "Is Played",
             "type": "boolean"
           },
+          "is_return_leg": {
+            "default": false,
+            "title": "Is Return Leg",
+            "type": "boolean"
+          },
           "margin_minutes": {
             "title": "Margin Minutes",
             "type": "integer"
@@ -1409,6 +1450,17 @@
               }
             ],
             "title": "Position In Schedule"
+          },
+          "return_leg_match_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Leg Match Id"
           },
           "round_id": {
             "title": "Round Id",
@@ -1626,6 +1678,8 @@
           "court_id",
           "stage_item_input1_conflict",
           "stage_item_input2_conflict",
+          "is_return_leg",
+          "return_leg_match_id",
           "stage_item_input1_id",
           "stage_item_input2_id",
           "stage_item_input1_winner_from_match_id",
@@ -2236,6 +2290,11 @@
       },
       "StageItemCreateBody": {
         "properties": {
+          "away_goals_rule": {
+            "default": false,
+            "title": "Away Goals Rule",
+            "type": "boolean"
+          },
           "double_round_robin": {
             "default": false,
             "title": "Double Round Robin",
@@ -2299,6 +2358,16 @@
             "title": "Team Count",
             "type": "integer"
           },
+          "two_legged": {
+            "default": false,
+            "title": "Two Legged",
+            "type": "boolean"
+          },
+          "two_legged_final": {
+            "default": false,
+            "title": "Two Legged Final",
+            "type": "boolean"
+          },
           "type": {
             "$ref": "#/components/schemas/StageType"
           }
@@ -2310,6 +2379,9 @@
           "team_count",
           "ranking_id",
           "double_round_robin",
+          "two_legged",
+          "two_legged_final",
+          "away_goals_rule",
           "round_name_pattern",
           "round_names"
         ],
@@ -2760,6 +2832,11 @@
       },
       "StageItemWithRounds": {
         "properties": {
+          "away_goals_rule": {
+            "default": false,
+            "title": "Away Goals Rule",
+            "type": "boolean"
+          },
           "created": {
             "format": "date-time",
             "title": "Created",
@@ -2828,6 +2905,16 @@
             "title": "Team Count",
             "type": "integer"
           },
+          "two_legged": {
+            "default": false,
+            "title": "Two Legged",
+            "type": "boolean"
+          },
+          "two_legged_final": {
+            "default": false,
+            "title": "Two Legged Final",
+            "type": "boolean"
+          },
           "type": {
             "$ref": "#/components/schemas/StageType"
           },
@@ -2844,6 +2931,9 @@
           "team_count",
           "ranking_id",
           "double_round_robin",
+          "two_legged",
+          "two_legged_final",
+          "away_goals_rule",
           "round_name_pattern",
           "id",
           "rounds",

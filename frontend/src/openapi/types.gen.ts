@@ -258,6 +258,10 @@ export type Match = {
    */
   is_played: boolean;
   /**
+   * Is Return Leg
+   */
+  is_return_leg: boolean;
+  /**
    * Margin Minutes
    */
   margin_minutes: number;
@@ -265,6 +269,10 @@ export type Match = {
    * Position In Schedule
    */
   position_in_schedule: number | null;
+  /**
+   * Return Leg Match Id
+   */
+  return_leg_match_id: number | null;
   /**
    * Round Id
    */
@@ -557,6 +565,10 @@ export type MatchWithDetails = {
    */
   is_played: boolean;
   /**
+   * Is Return Leg
+   */
+  is_return_leg: boolean;
+  /**
    * Margin Minutes
    */
   margin_minutes: number;
@@ -564,6 +576,10 @@ export type MatchWithDetails = {
    * Position In Schedule
    */
   position_in_schedule: number | null;
+  /**
+   * Return Leg Match Id
+   */
+  return_leg_match_id: number | null;
   /**
    * Round Id
    */
@@ -680,6 +696,10 @@ export type MatchWithDetailsDefinitive = {
    */
   is_played: boolean;
   /**
+   * Is Return Leg
+   */
+  is_return_leg: boolean;
+  /**
    * Margin Minutes
    */
   margin_minutes: number;
@@ -687,6 +707,10 @@ export type MatchWithDetailsDefinitive = {
    * Position In Schedule
    */
   position_in_schedule: number | null;
+  /**
+   * Return Leg Match Id
+   */
+  return_leg_match_id: number | null;
   /**
    * Round Id
    */
@@ -1131,6 +1155,10 @@ export type StageItemActivateNextBody = {
  */
 export type StageItemCreateBody = {
   /**
+   * Away Goals Rule
+   */
+  away_goals_rule: boolean;
+  /**
    * Double Round Robin
    */
   double_round_robin: boolean;
@@ -1158,6 +1186,14 @@ export type StageItemCreateBody = {
    * Team Count
    */
   team_count: number;
+  /**
+   * Two Legged
+   */
+  two_legged: boolean;
+  /**
+   * Two Legged Final
+   */
+  two_legged_final: boolean;
   type: StageType;
 };
 
@@ -1453,6 +1489,10 @@ export type StageItemUpdateBody = {
  */
 export type StageItemWithRounds = {
   /**
+   * Away Goals Rule
+   */
+  away_goals_rule: boolean;
+  /**
    * Created
    */
   created: string;
@@ -1492,6 +1532,14 @@ export type StageItemWithRounds = {
    * Team Count
    */
   team_count: number;
+  /**
+   * Two Legged
+   */
+  two_legged: boolean;
+  /**
+   * Two Legged Final
+   */
+  two_legged_final: boolean;
   type: StageType;
   /**
    * Type Name
