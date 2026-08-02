@@ -10,7 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -441,7 +441,7 @@ function MatchModalForm({
   );
 }
 
-export default function MatchModal({
+export default memo(function MatchModal({
   tournamentData,
   match,
   swrStagesResponse,
@@ -494,4 +494,4 @@ export default function MatchModal({
       </Modal>
     </>
   );
-}
+});

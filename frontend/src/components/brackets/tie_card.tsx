@@ -1,5 +1,5 @@
 import { Text, UnstyledButton } from '@mantine/core';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -14,7 +14,7 @@ import Match from './match';
 // `Match` cards (in read-only display mode, since click/modal handling is owned here) into one
 // visual card. The first leg always opens its own edit modal; the second leg opens the first
 // leg's modal instead until the first leg has been played.
-export default function TieCard({
+export default memo(function TieCard({
   tournamentData,
   swrStagesResponse,
   swrUpcomingMatchesResponse,
@@ -121,4 +121,4 @@ export default function TieCard({
       />
     </>
   );
-}
+});

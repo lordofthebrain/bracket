@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { BiEditAlt } from '@react-icons/all-files/bi/BiEditAlt';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -30,7 +30,7 @@ function TeamLogo({ team }: { team: FullTeamWithPlayers | null }) {
   );
 }
 
-export default function TeamUpdateModal({
+export default memo(function TeamUpdateModal({
   tournament_id,
   team,
   swrTeamsResponse,
@@ -140,4 +140,4 @@ export default function TeamUpdateModal({
       </Button>
     </>
   );
-}
+});

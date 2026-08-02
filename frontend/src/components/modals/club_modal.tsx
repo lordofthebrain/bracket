@@ -2,7 +2,7 @@ import { Button, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { BiEditAlt } from '@react-icons/all-files/bi/BiEditAlt';
 import { GoPlus } from '@react-icons/all-files/go/GoPlus';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
@@ -10,7 +10,7 @@ import SaveButton from '@components/buttons/save';
 import { Club, ClubsResponse } from '@openapi';
 import { createClub, updateClub } from '@services/club';
 
-export default function ClubModal({
+export default memo(function ClubModal({
   club,
   swrClubsResponse,
 }: {
@@ -79,4 +79,4 @@ export default function ClubModal({
       {modalOpenButton}
     </>
   );
-}
+});

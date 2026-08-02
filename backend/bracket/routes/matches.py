@@ -392,6 +392,9 @@ async def reassign_winner_sources(
 
     sources_per_round: dict[int, dict[MatchId, MatchId]] = {}
     for match_id, (source1, source2) in new_sources.items():
+        if matches_by_id[match_id].is_return_leg:
+            # A return leg's sources are the primary leg's, swapped, not a genuine second claim.
+            continue
         round_index = round_index_by_match[match_id]
         round_sources = sources_per_round.setdefault(round_index, {})
         for source_match_id in (source1, source2):
@@ -411,6 +414,16 @@ async def reassign_winner_sources(
             assignment.stage_item_input1_winner_from_match_id,
             assignment.stage_item_input2_winner_from_match_id,
         )
+
+        return_leg_match_id = matches_by_id[assignment.match_id].return_leg_match_id
+        if return_leg_match_id is not None:
+            # Mirror the swapped sources onto the return leg, matching how it's built at
+            # creation time in _build_return_leg_body, so its own fields don't go stale.
+            await sql_update_match_winner_sources(
+                return_leg_match_id,
+                assignment.stage_item_input2_winner_from_match_id,
+                assignment.stage_item_input1_winner_from_match_id,
+            )
 
     updated_stage_item = await get_stage_item(tournament_id, stage_item_id)
     await update_inputs_in_complete_elimination_stage_item(updated_stage_item)

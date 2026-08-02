@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Modal, TextInput, Title, UnstyledButton } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LuConstruction } from 'react-icons/lu';
 import { SWRResponse } from 'swr';
@@ -38,16 +38,19 @@ function RoundDeleteButton({
   );
 }
 
-export default function RoundModal({
+export default memo(function RoundModal({
   tournamentData,
   round,
   swrStagesResponse,
   swrUpcomingMatchesResponse,
+  nameOnly = false,
 }: {
   tournamentData: TournamentMinimal;
   round: RoundWithMatches;
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   swrUpcomingMatchesResponse: SWRResponse | null;
+  // Hides the delete/mark-as-draft actions, leaving only the rename form.
+  nameOnly?: boolean;
 }) {
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
@@ -82,28 +85,32 @@ export default function RoundModal({
             {t('save_button')}
           </Button>
         </form>
-        <Button
-          fullWidth
-          mt="1rem"
-          color="yellow"
-          variant="outline"
-          disabled={round.is_draft}
-          leftSection={<LuConstruction />}
-          onClick={async () => {
-            await updateRound(tournamentData.id, round.id, round.name, true);
-            await swrStagesResponse.mutate();
-            if (swrUpcomingMatchesResponse != null) await swrUpcomingMatchesResponse.mutate();
-            setOpened(false);
-          }}
-        >
-          {t('mark_round_as_draft')}
-        </Button>
-        <RoundDeleteButton
-          swrStagesResponse={swrStagesResponse}
-          swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
-          tournamentData={tournamentData}
-          round={round}
-        />
+        {!nameOnly && (
+          <>
+            <Button
+              fullWidth
+              mt="1rem"
+              color="yellow"
+              variant="outline"
+              disabled={round.is_draft}
+              leftSection={<LuConstruction />}
+              onClick={async () => {
+                await updateRound(tournamentData.id, round.id, round.name, true);
+                await swrStagesResponse.mutate();
+                if (swrUpcomingMatchesResponse != null) await swrUpcomingMatchesResponse.mutate();
+                setOpened(false);
+              }}
+            >
+              {t('mark_round_as_draft')}
+            </Button>
+            <RoundDeleteButton
+              swrStagesResponse={swrStagesResponse}
+              swrUpcomingMatchesResponse={swrUpcomingMatchesResponse}
+              tournamentData={tournamentData}
+              round={round}
+            />
+          </>
+        )}
       </Modal>
 
       <UnstyledButton onClick={() => setOpened(true)}>
@@ -120,4 +127,4 @@ export default function RoundModal({
       </ActionIcon>
     </>
   );
-}
+});

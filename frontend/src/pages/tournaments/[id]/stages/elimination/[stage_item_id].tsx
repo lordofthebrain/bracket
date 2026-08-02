@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import matchClasses from '@components/brackets/match.module.css';
+import RoundModal from '@components/modals/round_modal';
 import { formatMatchInput1, formatMatchInput2 } from '@components/utils/match';
 import {
   getStageItemIdFromRouter,
@@ -131,8 +132,17 @@ export default function EliminationStageItemPage() {
       ? stageItemsLookup[stageItemId]
       : null;
 
+  // Return legs are auto-derived from their first leg and never planned separately here.
   const sortedRounds: RoundWithMatches[] = useMemo(
-    () => (stageItem != null ? [...stageItem.rounds].sort((r1, r2) => r1.id - r2.id) : []),
+    () =>
+      stageItem != null
+        ? [...stageItem.rounds]
+            .sort((r1, r2) => r1.id - r2.id)
+            .map((round) => ({
+              ...round,
+              matches: round.matches.filter((match: any) => !match.is_return_leg),
+            }))
+        : [],
     [stageItem]
   );
 
@@ -240,7 +250,13 @@ export default function EliminationStageItemPage() {
               }}
             >
               <Center>
-                <Title order={3}>{round.name}</Title>
+                <RoundModal
+                  tournamentData={tournamentData}
+                  round={round}
+                  swrStagesResponse={swrStagesResponse}
+                  swrUpcomingMatchesResponse={null}
+                  nameOnly
+                />
               </Center>
               {round.matches.map((match: any) => {
                 const labels = matchLabelsById[match.id];

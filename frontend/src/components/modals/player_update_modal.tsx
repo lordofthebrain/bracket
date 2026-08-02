@@ -1,14 +1,14 @@
 import { Button, Checkbox, Modal, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { BiEditAlt } from '@react-icons/all-files/bi/BiEditAlt';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import { Player, PlayersResponse } from '@openapi';
 import { updatePlayer } from '@services/player';
 
-export default function PlayerUpdateModal({
+export default memo(function PlayerUpdateModal({
   tournament_id,
   player,
   swrPlayersResponse,
@@ -73,4 +73,4 @@ export default function PlayerUpdateModal({
       {modalOpenButton}
     </>
   );
-}
+});
