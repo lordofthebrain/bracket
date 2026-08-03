@@ -208,7 +208,7 @@ const ScheduleRow = React.memo(function ScheduleRow({
       : undefined;
 
   return (
-    <Card shadow="sm" radius="md" withBorder mt="md" p={0} style={{ width: '48rem' }}>
+    <Card shadow="sm" radius="md" withBorder mt="md" p={0} style={{ width: '35rem' }}>
       <div style={{ padding: 'var(--mantine-spacing-md)' }}>
         <LegRow
           match={data.match}
@@ -333,7 +333,7 @@ function Schedule({
 
   return (
     <Group wrap="nowrap" align="top">
-      <div style={{ width: '48rem' }}>
+      <div style={{ width: '35rem' }}>
         {rows}
         {noItemsAlert}
       </div>
@@ -389,21 +389,14 @@ function ResultsForStageItem({
 
   return (
     <div>
-      <Center>
-        <div style={{ width: '48rem' }}>
-          <Title order={3} mb="sm">
-            {stageItem.name}
-          </Title>
-        </div>
-      </Center>
       {roundOptions.length > 0 && (
         <Center>
-          <div style={{ width: '48rem' }}>
+          <div style={{ width: '35rem' }}>
             <RoundFilterSelect
               options={roundOptions}
               value={roundFilter}
               onChange={setRoundFilter}
-              style={{ maxWidth: '20rem' }}
+              style={{ maxWidth: '35rem' }}
             />
           </div>
         </Center>
@@ -490,14 +483,15 @@ export default function ResultsPage() {
         round={null}
       />
       <Center>
-        <Title style={{ width: '48rem' }}>{t('results_title')}</Title>
+        <Title style={{ width: '35rem' }}>{t('results_title')}</Title>
       </Center>
       <Center>
-        <div style={{ width: '48rem' }}>
+        <div style={{ width: '35rem' }}>
           <StageFilterSelect
             stageFilter={stageFilter}
             setStageFilter={setStageFilter}
             stageOptions={stageOptions}
+            maxWidth="35rem"
           />
         </div>
       </Center>
@@ -510,9 +504,9 @@ export default function ResultsPage() {
           />
         </Center>
       ) : (
-        <Tabs value={activeStageItemTab} onChange={setActiveStageItemTab} mt="1.5rem">
+        <Tabs value={activeStageItemTab} onChange={setActiveStageItemTab} variant="pills" mt="1.5rem">
           <Center>
-            <div style={{ width: '48rem' }}>
+            <div style={{ width: '35rem' }}>
               <Tabs.List>
                 {stageItemIds.map((stageItemId: number) => (
                   <Tabs.Tab key={stageItemId} value={`${stageItemId}`}>
