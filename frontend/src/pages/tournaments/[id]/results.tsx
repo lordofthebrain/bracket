@@ -1,6 +1,5 @@
 import {
   Alert,
-  Anchor,
   Card,
   Center,
   Divider,
@@ -8,6 +7,7 @@ import {
   Image,
   Loader,
   Stack,
+  Tabs,
   Text,
   Title,
   UnstyledButton,
@@ -15,7 +15,7 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import { IconAlertCircle } from '@tabler/icons-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
@@ -347,7 +347,6 @@ function ResultsForStageItem({
   stageItemMatches,
   matchesLookup,
   openMatchModal,
-  jumpTo,
   isDarkMode,
 }: {
   t: Translator;
@@ -356,7 +355,6 @@ function ResultsForStageItem({
   stageItemMatches: any[];
   matchesLookup: any;
   openMatchModal: CallableFunction;
-  jumpTo: { targetId: string; label: string }[];
   isDarkMode: boolean;
 }) {
   const [roundFilter, setRoundFilter] = useState<string | null>(null);
@@ -392,16 +390,9 @@ function ResultsForStageItem({
     <div>
       <Center>
         <div style={{ width: '48rem' }}>
-          <Group justify="space-between" align="baseline" mb="sm" style={{ maxWidth: '20rem' }}>
-            <Title order={3}>{stageItem.name}</Title>
-            <Group gap="md">
-              {jumpTo.map((jump) => (
-                <Anchor key={jump.targetId} href={`#${jump.targetId}`}>
-                  {jump.label}
-                </Anchor>
-              ))}
-            </Group>
-          </Group>
+          <Title order={3} mb="sm">
+            {stageItem.name}
+          </Title>
         </div>
       </Center>
       {roundOptions.length > 0 && (
@@ -462,10 +453,32 @@ export default function ResultsPage() {
 
   const stageItemIds = Object.values(stageItemsLookup)
     .filter((stageItem: any) => stageFilter == null || `${stageItem.stage_id}` === stageFilter)
-    .sort((si1: any, si2: any) => (si1.name > si2.name ? 1 : -1))
+    .sort((si1: any, si2: any) => si1.id - si2.id)
     .map((stageItem: any) => stageItem.id);
 
-  const anchorId = (stageItemId: number) => `results-stage-item-${stageItemId}`;
+  const [activeStageItemTab, setActiveStageItemTab] = useState<string | null>(null);
+  const [visitedStageItemTabs, setVisitedStageItemTabs] = useState<Set<string>>(new Set());
+  const previousStageItemIdsRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    if (stageItemIds.length < 1) return;
+    if (activeStageItemTab != null && stageItemIds.some((id) => `${id}` === activeStageItemTab)) {
+      previousStageItemIdsRef.current = stageItemIds;
+      return;
+    }
+    const previousIndex = previousStageItemIdsRef.current.findIndex(
+      (id) => `${id}` === activeStageItemTab
+    );
+    const nextIndex = previousIndex >= 0 && previousIndex < stageItemIds.length ? previousIndex : 0;
+    previousStageItemIdsRef.current = stageItemIds;
+    setActiveStageItemTab(`${stageItemIds[nextIndex]}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageItemIds.join(',')]);
+
+  useEffect(() => {
+    if (activeStageItemTab == null || visitedStageItemTabs.has(activeStageItemTab)) return;
+    setVisitedStageItemTabs((prev) => new Set(prev).add(activeStageItemTab));
+  }, [activeStageItemTab, visitedStageItemTabs]);
 
   const openMatchModal = useCallback((matchToOpen: MatchWithDetails) => {
     setMatch(matchToOpen);
@@ -514,27 +527,24 @@ export default function ResultsPage() {
           />
         </Center>
       ) : (
-        stageItemIds.map((stageItemId: number, index: number) => {
-          const jumpTo = stageItemIds
-            .filter((otherId: number) => otherId !== stageItemId)
-            .map((otherId: number) => {
-              const otherIndex = stageItemIds.indexOf(otherId);
-              const arrow = otherIndex > index ? '↓' : '↑';
-              return {
-                targetId: anchorId(otherId),
-                label: `${arrow} ${stageItemsLookup[otherId].name}`,
-              };
-            });
-
-          return (
-            <div
+        <Tabs value={activeStageItemTab} onChange={setActiveStageItemTab} mt="1.5rem">
+          <Center>
+            <div style={{ width: '48rem' }}>
+              <Tabs.List>
+                {stageItemIds.map((stageItemId: number) => (
+                  <Tabs.Tab key={stageItemId} value={`${stageItemId}`}>
+                    {stageItemsLookup[stageItemId].name}
+                  </Tabs.Tab>
+                ))}
+              </Tabs.List>
+            </div>
+          </Center>
+          {stageItemIds.map((stageItemId: number) => (
+            <Tabs.Panel
               key={stageItemId}
-              id={anchorId(stageItemId)}
-              style={{
-                marginTop: index > 0 ? '3rem' : '1rem',
-                marginBottom: index === stageItemIds.length - 1 ? '3rem' : undefined,
-                scrollMarginTop: '4.9rem',
-              }}
+              value={`${stageItemId}`}
+              keepMounted={visitedStageItemTabs.has(`${stageItemId}`)}
+              pt="1.5rem"
             >
               <ResultsForStageItem
                 t={t}
@@ -543,12 +553,11 @@ export default function ResultsPage() {
                 stageItemMatches={matchesByStageItemId[stageItemId] || []}
                 matchesLookup={matchesLookup}
                 openMatchModal={openMatchModal}
-                jumpTo={jumpTo}
                 isDarkMode={isDarkMode}
               />
-            </div>
-          );
-        })
+            </Tabs.Panel>
+          ))}
+        </Tabs>
       )}
     </TournamentLayout>
   );
