@@ -1,7 +1,7 @@
 import { showNotification } from '@mantine/notifications';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router';
-import useSWR, { SWRResponse } from 'swr';
+import useSWR, { SWRResponse, useSWRConfig } from 'swr';
 
 import { SchedulerSettings } from '@components/utils/match';
 import { TournamentFilter } from '@components/utils/tournament';
@@ -22,6 +22,7 @@ import {
   UserPublicResponse,
 } from '@openapi';
 import { getLogin, performLogout, tokenPresent } from './local_storage';
+import { structuralShare } from './structural_sharing';
 
 export function handleRequestError(response: AxiosError) {
   if (response.code === 'ERR_NETWORK') {
@@ -101,6 +102,16 @@ const fetcher = (url: string) =>
     .get(url)
     .then((res: { data: any }) => res.data);
 
+// Wraps fetcher so any refetch (revalidation, polling, or a bare .mutate()) structurally shares with the current cache value.
+function useStructuralSharingFetcher<T>(key: string | null) {
+  const { cache } = useSWRConfig();
+  return async (url: string): Promise<T> => {
+    const fresh: T = await fetcher(url);
+    const current = key != null ? (cache.get(key)?.data as T | undefined) : undefined;
+    return current !== undefined ? structuralShare(current, fresh) : fresh;
+  };
+}
+
 export function getClubs(): SWRResponse<ClubsResponse> {
   return useSWR('clubs', fetcher);
 }
@@ -166,19 +177,19 @@ export function getTeamsLive(tournament_id: number | null): SWRResponse<TeamsWit
 export function getAvailableStageItemInputs(
   tournament_id: number
 ): SWRResponse<StageItemInputOptionsResponse> {
-  return useSWR(`tournaments/${tournament_id}/available_inputs`, fetcher);
+  const key = `tournaments/${tournament_id}/available_inputs`;
+  return useSWR(key, useStructuralSharingFetcher<StageItemInputOptionsResponse>(key));
 }
 
 export function getStages(
   tournament_id: number | null,
   no_draft_rounds: boolean = false
 ): SWRResponse<StagesWithStageItemsResponse> {
-  return useSWR(
+  const key =
     tournament_id == null || tournament_id === -1
       ? null
-      : `tournaments/${tournament_id}/stages?no_draft_rounds=${no_draft_rounds}`,
-    fetcher
-  );
+      : `tournaments/${tournament_id}/stages?no_draft_rounds=${no_draft_rounds}`;
+  return useSWR(key, useStructuralSharingFetcher<StagesWithStageItemsResponse>(key));
 }
 
 export function getStagesLive(
@@ -198,7 +209,8 @@ export function getRankings(tournament_id: number): SWRResponse<RankingsResponse
 }
 
 export function getRankingsPerStageItem(tournament_id: number): SWRResponse<StageRankingResponse> {
-  return useSWR(`tournaments/${tournament_id}/next_stage_rankings`, fetcher);
+  const key = `tournaments/${tournament_id}/next_stage_rankings`;
+  return useSWR(key, useStructuralSharingFetcher<StageRankingResponse>(key));
 }
 
 export function getCourts(tournament_id: number): SWRResponse<CourtsResponse> {
