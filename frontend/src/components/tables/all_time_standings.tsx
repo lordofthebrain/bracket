@@ -1,15 +1,11 @@
+import { Tabs } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
 import { NoContent } from '@components/no_content/empty_table_info';
+import { useLazyTabs } from '@components/utils/react';
 import { StagesWithStageItemsResponse } from '@openapi';
-import {
-  JumpToLink,
-  TableTitleWithJumpLinks,
-  TeamStatsRow,
-  TeamStatsTable,
-  getJumpToLinks,
-} from './standings';
+import { TeamStatsRow, TeamStatsTable } from './standings';
 import { getTableState, sortTableEntries } from './table';
 
 // Groups round-robin stage items from season stages by their ordinal position within their
@@ -75,15 +71,7 @@ function aggregateRows(stageItems: any[]): TeamStatsRow[] {
   return [...rowsByTeamId.values()];
 }
 
-function AllTimeStandingsTable({
-  label,
-  jumpTo,
-  rows,
-}: {
-  label: string;
-  jumpTo: JumpToLink[];
-  rows: TeamStatsRow[];
-}) {
+function AllTimeStandingsTable({ rows }: { rows: TeamStatsRow[] }) {
   const tableState = getTableState('rank', false);
 
   const sorted = [...rows].sort((r1, r2) => {
@@ -97,12 +85,7 @@ function AllTimeStandingsTable({
 
   const rankedRows = sorted.map((row, index) => ({ ...row, rankLabel: `${index + 1}` }));
 
-  return (
-    <div>
-      <TableTitleWithJumpLinks title={label} jumpTo={jumpTo} compact />
-      <TeamStatsTable rows={rankedRows} stageItemType="ROUND_ROBIN" tableState={tableState} />
-    </div>
-  );
+  return <TeamStatsTable rows={rankedRows} stageItemType="ROUND_ROBIN" tableState={tableState} />;
 }
 
 export function AllTimeStandingsContent({
@@ -113,38 +96,31 @@ export function AllTimeStandingsContent({
   const { t } = useTranslation();
   const stages = swrStagesResponse.data?.data ?? [];
   const positionGroups = getPositionGroups(stages).filter((group) => group.length > 0);
+  const labeledGroups = positionGroups.map((group, index) => ({
+    id: `${index}`,
+    group,
+    label: group[group.length - 1].name,
+  }));
+  const { activeTab, setActiveTab, visitedTabs } = useLazyTabs(labeledGroups.map((g) => g.id));
 
-  if (positionGroups.length < 1) {
+  if (labeledGroups.length < 1) {
     return <NoContent title={t('could_not_find_any_alert', { entity: t('teams_title') })} />;
   }
 
-  const anchorId = (index: number) => `all-time-standings-${index}`;
-  const labeledGroups = positionGroups.map((group, index) => ({
-    group,
-    index,
-    label: group[group.length - 1].name,
-  }));
-
   return (
-    <>
-      {labeledGroups.map(({ group, index, label }) => {
-        const jumpTo = getJumpToLinks(
-          labeledGroups,
-          index,
-          (other) => anchorId(other.index),
-          (other) => other.label
-        );
-
-        return (
-          <div
-            key={anchorId(index)}
-            id={anchorId(index)}
-            style={{ marginTop: index > 0 ? '3rem' : undefined, scrollMarginTop: '4.9rem' }}
-          >
-            <AllTimeStandingsTable label={label} jumpTo={jumpTo} rows={aggregateRows(group)} />
-          </div>
-        );
-      })}
-    </>
+    <Tabs value={activeTab} onChange={setActiveTab} variant="pills">
+      <Tabs.List>
+        {labeledGroups.map(({ id, label }) => (
+          <Tabs.Tab key={id} value={id}>
+            {label}
+          </Tabs.Tab>
+        ))}
+      </Tabs.List>
+      {labeledGroups.map(({ id, group }) => (
+        <Tabs.Panel key={id} value={id} keepMounted={visitedTabs.has(id)} pt="1rem">
+          <AllTimeStandingsTable rows={aggregateRows(group)} />
+        </Tabs.Panel>
+      ))}
+    </Tabs>
   );
 }

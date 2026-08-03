@@ -21,6 +21,26 @@ import {
   getStagesLookup,
 } from '@services/lookups';
 
+export function useStandingsData(
+  swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>,
+  stageId?: number | null
+) {
+  const stageItemsLookup = getStageItemLookup(swrStagesResponse);
+  const stagesLookup = getStagesLookup(swrStagesResponse);
+  const stageItemTeamLookup = responseIsValid(swrStagesResponse)
+    ? getStageItemTeamsLookup(swrStagesResponse)
+    : {};
+  const cupWinnerTeamIdsByStage = getCupWinnerTeamIdsByStage(swrStagesResponse);
+
+  const stageItemIds = Object.keys(stageItemTeamLookup)
+    .filter((stageItemId) => stageItemsLookup[stageItemId] != null)
+    .filter((stageItemId) => stageId == null || stageItemsLookup[stageItemId].stage_id === stageId)
+    .filter((stageItemId) => stageItemsLookup[stageItemId].type !== 'SINGLE_ELIMINATION')
+    .sort((si1: string, si2: string) => Number(si1) - Number(si2));
+
+  return { stageItemsLookup, stagesLookup, stageItemTeamLookup, stageItemIds, cupWinnerTeamIdsByStage };
+}
+
 export function StandingsContent({
   swrStagesResponse,
   fontSizeInPixels,
@@ -36,19 +56,8 @@ export function StandingsContent({
 }) {
   const { t } = useTranslation();
 
-  const stageItemsLookup = getStageItemLookup(swrStagesResponse);
-  const stagesLookup = getStagesLookup(swrStagesResponse);
-  const stageItemTeamLookup = responseIsValid(swrStagesResponse)
-    ? getStageItemTeamsLookup(swrStagesResponse)
-    : {};
-
-  const stageItemIds = Object.keys(stageItemTeamLookup)
-    .filter((stageItemId) => stageItemsLookup[stageItemId] != null)
-    .filter((stageItemId) => stageId == null || stageItemsLookup[stageItemId].stage_id === stageId)
-    .filter((stageItemId) => stageItemsLookup[stageItemId].type !== 'SINGLE_ELIMINATION')
-    .sort((si1: any, si2: any) =>
-      stageItemsLookup[si1].name > stageItemsLookup[si2].name ? 1 : -1
-    );
+  const { stageItemsLookup, stagesLookup, stageItemTeamLookup, stageItemIds, cupWinnerTeamIdsByStage } =
+    useStandingsData(swrStagesResponse, stageId);
 
   if (stageItemIds.length < 1) {
     return (
@@ -61,7 +70,6 @@ export function StandingsContent({
   }
 
   const anchorId = (stageItemId: string) => `standings-stage-item-${stageItemId}`;
-  const cupWinnerTeamIdsByStage = getCupWinnerTeamIdsByStage(swrStagesResponse);
 
   const rows = stageItemIds.map((stageItemId, index) => {
     const jumpTo = getJumpToLinks(

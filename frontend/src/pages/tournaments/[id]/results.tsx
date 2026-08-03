@@ -15,7 +15,7 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { AiOutlineHourglass } from '@react-icons/all-files/ai/AiOutlineHourglass';
 import { IconAlertCircle } from '@tabler/icons-react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
@@ -31,6 +31,7 @@ import {
   getTieAggregateScoreDisplay,
   getTieAggregateWinner,
 } from '@components/utils/match';
+import { useLazyTabs } from '@components/utils/react';
 import { Translator } from '@components/utils/types';
 import { getTournamentIdFromRouter, responseIsValid } from '@components/utils/util';
 import { MatchWithDetails } from '@openapi';
@@ -456,29 +457,11 @@ export default function ResultsPage() {
     .sort((si1: any, si2: any) => si1.id - si2.id)
     .map((stageItem: any) => stageItem.id);
 
-  const [activeStageItemTab, setActiveStageItemTab] = useState<string | null>(null);
-  const [visitedStageItemTabs, setVisitedStageItemTabs] = useState<Set<string>>(new Set());
-  const previousStageItemIdsRef = useRef<number[]>([]);
-
-  useEffect(() => {
-    if (stageItemIds.length < 1) return;
-    if (activeStageItemTab != null && stageItemIds.some((id) => `${id}` === activeStageItemTab)) {
-      previousStageItemIdsRef.current = stageItemIds;
-      return;
-    }
-    const previousIndex = previousStageItemIdsRef.current.findIndex(
-      (id) => `${id}` === activeStageItemTab
-    );
-    const nextIndex = previousIndex >= 0 && previousIndex < stageItemIds.length ? previousIndex : 0;
-    previousStageItemIdsRef.current = stageItemIds;
-    setActiveStageItemTab(`${stageItemIds[nextIndex]}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stageItemIds.join(',')]);
-
-  useEffect(() => {
-    if (activeStageItemTab == null || visitedStageItemTabs.has(activeStageItemTab)) return;
-    setVisitedStageItemTabs((prev) => new Set(prev).add(activeStageItemTab));
-  }, [activeStageItemTab, visitedStageItemTabs]);
+  const {
+    activeTab: activeStageItemTab,
+    setActiveTab: setActiveStageItemTab,
+    visitedTabs: visitedStageItemTabs,
+  } = useLazyTabs(stageItemIds.map((id) => `${id}`));
 
   const openMatchModal = useCallback((matchToOpen: MatchWithDetails) => {
     setMatch(matchToOpen);

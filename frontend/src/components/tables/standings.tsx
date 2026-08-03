@@ -400,6 +400,7 @@ export function StandingsTableForStageItem({
   tournamentId,
   jumpTo,
   cupWinnerTeamIds,
+  showTitle = true,
 }: {
   teams_with_inputs: StageItemInputFinal[];
   stageItem: StageItemWithRounds;
@@ -410,6 +411,7 @@ export function StandingsTableForStageItem({
   tournamentId: number;
   jumpTo: { targetId: string; label: string }[];
   cupWinnerTeamIds?: Set<number>;
+  showTitle?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const tableState = getTableState('rank', false);
@@ -554,7 +556,7 @@ export function StandingsTableForStageItem({
 
   return (
     <>
-      <TableTitleWithJumpLinks title={stageItem.name} jumpTo={jumpTo} />
+      {showTitle && <TableTitleWithJumpLinks title={stageItem.name} jumpTo={jumpTo} />}
       <RoundFilterSelect
         options={roundOptions}
         value={roundFilter}
