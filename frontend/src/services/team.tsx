@@ -4,13 +4,15 @@ export async function createTeam(
   tournament_id: number,
   name: string,
   active: boolean,
-  player_ids: string[]
+  player_ids: string[],
+  country: string | null
 ) {
   return createAxios()
     .post(`tournaments/${tournament_id}/teams`, {
       name,
       active,
       player_ids,
+      country,
     })
     .catch((response: any) => handleRequestError(response));
 }
@@ -32,13 +34,15 @@ export async function updateTeam(
   team_id: number,
   name: string,
   active: boolean,
-  player_ids: string[]
+  player_ids: string[],
+  country: string | null
 ) {
   return awaitRequestAndHandleError(async (axios) =>
     axios.put(`tournaments/${tournament_id}/teams/${team_id}`, {
       name,
       active,
       player_ids,
+      country,
     })
   );
 }

@@ -170,6 +170,10 @@ export type FullTeamWithPlayers = {
    */
   active: boolean;
   /**
+   * Country
+   */
+  country: string | null;
+  /**
    * Created
    */
   created: string;
@@ -1675,6 +1679,10 @@ export type Team = {
    */
   active: boolean;
   /**
+   * Country
+   */
+  country: string | null;
+  /**
    * Created
    */
   created: string;
@@ -1724,6 +1732,10 @@ export type TeamBody = {
    * Active
    */
   active: boolean;
+  /**
+   * Country
+   */
+  country: string | null;
   /**
    * Name
    */

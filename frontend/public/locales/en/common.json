@@ -299,6 +299,8 @@
     "team_count_input_round_robin_label": "Number of teams advancing from the previous stage",
     "team_count_select_elimination_label": "Number of teams advancing from the previous stage",
     "team_count_select_elimination_placeholder": "2, 4, 8 etc.",
+    "team_country_input_label": "Country",
+    "team_country_input_placeholder": "Pick a country",
     "team_member_select_placeholder": "Pick team members for this team",
     "team_member_select_title": "Team members",
     "team_name_input_placeholder": "Best Team Ever",

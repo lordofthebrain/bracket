@@ -27,6 +27,7 @@ import { SWRResponse } from 'swr';
 
 import SaveButton from '@components/buttons/save';
 import { MultiTeamsInput } from '@components/forms/player_create_csv_input';
+import { CountrySelect } from '@components/select/country_select';
 import { Player, TeamsWithPlayersResponse } from '@openapi';
 import { getPlayers, uploadTeamLogo } from '@services/adapter';
 import { createTeam, createTeams } from '@services/team';
@@ -103,6 +104,7 @@ function SingleTeamTab({
       name: '',
       active: true,
       player_ids: [],
+      country: null,
     },
     validate: {
       name: (value) => (value.length > 0 ? null : t('too_short_name_validation')),
@@ -115,7 +117,8 @@ function SingleTeamTab({
           tournament_id,
           values.name,
           values.active,
-          values.player_ids
+          values.player_ids,
+          values.country
         );
         if (result != null && logoFile != null) {
           const newTeamId = result.data.data.id;
@@ -147,6 +150,8 @@ function SingleTeamTab({
         limit={25}
         {...form.getInputProps('player_ids')}
       />
+
+      <CountrySelect form={form} />
 
       <Fieldset legend={t('logo_settings_title')} mt={12} radius="md">
         <Dropzone

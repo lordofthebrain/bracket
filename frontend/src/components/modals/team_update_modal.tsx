@@ -14,6 +14,7 @@ import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SWRResponse } from 'swr';
 
+import { CountrySelect } from '@components/select/country_select';
 import { DropzoneButton } from '@components/utils/file_upload';
 import { FullTeamWithPlayers, Player, TeamsWithPlayersResponse } from '@openapi';
 import { getBaseApiUrl, getPlayers, removeTeamLogo, requestSucceeded } from '@services/adapter';
@@ -49,6 +50,7 @@ export default memo(function TeamUpdateModal({
       name: team.name,
       active: team.active,
       player_ids: team.players.map((player) => `${player.id}`),
+      country: team.country,
     },
 
     validate: {
@@ -66,7 +68,8 @@ export default memo(function TeamUpdateModal({
               team.id,
               values.name,
               values.active,
-              values.player_ids
+              values.player_ids,
+              values.country
             );
             if (requestSucceeded(result)) {
               await swrTeamsResponse.mutate();
@@ -97,6 +100,8 @@ export default memo(function TeamUpdateModal({
             limit={25}
             {...form.getInputProps('player_ids')}
           />
+
+          <CountrySelect form={form} />
 
           <Fieldset legend={t('logo_settings_title')} mt={12} radius="md">
             <DropzoneButton

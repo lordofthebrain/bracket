@@ -24,6 +24,7 @@ class TeamInsertable(BaseModelORM):
     draws: int = 0
     losses: int = 0
     logo_path: str | None = None
+    country: str | None = None
 
 
 class Team(TeamInsertable):
@@ -40,6 +41,7 @@ class TeamWithPlayers(BaseModel):
     losses: int = 0
     name: str
     logo_path: str | None = None
+    country: str | None = None
 
     @property
     def player_ids(self) -> list[PlayerId]:
@@ -65,6 +67,7 @@ class TeamBody(BaseModelORM):
     name: Annotated[str, StringConstraints(min_length=1, max_length=30)]
     active: bool
     player_ids: set[PlayerId]
+    country: str | None = None
 
 
 class TeamMultiBody(BaseModelORM):

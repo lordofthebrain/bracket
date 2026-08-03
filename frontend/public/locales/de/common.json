@@ -303,6 +303,8 @@
     "team_count_input_round_robin_label": "Anzahl der Teams, die aus der vorherigen Stufe weiterkommen.",
     "team_count_select_elimination_label": "Anzahl der Teams, die aus der vorherigen Stufe weiterkommen.",
     "team_count_select_elimination_placeholder": "2, 4, 8 usw.",
+    "team_country_input_label": "Land",
+    "team_country_input_placeholder": "Land auswählen",
     "team_member_select_placeholder": "Wähle Teammitglieder für dieses Team",
     "team_member_select_title": "Teammitglieder",
     "team_name_input_placeholder": "Bestes Team aller Zeiten",

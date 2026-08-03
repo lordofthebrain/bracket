@@ -33,6 +33,7 @@
     "axios": "1.15.2",
     "date-fns": "4.1.0",
     "dayjs": "1.11.20",
+    "i18n-iso-countries": "7.14.0",
     "i18next": "26.0.3",
     "nuqs": "2.8.9",
     "prettier-plugin-organize-imports": "^4.3.0",

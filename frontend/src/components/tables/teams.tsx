@@ -7,6 +7,7 @@ import { SWRResponse } from 'swr';
 import DeleteButton from '@components/buttons/delete';
 import TeamUpdateModal from '@components/modals/team_update_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
+import { getCountryDisplayName } from '@components/select/country_select';
 import { DateTime } from '@components/utils/datetime';
 import RequestErrorAlert from '@components/utils/error_alert';
 import { TableSkeletonSingleColumn } from '@components/utils/skeletons';
@@ -36,8 +37,9 @@ function TeamRow({
   team: FullTeamWithPlayers;
   swrTeamsResponse: SWRResponse<TeamsWithPlayersResponse>;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
+  const locale = i18n.language?.startsWith('de') ? 'de' : 'en';
 
   return (
     <Table.Tr>
@@ -54,6 +56,7 @@ function TeamRow({
           {team.name}
         </Group>
       </Table.Td>
+      <Table.Td>{team.country != null ? getCountryDisplayName(team.country, locale) : '-'}</Table.Td>
       <Table.Td>
         <DateTime datetime={team.created} />
       </Table.Td>
@@ -139,6 +142,7 @@ export default function TeamsTable({
             <ThSortable state={tableState} field="name">
               {t('name_table_header')}
             </ThSortable>
+            <ThNotSortable>{t('team_country_input_label')}</ThNotSortable>
             <ThSortable state={tableState} field="created">
               {t('created')}
             </ThSortable>

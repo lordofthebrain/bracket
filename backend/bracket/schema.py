@@ -169,6 +169,7 @@ teams = Table(
     Column("draws", Integer, nullable=False, server_default="0"),
     Column("losses", Integer, nullable=False, server_default="0"),
     Column("logo_path", String, nullable=True),
+    Column("country", String, nullable=True),
 )
 
 players = Table(
