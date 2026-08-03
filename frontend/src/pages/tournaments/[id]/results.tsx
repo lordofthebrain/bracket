@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 import MatchModal from '@components/modals/match_modal';
 import { NoContent } from '@components/no_content/empty_table_info';
+import { getCountryDisplayName } from '@components/select/country_select';
 import { RoundFilterSelect } from '@components/select/round_filter_select';
 import { StageFilterSelect, useStageFilter } from '@components/select/stage_filter_select';
 import {
@@ -30,6 +31,7 @@ import {
   getTeamLeagueLabel,
   getTieAggregateScoreDisplay,
   getTieAggregateWinner,
+  isInternationalCup,
 } from '@components/utils/match';
 import { useLazyTabs } from '@components/utils/react';
 import { Translator } from '@components/utils/types';
@@ -56,6 +58,7 @@ function LegRow({
   matchesLookup,
   isSingleElimination,
   stageId,
+  stageItemId,
   winner,
   isDarkMode,
   onClick,
@@ -65,20 +68,28 @@ function LegRow({
   matchesLookup: any;
   isSingleElimination: boolean;
   stageId: number;
+  stageItemId: number;
   winner: 1 | 2 | null;
   isDarkMode: boolean;
   onClick: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const scoreColor = '#656565';
 
   const result = getMatchResultDisplay(match);
   const input1Won = isSingleElimination && match.is_played && winner === 1;
   const input2Won = isSingleElimination && match.is_played && winner === 2;
-  const leagueLabel = (input: any) =>
-    isSingleElimination ? getTeamLeagueLabel(input?.team_id, stageItemsLookup, stageId) : null;
-  const league1Label = leagueLabel(match.stage_item_input1);
-  const league2Label = leagueLabel(match.stage_item_input2);
+  const isInternational = isSingleElimination && isInternationalCup(stageItemsLookup, stageItemId);
+  const locale = i18n.language?.startsWith('de') ? 'de' : 'en';
+  const originLabel = (input: any) => {
+    if (!isSingleElimination) return null;
+    if (isInternational) {
+      return input?.team?.country != null ? getCountryDisplayName(input.team.country, locale) : null;
+    }
+    return getTeamLeagueLabel(input?.team_id, stageItemsLookup, stageId);
+  };
+  const originLabel1 = originLabel(match.stage_item_input1);
+  const originLabel2 = originLabel(match.stage_item_input2);
   const winnerNameStyle = isDarkMode ? { color: 'white' } : undefined;
 
   const checkpointStyle = {
@@ -95,9 +106,9 @@ function LegRow({
             <Text fw={input1Won ? 700 : 500} style={input1Won ? winnerNameStyle : undefined}>
               {formatMatchInput1(t, stageItemsLookup, matchesLookup, match)}
             </Text>
-            {league1Label != null && (
+            {originLabel1 != null && (
               <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
-                ({league1Label})
+                ({originLabel1})
               </div>
             )}
           </Group>
@@ -134,9 +145,9 @@ function LegRow({
             <Text fw={input2Won ? 700 : 500} style={input2Won ? winnerNameStyle : undefined}>
               {formatMatchInput2(t, stageItemsLookup, matchesLookup, match)}
             </Text>
-            {league2Label != null && (
+            {originLabel2 != null && (
               <div style={{ fontSize: 'var(--mantine-font-size-sm)', color: 'var(--mantine-color-dimmed)' }}>
-                ({league2Label})
+                ({originLabel2})
               </div>
             )}
           </Group>
@@ -216,6 +227,7 @@ const ScheduleRow = React.memo(function ScheduleRow({
           matchesLookup={matchesLookup}
           isSingleElimination={isSingleElimination}
           stageId={data.stageItem.stage_id}
+          stageItemId={data.stageItem.id}
           winner={winner1}
           isDarkMode={isDarkMode}
           onClick={() => openMatchModal(data.match)}
@@ -231,6 +243,7 @@ const ScheduleRow = React.memo(function ScheduleRow({
               matchesLookup={matchesLookup}
               isSingleElimination={isSingleElimination}
               stageId={data.stageItem.stage_id}
+              stageItemId={data.stageItem.id}
               winner={winner2}
               isDarkMode={isDarkMode}
               onClick={returnLegOnClick as () => void}

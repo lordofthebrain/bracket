@@ -325,6 +325,15 @@ export function getTeamLeagueLabel(
   return null;
 }
 
+// A cup is international if the teams entered into it come from more than one country.
+export function isInternationalCup(stageItemsLookup: any, cupStageItemId: number): boolean {
+  const countries = new Set<string>();
+  stageItemsLookup[cupStageItemId]?.inputs?.forEach((input: any) => {
+    if (input.team?.country != null) countries.add(input.team.country);
+  });
+  return countries.size > 1;
+}
+
 // "Winner of match X - Y" labels resolve recursively through the bracket, and each
 // unresolved match spawns two further recursive calls into its own predecessor match
 // (once for input1, once for input2) - without caching this doubles per round of
