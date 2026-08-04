@@ -205,7 +205,8 @@ export function getStagesLive(
 }
 
 export function getRankings(tournament_id: number): SWRResponse<RankingsResponse> {
-  return useSWR(`tournaments/${tournament_id}/rankings`, fetcher);
+  const key = `tournaments/${tournament_id}/rankings`;
+  return useSWR(key, useStructuralSharingFetcher<RankingsResponse>(key));
 }
 
 export function getRankingsPerStageItem(tournament_id: number): SWRResponse<StageRankingResponse> {

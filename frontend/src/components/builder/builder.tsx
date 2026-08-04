@@ -18,7 +18,7 @@ import {
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { BiCheck } from '@react-icons/all-files/bi/BiCheck';
 import { IconAlertCircle, IconPencil, IconTrash } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiSolidWrench } from 'react-icons/bi';
 import { SWRResponse } from 'swr';
@@ -291,35 +291,44 @@ const StageItemRow = React.memo(function StageItemRow({
   const [opened, setOpened] = useState(false);
   const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
 
-  const teamIdsUsedInStageItem = new Set(
-    stageItem.inputs.filter((input) => input.team_id != null).map((input) => input.team_id as number)
+  const teamIdsUsedInStageItem = useMemo(
+    () =>
+      new Set(
+        stageItem.inputs
+          .filter((input) => input.team_id != null)
+          .map((input) => input.team_id as number)
+      ),
+    [stageItem.inputs]
   );
 
-  const inputs = stageItem.inputs
-    .sort((i1, i2) => (i1.slot > i2.slot ? 1 : -1))
-    .map((input, i) => {
-      let currentOptionValue = null;
-      if (input.winner_from_stage_item_id != null) {
-        currentOptionValue = `${input.winner_from_stage_item_id}_${input.winner_position}`;
-      } else if (input.team_id != null) {
-        currentOptionValue = `${input.team_id}`;
-      }
+  const sortedInputs = useMemo(
+    () => [...stageItem.inputs].sort((i1, i2) => (i1.slot > i2.slot ? 1 : -1)),
+    [stageItem.inputs]
+  );
 
-      return (
-        <StageItemInputSection
-          key={i}
-          tournament={tournament}
-          stageItemInput={input}
-          currentOptionValue={currentOptionValue}
-          availableInputs={availableInputs}
-          teamIdsUsedInStageItem={teamIdsUsedInStageItem}
-          lastInList={i === stageItem.inputs.length - 1}
-          swrAvailableInputsResponse={swrAvailableInputsResponse}
-          swrStagesResponse={swrStagesResponse}
-          swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
-        />
-      );
-    });
+  const inputs = sortedInputs.map((input, i) => {
+    let currentOptionValue = null;
+    if (input.winner_from_stage_item_id != null) {
+      currentOptionValue = `${input.winner_from_stage_item_id}_${input.winner_position}`;
+    } else if (input.team_id != null) {
+      currentOptionValue = `${input.team_id}`;
+    }
+
+    return (
+      <StageItemInputSection
+        key={i}
+        tournament={tournament}
+        stageItemInput={input}
+        currentOptionValue={currentOptionValue}
+        availableInputs={availableInputs}
+        teamIdsUsedInStageItem={teamIdsUsedInStageItem}
+        lastInList={i === sortedInputs.length - 1}
+        swrAvailableInputsResponse={swrAvailableInputsResponse}
+        swrStagesResponse={swrStagesResponse}
+        swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
+      />
+    );
+  });
 
   return (
     <Card withBorder shadow="sm" radius="md">
@@ -433,26 +442,28 @@ const StageColumn = React.memo(function StageColumn({
   const teamsMap = getTeamsLookup(tournament != null ? tournament.id : -1);
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
 
+  const availableInputs = useMemo(() => {
+    if (teamsMap == null) return [];
+    return [
+      ...(getAvailableInputs(swrAvailableInputsResponse, teamsMap, stageItemsLookup)[stage.id] ||
+        []),
+      {
+        value: 'null',
+        label: null,
+        team_id: null,
+        winner_from_stage_item_id: null,
+        winner_position: null,
+        already_taken: false,
+      },
+    ];
+  }, [swrAvailableInputsResponse.data, teamsMap, stageItemsLookup, stage.id]);
+
   if (teamsMap == null) {
     return null;
   }
 
-  const availableInputs = [
-    ...(getAvailableInputs(swrAvailableInputsResponse, teamsMap, stageItemsLookup)[stage.id] ||
-      []),
-    {
-      value: 'null',
-      label: null,
-      team_id: null,
-      winner_from_stage_item_id: null,
-      winner_position: null,
-      already_taken: false,
-    },
-  ];
-
-  const rows = stage.stage_items
+  const rows = [...stage.stage_items]
     .sort((i1: StageItemWithRounds, i2: StageItemWithRounds) => (i1.id > i2.id ? 1 : -1))
-    .sort((i1: StageItemWithRounds, i2: StageItemWithRounds) => (i1.name > i2.name ? 1 : -1))
     .map((stageItem: StageItemWithRounds) => (
       <StageItemRow
         key={stageItem.id}
