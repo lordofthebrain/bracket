@@ -25,11 +25,13 @@ export function StageFilterSelect({
   setStageFilter,
   stageOptions,
   maxWidth = '20rem',
+  width,
 }: {
   stageFilter: string | null;
   setStageFilter: (value: string | null) => void;
   stageOptions: { value: string; label: string }[];
   maxWidth?: string;
+  width?: string;
 }) {
   const { t } = useTranslation();
 
@@ -43,7 +45,7 @@ export function StageFilterSelect({
       onChange={setStageFilter}
       allowDeselect={false}
       mt="1rem"
-      style={{ maxWidth }}
+      style={{ width, maxWidth }}
     />
   );
 }

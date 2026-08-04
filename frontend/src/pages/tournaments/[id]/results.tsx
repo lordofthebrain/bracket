@@ -2,6 +2,7 @@ import {
   Alert,
   Card,
   Center,
+  Container,
   Divider,
   Group,
   Image,
@@ -219,7 +220,7 @@ const ScheduleRow = React.memo(function ScheduleRow({
       : undefined;
 
   return (
-    <Card shadow="sm" radius="md" withBorder mt="md" p={0} style={{ width: '35rem' }}>
+    <Card shadow="sm" radius="md" withBorder mt="md" p={0} style={{ width: '100%' }}>
       <div style={{ padding: 'var(--mantine-spacing-md)' }}>
         <LegRow
           match={data.match}
@@ -345,12 +346,10 @@ function Schedule({
     ) : null;
 
   return (
-    <Group wrap="nowrap" align="top">
-      <div style={{ width: '35rem' }}>
-        {rows}
-        {noItemsAlert}
-      </div>
-    </Group>
+    <div style={{ width: '100%' }}>
+      {rows}
+      {noItemsAlert}
+    </div>
   );
 }
 
@@ -404,14 +403,12 @@ function ResultsForStageItem({
     <div>
       {roundOptions.length > 0 && (
         <Center>
-          <div style={{ width: '35rem' }}>
-            <RoundFilterSelect
-              options={roundOptions}
-              value={roundFilter}
-              onChange={setRoundFilter}
-              style={{ maxWidth: '35rem' }}
-            />
-          </div>
+          <RoundFilterSelect
+            options={roundOptions}
+            value={roundFilter}
+            onChange={setRoundFilter}
+            style={{ width: '100%' }}
+          />
         </Center>
       )}
       <Center mt="1rem">
@@ -495,60 +492,55 @@ export default function ResultsPage() {
         setOpened={modalSetOpenedAndUpdateMatch}
         round={null}
       />
-      <Center>
-        <Title style={{ width: '35rem' }}>{t('results_title')}</Title>
-      </Center>
-      <Center>
-        <div style={{ width: '35rem' }}>
+      <Container size="48rem" px={0}>
+        <Title>{t('results_title')}</Title>
+        <Center mt="md">
           <StageFilterSelect
             stageFilter={stageFilter}
             setStageFilter={setStageFilter}
             stageOptions={stageOptions}
-            maxWidth="35rem"
-          />
-        </div>
-      </Center>
-      {stageItemIds.length < 1 ? (
-        <Center mt="1rem">
-          <NoContent
-            title={t('no_matches_title')}
-            description={t('no_matches_description')}
-            icon={<AiOutlineHourglass />}
+            width="100%"
+            maxWidth="100%"
           />
         </Center>
-      ) : (
-        <Tabs value={activeStageItemTab} onChange={setActiveStageItemTab} variant="pills" mt="1.5rem">
-          <Center>
-            <div style={{ width: '35rem' }}>
-              <Tabs.List>
-                {stageItemIds.map((stageItemId: number) => (
-                  <Tabs.Tab key={stageItemId} value={`${stageItemId}`}>
-                    {stageItemsLookup[stageItemId].name}
-                  </Tabs.Tab>
-                ))}
-              </Tabs.List>
-            </div>
+        {stageItemIds.length < 1 ? (
+          <Center mt="1rem">
+            <NoContent
+              title={t('no_matches_title')}
+              description={t('no_matches_description')}
+              icon={<AiOutlineHourglass />}
+            />
           </Center>
-          {stageItemIds.map((stageItemId: number) => (
-            <Tabs.Panel
-              key={stageItemId}
-              value={`${stageItemId}`}
-              keepMounted={visitedStageItemTabs.has(`${stageItemId}`)}
-              pt="1.5rem"
-            >
-              <ResultsForStageItem
-                t={t}
-                stageItem={stageItemsLookup[stageItemId]}
-                stageItemsLookup={stageItemsLookup}
-                stageItemMatches={matchesByStageItemId[stageItemId] || []}
-                matchesLookup={matchesLookup}
-                openMatchModal={openMatchModal}
-                isDarkMode={isDarkMode}
-              />
-            </Tabs.Panel>
-          ))}
-        </Tabs>
-      )}
+        ) : (
+          <Tabs value={activeStageItemTab} onChange={setActiveStageItemTab} variant="pills" mt="1.5rem">
+            <Tabs.List>
+              {stageItemIds.map((stageItemId: number) => (
+                <Tabs.Tab key={stageItemId} value={`${stageItemId}`}>
+                  {stageItemsLookup[stageItemId].name}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+            {stageItemIds.map((stageItemId: number) => (
+              <Tabs.Panel
+                key={stageItemId}
+                value={`${stageItemId}`}
+                keepMounted={visitedStageItemTabs.has(`${stageItemId}`)}
+                pt="1.5rem"
+              >
+                <ResultsForStageItem
+                  t={t}
+                  stageItem={stageItemsLookup[stageItemId]}
+                  stageItemsLookup={stageItemsLookup}
+                  stageItemMatches={matchesByStageItemId[stageItemId] || []}
+                  matchesLookup={matchesLookup}
+                  openMatchModal={openMatchModal}
+                  isDarkMode={isDarkMode}
+                />
+              </Tabs.Panel>
+            ))}
+          </Tabs>
+        )}
+      </Container>
     </TournamentLayout>
   );
 }
