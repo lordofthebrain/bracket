@@ -1,9 +1,10 @@
 import {
+  Accordion,
   ActionIcon,
   Alert,
   Badge,
+  Box,
   Button,
-  Card,
   CheckIcon,
   Combobox,
   Group,
@@ -18,7 +19,7 @@ import {
 import { AiFillWarning } from '@react-icons/all-files/ai/AiFillWarning';
 import { BiCheck } from '@react-icons/all-files/bi/BiCheck';
 import { IconAlertCircle, IconPencil, IconTrash } from '@tabler/icons-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BiSolidWrench } from 'react-icons/bi';
 import { SWRResponse } from 'swr';
@@ -252,10 +253,12 @@ const StageItemInputSection = React.memo(function StageItemInputSection({
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   swrRankingsPerStageItemResponse: SWRResponse<StageRankingResponse>;
 }) {
-  const opts = lastInList ? { pt: 'xs', mb: '-0.5rem' } : { py: 'xs', withBorder: true };
+  const opts = lastInList
+    ? { pt: 'xs', mb: '-0.5rem' }
+    : { py: 'xs', style: { borderTop: 'solid 0.0625rem light-dark(#ccc, #444)' } };
 
   return (
-    <Card.Section inheritPadding {...opts}>
+    <Box {...opts}>
       <StageItemInputComboBox
         tournament={tournament}
         stageItemInput={stageItemInput}
@@ -266,7 +269,7 @@ const StageItemInputSection = React.memo(function StageItemInputSection({
         swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
         swrStagesResponse={swrStagesResponse}
       />
-    </Card.Section>
+    </Box>
   );
 });
 
@@ -276,6 +279,7 @@ const StageItemRow = React.memo(function StageItemRow({
   swrStagesResponse,
   availableInputs,
   rankings,
+  visited,
   swrAvailableInputsResponse,
   swrRankingsPerStageItemResponse,
 }: {
@@ -284,6 +288,7 @@ const StageItemRow = React.memo(function StageItemRow({
   swrStagesResponse: SWRResponse<StagesWithStageItemsResponse>;
   availableInputs: StageItemInputChoice[];
   rankings: Ranking[];
+  visited: boolean;
   swrAvailableInputsResponse: SWRResponse<StageItemInputOptionsResponse>;
   swrRankingsPerStageItemResponse: SWRResponse<StageRankingResponse>;
 }) {
@@ -306,35 +311,39 @@ const StageItemRow = React.memo(function StageItemRow({
     [stageItem.inputs]
   );
 
-  const inputs = sortedInputs.map((input, i) => {
-    let currentOptionValue = null;
-    if (input.winner_from_stage_item_id != null) {
-      currentOptionValue = `${input.winner_from_stage_item_id}_${input.winner_position}`;
-    } else if (input.team_id != null) {
-      currentOptionValue = `${input.team_id}`;
-    }
+  const inputs = !visited
+    ? null
+    : sortedInputs.map((input, i) => {
+        let currentOptionValue = null;
+        if (input.winner_from_stage_item_id != null) {
+          currentOptionValue = `${input.winner_from_stage_item_id}_${input.winner_position}`;
+        } else if (input.team_id != null) {
+          currentOptionValue = `${input.team_id}`;
+        }
 
-    return (
-      <StageItemInputSection
-        key={i}
-        tournament={tournament}
-        stageItemInput={input}
-        currentOptionValue={currentOptionValue}
-        availableInputs={availableInputs}
-        teamIdsUsedInStageItem={teamIdsUsedInStageItem}
-        lastInList={i === sortedInputs.length - 1}
-        swrAvailableInputsResponse={swrAvailableInputsResponse}
-        swrStagesResponse={swrStagesResponse}
-        swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
-      />
-    );
-  });
+        return (
+          <StageItemInputSection
+            key={i}
+            tournament={tournament}
+            stageItemInput={input}
+            currentOptionValue={currentOptionValue}
+            availableInputs={availableInputs}
+            teamIdsUsedInStageItem={teamIdsUsedInStageItem}
+            lastInList={i === sortedInputs.length - 1}
+            swrAvailableInputsResponse={swrAvailableInputsResponse}
+            swrStagesResponse={swrStagesResponse}
+            swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
+          />
+        );
+      });
 
   return (
-    <Card withBorder shadow="sm" radius="md">
-      <Card.Section withBorder inheritPadding py="xs" color="dimmed">
-        <Group justify="space-between">
+    <Accordion.Item value={`${stageItem.id}`}>
+      <Group justify="space-between" gap="0rem" wrap="nowrap">
+        <Accordion.Control>
           <Text fw={800}>{stageItem.name}</Text>
+        </Accordion.Control>
+        <Group gap="0rem" wrap="nowrap" pr="0.5rem">
           <UpdateStageItemModal
             swrStagesResponse={swrStagesResponse}
             stageItem={stageItem}
@@ -343,55 +352,53 @@ const StageItemRow = React.memo(function StageItemRow({
             setOpened={setOpened}
             rankings={rankings}
           />
-          <Group gap="0rem">
-            {stageItem.type === 'SWISS' || stageItem.type === 'ROUND_ROBIN' ? (
-              <Tooltip label={t('manage_rounds_button')}>
-                <ActionIcon
-                  variant="transparent"
-                  color="gray"
-                  component={PreloadLink}
-                  href={`/tournaments/${tournament.id}/stages/swiss/${stageItem.id}`}
-                >
-                  <BiSolidWrench size="1.25rem" />
-                </ActionIcon>
-              </Tooltip>
-            ) : null}
-            {stageItem.type === 'SINGLE_ELIMINATION' ? (
-              <Tooltip label={t('manage_rounds_button')}>
-                <ActionIcon
-                  variant="transparent"
-                  color="gray"
-                  component={PreloadLink}
-                  href={`/tournaments/${tournament.id}/stages/elimination/${stageItem.id}`}
-                >
-                  <BiSolidWrench size="1.25rem" />
-                </ActionIcon>
-              </Tooltip>
-            ) : null}
-            <Tooltip label={t('edit_stage_item_label')}>
+          {stageItem.type === 'SWISS' || stageItem.type === 'ROUND_ROBIN' ? (
+            <Tooltip label={t('manage_rounds_button')}>
               <ActionIcon
                 variant="transparent"
                 color="gray"
-                onClick={() => {
-                  setOpened(true);
-                }}
+                component={PreloadLink}
+                href={`/tournaments/${tournament.id}/stages/swiss/${stageItem.id}`}
               >
-                <IconPencil size="1.25rem" />
+                <BiSolidWrench size="1.25rem" />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label={t('delete_button')}>
+          ) : null}
+          {stageItem.type === 'SINGLE_ELIMINATION' ? (
+            <Tooltip label={t('manage_rounds_button')}>
               <ActionIcon
                 variant="transparent"
-                color="red.6"
-                onClick={() => setDeleteConfirmOpened(true)}
+                color="gray"
+                component={PreloadLink}
+                href={`/tournaments/${tournament.id}/stages/elimination/${stageItem.id}`}
               >
-                <IconTrash size="1.25rem" />
+                <BiSolidWrench size="1.25rem" />
               </ActionIcon>
             </Tooltip>
-          </Group>
+          ) : null}
+          <Tooltip label={t('edit_stage_item_label')}>
+            <ActionIcon
+              variant="transparent"
+              color="gray"
+              onClick={() => {
+                setOpened(true);
+              }}
+            >
+              <IconPencil size="1.25rem" />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label={t('delete_button')}>
+            <ActionIcon
+              variant="transparent"
+              color="red.6"
+              onClick={() => setDeleteConfirmOpened(true)}
+            >
+              <IconTrash size="1.25rem" />
+            </ActionIcon>
+          </Tooltip>
         </Group>
-      </Card.Section>
-      {inputs}
+      </Group>
+      <Accordion.Panel>{inputs}</Accordion.Panel>
       <Modal
         opened={deleteConfirmOpened}
         onClose={() => setDeleteConfirmOpened(false)}
@@ -417,7 +424,7 @@ const StageItemRow = React.memo(function StageItemRow({
           </Button>
         </Group>
       </Modal>
-    </Card>
+    </Accordion.Item>
   );
 });
 
@@ -439,8 +446,24 @@ const StageColumn = React.memo(function StageColumn({
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
   const [deleteConfirmOpened, setDeleteConfirmOpened] = useState(false);
+  const [openStageItems, setOpenStageItems] = useState<string[]>([]);
+  const [visitedStageItems, setVisitedStageItems] = useState<Set<string>>(new Set());
   const teamsMap = getTeamsLookup(tournament != null ? tournament.id : -1);
   const stageItemsLookup = getStageItemLookup(swrStagesResponse);
+
+  useEffect(() => {
+    setVisitedStageItems((prev) => {
+      const next = new Set(prev);
+      let changed = false;
+      for (const id of openStageItems) {
+        if (!next.has(id)) {
+          next.add(id);
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [openStageItems]);
 
   const availableInputs = useMemo(() => {
     if (teamsMap == null) return [];
@@ -474,6 +497,7 @@ const StageColumn = React.memo(function StageColumn({
         swrAvailableInputsResponse={swrAvailableInputsResponse}
         swrRankingsPerStageItemResponse={swrRankingsPerStageItemResponse}
         rankings={rankings}
+        visited={visitedStageItems.has(`${stageItem.id}`)}
       />
     ));
 
@@ -539,7 +563,15 @@ const StageColumn = React.memo(function StageColumn({
           </Button>
         </Group>
       </Modal>
-      {rows}
+      <Accordion
+        multiple
+        variant="separated"
+        value={openStageItems}
+        onChange={setOpenStageItems}
+        w="100%"
+      >
+        {rows}
+      </Accordion>
       <CreateStageItemModal
         key={-1}
         tournament={tournament}
